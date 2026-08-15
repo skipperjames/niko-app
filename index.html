@@ -13071,7 +13071,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         }
     }
 
-    async function writeRemoteGh(data) {
+    async function writeRemoteGh(data, _attempt) {
+        _attempt = _attempt || 0;
         if (!state.ghConnected) throw new Error('GitHub 未连接');
         const url = `${GH_API}/repos/${state.ghOwner}/${state.ghRepo}/contents/${GH_FILE}`;
         // 获取当前文件 SHA（更新时必须提供）
@@ -13106,6 +13107,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
+            // 409/422：读 SHA 和上传之间，云端文件被另一台设备更新了 → 重取 SHA 自动重试
+            if ((res.status === 409 || res.status === 422) && _attempt < 3) {
+                addLog(`GitHub 云端有更新（SHA 冲突），自动重试 ${_attempt + 1}/3...`, 'warn');
+                return writeRemoteGh(data, _attempt + 1);
+            }
             throw new Error(`GitHub API ${res.status}: ${err.message || ''}`);
         }
     }
