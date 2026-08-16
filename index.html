@@ -49,6 +49,12 @@
         .niko-lock-btn:hover { opacity: .88; }
         .niko-lock-btn:disabled { opacity: .5; cursor: not-allowed; }
         .niko-lock-err { color: #f87171; font-size: 12px; min-height: 16px; margin-top: 8px; }
+        .niko-lock-remember {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            margin-top: 10px; color: rgba(255,255,255,.55); font-size: 12px;
+            cursor: pointer; user-select: none;
+        }
+        .niko-lock-remember input { accent-color: #818cf8; }
         /* ===== 全局重置 & 基础 ===== */
         * {
             margin: 0;
@@ -267,7 +273,31 @@
             max-height: 90vh;
             overflow-y: auto;
             transition: background 0.3s ease;
+            position: relative;
         }
+        /* 弹窗右上角全局关闭按钮（JS 自动注入到每个 .modal） */
+        .modal-close-x {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.06);
+            color: #666;
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        .modal-close-x:hover { background: rgba(0, 0, 0, 0.14); }
+        .modal-close-x:active { background: rgba(0, 0, 0, 0.2); }
+        body.dark-mode .modal-close-x { background: #2f2f45; color: #aaa; }
+        body.dark-mode .modal-close-x:hover { background: #3d3d58; color: #fff; }
         .modal h3 {
             margin-bottom: 14px;
             font-size: 16px;
@@ -5665,9 +5695,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="niko-lock-logo">◉</div>
             <h2>NIKO 私密看板</h2>
             <p>请输入访问密码以解锁</p>
-            <input type="password" class="niko-lock-input" id="nikoLockInput" placeholder="输入密码" autocomplete="off" spellcheck="false" />
+            <input type="password" class="niko-lock-input" id="nikoLockInput" placeholder="输入密码" autocomplete="off" autocapitalize="off" spellcheck="false" />
             <button class="niko-lock-btn" id="nikoLockBtn">解锁</button>
             <div class="niko-lock-err" id="nikoLockErr"></div>
+            <label class="niko-lock-remember"><input type="checkbox" id="nikoLockRemember" checked>记住此设备，30 天内免输入</label>
         </div>
     </div>
     <script>
@@ -5679,6 +5710,19 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         var input = document.getElementById('nikoLockInput');
         var btn = document.getElementById('nikoLockBtn');
         var err = document.getElementById('nikoLockErr');
+        var rememberChk = document.getElementById('nikoLockRemember');
+        var REMEMBER_DAYS = 30;
+
+        // 防鸿蒙/手机浏览器弹"保存到密码簿"：把密码框换成 text + 圆点渲染
+        // （-webkit-text-security 不被识别为密码输入，密码管理器不会弹窗；不支持的浏览器保持原样）
+        try {
+            if (window.CSS && CSS.supports('-webkit-text-security', 'disc') && input) {
+                input.type = 'text';
+                input.style.webkitTextSecurity = 'disc';
+                input.setAttribute('name', 'niko-verify-code');
+            }
+        } catch (e) {}
+
         function sha256(str) {
             return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
                 .then(function (buf) {
@@ -5686,6 +5730,36 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         return ('0' + b.toString(16)).slice(-2);
                     }).join('');
                 });
+        }
+        // 设备标识：用于"记住此设备"令牌的签名，跨设备拷贝令牌无效
+        function lockDeviceId() {
+            var id = null;
+            try { id = localStorage.getItem('niko_lock_device'); } catch (e) {}
+            if (!id) {
+                id = 'ld_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+                try { localStorage.setItem('niko_lock_device', id); } catch (e) {}
+            }
+            return id;
+        }
+        function saveRememberToken() {
+            if (!rememberChk || !rememberChk.checked) return;
+            var exp = Date.now() + REMEMBER_DAYS * 86400000;
+            sha256(HASH + '|' + lockDeviceId() + '|' + exp).then(function (sig) {
+                try { localStorage.setItem('niko_unlock_remember', JSON.stringify({ exp: exp, sig: sig })); } catch (e) {}
+            }).catch(function () {});
+        }
+        // 校验"记住此设备"令牌（有效则静默解锁，不再要求输入密码）
+        function checkRememberToken() {
+            var raw = null;
+            try { raw = localStorage.getItem('niko_unlock_remember'); } catch (e) {}
+            if (!raw) return;
+            try {
+                var t = JSON.parse(raw);
+                if (!t || !t.exp || !t.sig || t.exp < Date.now()) return;
+                sha256(HASH + '|' + lockDeviceId() + '|' + t.exp).then(function (expect) {
+                    if (expect === t.sig) unlock();
+                }).catch(function () {});
+            } catch (e) {}
         }
         function unlock() {
             lock.classList.add('hidden');
@@ -5699,6 +5773,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             if (btn) { btn.disabled = true; btn.textContent = '验证中…'; }
             sha256(val).then(function (h) {
                 if (h === HASH) {
+                    saveRememberToken();
                     unlock();
                 } else {
                     if (btn) { btn.disabled = false; btn.textContent = '解锁'; }
@@ -5719,6 +5794,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         try {
             if (sessionStorage.getItem('niko_unlocked') === '1') unlock();
         } catch (e) {}
+        // 会话未解锁 → 检查"记住此设备"令牌（勾选过且 30 天内有效则静默解锁）
+        if (!lock.classList.contains('hidden')) checkRememberToken();
     })();
     </script>
 
@@ -6764,7 +6841,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     </div>
 
     <!-- 数据管理弹窗 -->
-    <div class="modal-mask" id="dataManagerModal">
+    <div class="modal-mask" id="dataManagerModal" data-close-fn="closeDataManager">
         <div class="modal" style="width:460px;">
             <h3>💾 数据管理</h3>
 
@@ -12517,7 +12594,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 
     /* ---------- 常量 ---------- */
     const DATA_PREFIXES = ['work_calendar_', 'niko_'];
-    const META_KEYS = ['niko_sync_snapshot', 'niko_sync_settings', 'niko_sync_device_id', 'niko_sync_local_snapshot'];
+    const META_KEYS = ['niko_sync_snapshot', 'niko_sync_settings', 'niko_sync_device_id', 'niko_sync_local_snapshot', 'niko_unlock_remember', 'niko_lock_device'];
     // 设备本地状态 / 缓存 / 迁移标记类 key —— 不同步（避免番茄钟进行中、视图状态等跨设备串扰）
     const EXCLUDE_KEYS = [
         'niko_pomodoro_active',          // 番茄钟进行中状态
@@ -12893,19 +12970,34 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         for (let i = 0; i < localStorage.length; i++) {
             const k = localStorage.key(i);
             if (k && DATA_PREFIXES.some(p => k.startsWith(p)) &&
-                !META_KEYS.includes(k) && !EXCLUDE_KEYS.includes(k)) {
+                !META_KEYS.includes(k) && !EXCLUDE_KEYS.includes(k) &&
+                !k.startsWith('niko_sync_local_snapshot')) {
                 result[k] = localStorage.getItem(k);
             }
         }
         return result;
     }
 
-    function loadSnapshot() {
-        const raw = localStorage.getItem('niko_sync_local_snapshot');
-        try { return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
+    function loadSnapshot(channel) {
+        // 快照按通道隔离：坚果云(fs) 与 GitHub 各自记录"上次同步时本地长什么样"。
+        // 若共用一份快照，先同步的通道会把快照刷成最新，后同步的通道就会误判
+        // "本地没改、云端改了"，把云端旧数据拉回来覆盖本地（GitHub 永远显示已是最新）。
+        const ch = channel || 'fs';
+        const raw = localStorage.getItem('niko_sync_local_snapshot__' + ch);
+        if (raw !== null) {
+            try { const v = JSON.parse(raw); return v || {}; } catch (e) { return {}; }
+        }
+        // 迁移：旧版共用快照 → 作为该通道的初始快照（仅首次）
+        const legacy = localStorage.getItem('niko_sync_local_snapshot');
+        if (legacy) {
+            try { const v = JSON.parse(legacy); return v || {}; } catch (e) {}
+        }
+        return {};
     }
-    function saveSnapshot(data) {
-        localStorage.setItem('niko_sync_local_snapshot', JSON.stringify(data));
+    function saveSnapshot(data, channel) {
+        try {
+            localStorage.setItem('niko_sync_local_snapshot__' + (channel || 'fs'), JSON.stringify(data));
+        } catch (e) {}
     }
 
     /* ---------- 设备 ID ---------- */
@@ -13229,7 +13321,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         addLog(`[${channelName(channel)}] 开始同步...`, 'info');
 
         const local = collectLocal();
-        const snapshot = loadSnapshot();
+        const snapshot = loadSnapshot(channel);
         let remote = await readRemote(channel);
 
         // 首次同步：云端无文件 → 全量推送
@@ -13242,7 +13334,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 version: '3.0', app: 'NIKO', deviceId: getDeviceId(),
                 updatedAt: nowIso(), keys
             }, channel);
-            saveSnapshot(local);
+            saveSnapshot(local, channel);
             state.lastSyncAt = nowIso();
             state.lastResult = { pushed: Object.keys(local).length, pulled: 0, conflicts: 0 };
             saveSettings();
@@ -13313,7 +13405,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 addLog(`拉取 ${k}`, 'ok');
             }
         }
-        saveSnapshot(snapshotNow);
+        saveSnapshot(snapshotNow, channel);
 
         state.lastResult = { pushed, pulled, conflicts: 0 };
         if (pushed + pulled === 0) addLog(`[${channelName(channel || 'fs')}] 同步完成：数据已是最新`, 'ok');
@@ -13457,7 +13549,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         };
         const conflictCount = state.conflictList ? state.conflictList.length : 0;
         await writeRemote(outRemote, state.pendingChannel || 'fs');
-        saveSnapshot(snapshotNow);
+        saveSnapshot(snapshotNow, state.pendingChannel || 'fs');
         closeConflictModal();
 
         state.lastSyncAt = nowIso();
@@ -14975,6 +15067,101 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         if (typeof seedMarketNodes === 'function') { try { seedMarketNodes(); } catch (e) { console.warn('seedMarketNodes:', e); } }
     </script>
 
+    <!-- ===== 弹窗全局关闭（移动端友好）+ 防密码簿弹窗 ===== -->
+    <script>
+    (function () {
+        /* ---- 1. 给每个弹窗自动注入右上角 ✕ 关闭按钮 ---- */
+        function injectCloseBtns(scope) {
+            var root = scope && scope.querySelectorAll ? scope : document;
+            var mods = root.querySelectorAll('.modal-mask .modal');
+            for (var i = 0; i < mods.length; i++) {
+                var m = mods[i];
+                if (m.querySelector('.modal-close-x')) continue;
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'modal-close-x';
+                btn.setAttribute('aria-label', '关闭弹窗');
+                btn.textContent = '✕';
+                m.appendChild(btn);
+            }
+        }
+
+        /* ---- 2. 关闭弹窗：兼容 classList('show') 和 style.display 两种显示方式 ---- */
+        function hideMask(mask) {
+            if (!mask) return;
+            if (mask.getAttribute('data-modal-persistent') === '1') return; // 关键弹窗不允许误关
+            mask.classList.remove('show');
+            if (mask.style.display === 'flex' || mask.style.display === 'block') mask.style.display = 'none';
+            // 可选：弹窗自带清理函数（data-close-fn="函数名"），关闭时一并执行
+            var fnName = mask.getAttribute('data-close-fn');
+            if (fnName && typeof window[fnName] === 'function') {
+                try { window[fnName](); } catch (e) {}
+            }
+        }
+
+        /* ---- 3. 事件委托：点 ✕ 或点遮罩空白处关闭 ---- */
+        document.addEventListener('click', function (e) {
+            var t = e.target;
+            if (!t || !t.closest) return;
+            var x = t.closest('.modal-close-x');
+            if (x) {
+                e.preventDefault();
+                e.stopPropagation();
+                hideMask(x.closest('.modal-mask'));
+                return;
+            }
+            // 点在遮罩本身（弹窗外的空白区域）→ 关闭
+            if (t.classList && t.classList.contains('modal-mask')) hideMask(t);
+        }, false);
+
+        function init() { injectCloseBtns(document); }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+        else init();
+
+        // 动态插入的弹窗也会自动补上关闭按钮
+        try {
+            var mo = new MutationObserver(function (muts) {
+                for (var i = 0; i < muts.length; i++) {
+                    var nodes = muts[i].addedNodes;
+                    for (var j = 0; j < nodes.length; j++) {
+                        var n = nodes[j];
+                        if (n.nodeType !== 1) continue;
+                        if (n.classList && n.classList.contains('modal') && n.closest && n.closest('.modal-mask')) injectCloseBtns(n.closest('.modal-mask'));
+                        else injectCloseBtns(n);
+                    }
+                }
+            });
+            mo.observe(document.documentElement, { childList: true, subtree: true });
+        } catch (e) {}
+
+        /* ---- 4. 防鸿蒙/手机浏览器"保存到密码簿"弹窗 ----
+           原理：把密码框换成 text 输入 + CSS 圆点渲染（-webkit-text-security），
+           密码管理器不认为是密码输入，就不会弹保存提示。不支持该 CSS 的浏览器保持原样。 */
+        var supportsDisc = false;
+        try { supportsDisc = window.CSS && CSS.supports('-webkit-text-security', 'disc'); } catch (e) {}
+        function disguisePasswordInputs() {
+            if (!supportsDisc) return;
+            var ids = ['cloudsyncGhToken'];
+            for (var i = 0; i < ids.length; i++) {
+                var inp = document.getElementById(ids[i]);
+                if (!inp || inp.type !== 'password' || inp.dataset.nikoDisguised) continue;
+                inp.dataset.nikoDisguised = '1';
+                inp.type = 'text';
+                inp.style.webkitTextSecurity = 'disc';
+                inp.setAttribute('autocomplete', 'off');
+                inp.setAttribute('name', 'niko-verify-code');
+            }
+        }
+        function watchDisguise() {
+            disguisePasswordInputs();
+            try {
+                var mo2 = new MutationObserver(disguisePasswordInputs);
+                mo2.observe(document.body || document.documentElement, { childList: true, subtree: true });
+            } catch (e) {}
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchDisguise);
+        else watchDisguise();
+    })();
     </script>
     <!-- 截图识别 OCR 引擎（Tesseract.js，按需加载，首次识别下载语言包后浏览器缓存） -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
