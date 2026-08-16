@@ -1942,16 +1942,19 @@
         .habit-card-head .habit-name { font-size: 14px; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .habit-card-head .habit-streak { font-size: 11px; color: #888; white-space: nowrap; }
         body.dark-mode .habit-card-head .habit-streak { color: #999; }
-        .habit-del {
+        .habit-del, .habit-edit {
             font-size: 11px;
-            color: #ef4444;
             background: none;
             border: none;
             cursor: pointer;
             padding: 2px 6px;
             border-radius: 6px;
         }
+        .habit-del { color: #ef4444; }
         .habit-del:hover { background: #fee2e2; }
+        .habit-edit { color: #3b82f6; }
+        .habit-edit:hover { background: #dbeafe; }
+        body.dark-mode .habit-edit:hover { background: #1e3a5f; }
         .habit-card .habit-progress {
             margin-top: 6px;
             font-size: 11px;
@@ -5115,6 +5118,11 @@
         .book-rec-author { font-size: 12px; color: #888; }
         .book-rec-why { font-size: 12px; color: #666; line-height: 1.5; flex: 1; }
         .book-rec-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .book-rec-personal-hd {
+            font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+        }
+        body.dark-mode .book-rec-personal-hd { color: #ccc; }
+        .book-rec-personal-empty { font-size: 12px; color: #888; }
 
         /* 打卡视图 */
         .book-checkin-today {
@@ -5232,6 +5240,31 @@
         .book-sub-notes { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
         .book-sub-note { font-size: 12px; background: #f8f6f1; border-radius: 8px; padding: 6px 10px; color: #555; }
         body.dark-mode .book-sub-note { background: #111827; color: #bbb; }
+
+        /* 识图添加书籍（微信读书截图识别） */
+        .book-ocr-drop {
+            border: 2px dashed #d1d5db; border-radius: 12px; padding: 24px; text-align: center;
+            color: #888; font-size: 13px; cursor: pointer; transition: all .2s; background: #f9fafb;
+        }
+        body.dark-mode .book-ocr-drop { border-color: #444; background: #1f2937; color: #aaa; }
+        .book-ocr-drop.dragover { border-color: #b45309; background: #fffaf0; color: #b45309; }
+        .book-ocr-preview { max-width: 100%; max-height: 220px; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .book-ocr-status { font-size: 12px; color: #b45309; margin-top: 8px; }
+        .book-ocr-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .book-ocr-fields .full { grid-column: 1 / -1; }
+        .book-ocr-fields label { font-size: 12px; color: #888; display: block; margin-bottom: 4px; }
+        .book-ocr-fields input, .book-ocr-fields select {
+            width: 100%; padding: 8px 10px; border-radius: 8px; font-size: 13px;
+            border: 1px solid #e5dccb; background: #fff; box-sizing: border-box;
+        }
+        body.dark-mode .book-ocr-fields input, body.dark-mode .book-ocr-fields select {
+            background: #111827; border-color: #444; color: #eee;
+        }
+        .book-ocr-raw {
+            width: 100%; min-height: 70px; padding: 8px 10px; border-radius: 8px; font-size: 12px;
+            border: 1px solid #e5e7eb; background: #f9fafb; color: #666; resize: vertical; box-sizing: border-box;
+        }
+        body.dark-mode .book-ocr-raw { background: #111827; border-color: #444; color: #bbb; }
 /* ===== 日记专属CSS ===== */
         .diary-stats {
             display: grid;
@@ -5616,9 +5649,13 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         .member-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .member-form-grid .form-item.full { grid-column: 1 / -1; }
         .member-renew-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .member-renew-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12.5px; color: #444; white-space: nowrap; }
+        .member-renew-label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12.5px; color: #444; white-space: nowrap; }
         .member-renew-label input { accent-color: #7c3aed; }
         .member-renew-days { font-size: 12px; color: #888; white-space: nowrap; }
+        .member-days-row { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+        .member-days-row input { width: 80px; }
+        .member-days-unit { font-size: 13px; color: #666; }
+        body.dark-mode .member-days-unit { color: #aaa; }
         /* 终身/续费徽章 */
         .member-badge {
             font-size: 10.5px; padding: 1px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap;
@@ -5735,6 +5772,83 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         body.dark-mode .gt-empty { color: #777; }
         .gt-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
         @media (max-width: 860px) { .gt-layout { grid-template-columns: 1fr; } }
+/* ===== 育儿手册专属CSS ===== */
+        .parenting-page { display: flex; flex-direction: column; gap: 14px; }
+        .parenting-stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;
+        }
+        .parenting-stat {
+            background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 12px; padding: 10px 14px;
+        }
+        body.dark-mode .parenting-stat { background: #182835; border-color: #1e3a5f; }
+        .parenting-stat-label { font-size: 12px; color: #888; }
+        .parenting-stat-value { font-size: 22px; font-weight: 600; color: #0ea5e9; margin-top: 2px; }
+        body.dark-mode .parenting-stat-value { color: #7dd3fc; }
+        .parenting-tabs {
+            display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px;
+        }
+        body.dark-mode .parenting-tabs { border-bottom-color: #333; }
+        .parenting-tab {
+            padding: 7px 16px; border-radius: 20px; cursor: pointer; font-size: 13px;
+            background: #f1f3f5; color: #555; border: 1px solid transparent; transition: all .2s; white-space: nowrap;
+        }
+        body.dark-mode .parenting-tab { background: #222; color: #aaa; }
+        .parenting-tab.active { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+        .parenting-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .parenting-card {
+            background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 14px 16px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        body.dark-mode .parenting-card { background: #1f2937; border-color: #333; }
+        .parenting-card-title { font-size: 14px; font-weight: 600; line-height: 1.4; }
+        .parenting-card-meta { font-size: 12px; color: #888; }
+        .parenting-card-body { font-size: 13px; color: #555; line-height: 1.6; }
+        body.dark-mode .parenting-card-body { color: #bbb; }
+        .parenting-tag {
+            font-size: 11px; padding: 1px 8px; border-radius: 999px; background: #e0f2fe; color: #0369a1;
+            align-self: flex-start;
+        }
+        body.dark-mode .parenting-tag { background: #1e3a5f; color: #7dd3fc; }
+        .parenting-empty {
+            text-align: center; color: #999; font-size: 13px; padding: 40px 0;
+            border: 1px dashed #ddd; border-radius: 12px;
+        }
+        body.dark-mode .parenting-empty { border-color: #333; color: #777; }
+        .parenting-form {
+            background: #f8fafc; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+        }
+        body.dark-mode .parenting-form { background: #1f2937; }
+        .parenting-form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .parenting-form-row > * { flex: 1; min-width: 120px; }
+        .parenting-form label { font-size: 12px; color: #888; display: block; margin-bottom: 4px; }
+        .parenting-form input, .parenting-form select, .parenting-form textarea {
+            width: 100%; padding: 8px 10px; border-radius: 8px; font-size: 13px;
+            border: 1px solid #e5e7eb; background: #fff; box-sizing: border-box;
+        }
+        body.dark-mode .parenting-form input, body.dark-mode .parenting-form select, body.dark-mode .parenting-form textarea {
+            background: #111827; border-color: #444; color: #eee;
+        }
+        .parenting-form textarea { resize: vertical; min-height: 60px; }
+        .parenting-checklist-item {
+            display: flex; align-items: flex-start; gap: 10px; background: #fff; border: 1px solid #eee;
+            border-radius: 10px; padding: 10px 12px;
+        }
+        body.dark-mode .parenting-checklist-item { background: #1f2937; border-color: #333; }
+        .parenting-checklist-item.done { opacity: .65; }
+        .parenting-checklist-item input[type="checkbox"] { margin-top: 3px; accent-color: #0ea5e9; }
+        .parenting-checklist-item .text { flex: 1; font-size: 13px; }
+        .parenting-checklist-item.done .text { text-decoration: line-through; color: #888; }
+        .parenting-advice-box {
+            background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 14px 16px;
+            font-size: 13px; line-height: 1.7; color: #0c4a6e; white-space: pre-wrap;
+        }
+        body.dark-mode .parenting-advice-box { background: #182835; border-color: #1e3a5f; color: #bae6fd; }
+        .parenting-principle-item {
+            background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px 12px;
+            display: flex; justify-content: space-between; align-items: center; gap: 8px;
+        }
+        body.dark-mode .parenting-principle-item { background: #1f2937; border-color: #333; }
+        .parenting-principle-text { flex: 1; font-size: 13px; line-height: 1.5; }
 
 /* ===== 手机端适配（<=768px：侧栏→底部Tab / 弹窗全屏 / 卡片单列） ===== */
 @media (max-width: 768px) {
@@ -5841,6 +5955,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     .book-view-tab, .book-status-tab { flex-shrink: 0; white-space: nowrap; }
     .book-checkin-today { flex-direction: column; align-items: stretch; }
 
+    /* 育儿手册：单列 */
+    .parenting-stats { grid-template-columns: repeat(2, 1fr); }
+    .parenting-tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .parenting-tab { flex-shrink: 0; }
+
     /* 便签：单列瀑布流 */
     .nb-wall { columns: 1; column-gap: 0; }
     .nb-wall .nb-card { margin-bottom: 12px; }
@@ -5849,7 +5968,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 
     /* 页面内边距紧凑化 + 今日主区纵向 */
     #todayPage { padding: 14px 14px; }
-    #planPage, #hotPage, #memePage, #copyPage, #notesPage, #bookPage, #diaryPage { padding: 14px 12px; }
+    #planPage, #hotPage, #memePage, #copyPage, #notesPage, #bookPage, #diaryPage, #parentingPage { padding: 14px 12px; }
     #todayPage .today-main { flex-direction: column; overflow: visible; }
     #todayPage .today-main .flight-plan,
     #todayPage .today-main .today-time-blocks,
@@ -6125,6 +6244,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="nav-item" onclick="switchPage('diary')">📔 日记</div>
             <div class="nav-item" onclick="switchPage('member')">💰 会员</div>
             <div class="nav-item" onclick="switchPage('game')">🎮 游戏时间</div>
+            <div class="nav-item" onclick="switchPage('parenting')">👶 育儿手册</div>
         </div>
         <div class="nav-section settings-section" style="margin-top:auto;">
             <div class="nav-title">Settings</div>
@@ -6157,6 +6277,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         <div class="nav-more-item" onclick="switchPage('copy');hideNavMore()">✍️ 文案库</div>
         <div class="nav-more-item" onclick="switchPage('notes');hideNavMore()">🗂 便签看板</div>
         <div class="nav-more-item" onclick="switchPage('book');hideNavMore()">📚 读书</div>
+        <div class="nav-more-item" onclick="switchPage('parenting');hideNavMore()">👶 育儿手册</div>
     </div>
 
     <!-- 手机端底部 Tab 栏：一键直达最常用 5 个板块 -->
@@ -6273,7 +6394,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <input type="number" class="habit-goal" id="habitRewardInput" min="0" max="480" step="1" value="0" title="每次打卡奖励的游戏分钟数（0=不奖励），去「游戏时间」看板可随时修改">
                             <span class="habit-goal-unit">分钟/次</span>
                         </span>
-                        <button class="btn primary" onclick="addHabit()">＋ 添加</button>
+                        <button class="btn primary" id="habitAddBtn" onclick="addHabit()">＋ 添加</button>
+                        <button class="btn" id="habitEditCancel" onclick="cancelEditHabit()" style="display:none;">取消编辑</button>
                     </div>
                     <div class="modal-body">
                         <div class="habit-stats" id="habitStatsList"></div>
@@ -6936,7 +7058,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <div id="bookShelfView">
                         <div class="book-toolbar" style="margin-bottom:10px;">
                             <div class="book-status-tabs" id="bookStatusTabs"></div>
-                            <button class="book-btn primary" onclick="openBookModal(null)" title="手动添加想读的书">＋ 添加书籍</button>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <button class="book-btn" onclick="openBookOcrModal()" title="截图识别微信读书等 App 的书名、作者、进度">📷 识图添加</button>
+                                <button class="book-btn primary" onclick="openBookModal(null)" title="手动添加想读的书">＋ 添加书籍</button>
+                            </div>
                         </div>
                         <div id="bookShelfGrid">
                             <div class="book-empty">加载中...</div>
@@ -6945,10 +7070,14 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 
                     <!-- AI 推荐视图 -->
                     <div id="bookRecView" style="display:none;">
-                        <div class="book-toolbar" style="margin-bottom:10px;">
-                            <span style="font-size:13px;color:#888;">AI 按买量设计师成长路径预置的推荐书单，一键加入书架</span>
-                            <button class="book-btn" onclick="updateBookRecommend()" title="重新合并AI最新调研的推荐，不会覆盖已加入书架的">🔄 更新AI推荐</button>
+                        <div class="book-toolbar" style="margin-bottom:10px;flex-wrap:wrap;">
+                            <span style="font-size:13px;color:#888;">结合你正在读的书 + 成长路径预置书单，帮你拓展视野</span>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <button class="book-btn" onclick="copyBookRecPrompt()" title="复制一段提示词，去问问 AI 更精准的推荐">📋 复制 AI 提问词</button>
+                                <button class="book-btn" onclick="updateBookRecommend()" title="重新合并AI最新调研的推荐，不会覆盖已加入书架的">🔄 更新AI推荐</button>
+                            </div>
                         </div>
+                        <div id="bookRecPersonal" style="margin-bottom:14px;"></div>
                         <div id="bookRecGrid">
                             <div class="book-empty">加载中...</div>
                         </div>
@@ -7027,6 +7156,36 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <div class="modal-footer">
                         <button class="btn" onclick="closeBookModal()">取消</button>
                         <button class="btn primary" onclick="saveBookModal()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 识图添加书籍弹窗 -->
+            <div class="modal-mask" id="bookOcrModal" onclick="if(event.target===this)closeBookOcrModal()">
+                <div class="modal" style="width:520px;">
+                    <h3>📷 识图添加书籍（支持微信读书截图）</h3>
+                    <div class="modal-body">
+                        <div class="book-ocr-drop" id="bookOcrDrop" onclick="document.getElementById('bookOcrFile').click()">
+                            <div>点击上传截图，或 Ctrl+V 粘贴</div>
+                            <div style="font-size:12px;color:#aaa;margin-top:4px;">支持 JPG / PNG，文字越清晰识别越准</div>
+                            <input type="file" id="bookOcrFile" accept="image/*" style="display:none;" onchange="bookOcrHandleFile(this.files[0])">
+                        </div>
+                        <div id="bookOcrPreviewWrap" style="display:none;text-align:center;margin-top:10px;">
+                            <img id="bookOcrPreview" class="book-ocr-preview" src="" alt="preview">
+                        </div>
+                        <div class="book-ocr-status" id="bookOcrStatus"></div>
+                        <div class="book-ocr-fields" id="bookOcrFields" style="display:none;">
+                            <div class="full"><label>识别到的原文（可手动修改后重新解析）</label><textarea class="book-ocr-raw" id="bookOcrRaw" onchange="bookOcrParseRaw()"></textarea></div>
+                            <div><label>书名 *</label><input type="text" id="bookOcrTitle" placeholder="如：原子习惯"></div>
+                            <div><label>作者</label><input type="text" id="bookOcrAuthor" placeholder="如：詹姆斯·克利尔"></div>
+                            <div><label>分类</label><select id="bookOcrCategory"></select></div>
+                            <div><label>进度 %（可选）</label><input type="number" id="bookOcrProgress" min="0" max="100" placeholder="0-100"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="closeBookOcrModal()">取消</button>
+                        <button class="btn" onclick="bookOcrParseRaw()" id="bookOcrReparseBtn" style="display:none;">🔄 重新解析</button>
+                        <button class="btn primary" onclick="bookOcrAdd()" id="bookOcrAddBtn" style="display:none;">＋ 加入书架</button>
                     </div>
                 </div>
             </div>
@@ -7131,9 +7290,13 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <label class="member-renew-label">
                                 <input type="checkbox" id="memberRenewInput" checked> 已开启自动续费
                             </label>
-                            <span class="member-renew-days">每周约用</span>
-                            <input type="number" id="memberWeeklyDaysInput" min="0" max="7" step="1" placeholder="0-7 天" title="每周大约使用几天，用于估算单天成本" style="width:76px;">
-                            <span class="member-renew-days">天</span>
+                        </div>
+                        <div class="form-item full">
+                            <label>每周大约使用几天（用于估算单次成本）</label>
+                            <div class="member-days-row">
+                                <input type="number" id="memberWeeklyDaysInput" min="0" max="7" step="1" placeholder="0-7" title="每周大约使用几天，用于估算单天成本">
+                                <span class="member-days-unit">天</span>
+                            </div>
                         </div>
                         <div class="form-item full">
                             <label>备注</label>
@@ -7185,6 +7348,83 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <div class="gt-card">
                         <div class="gt-card-title">📜 最近流水</div>
                         <div class="gt-history" id="gtHistory"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page" id="parentingPage">
+<div style="padding:20px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;" class="parenting-page">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:8px;">
+                    <div>
+                        <h1 style="font-size:22px;font-weight:600;display:flex;align-items:center;gap:10px;">👶 育儿手册</h1>
+                        <p style="color:#888;font-size:13px;margin-top:2px;">关注婴儿用品安全、记录育儿理念、生成今日建议</p>
+                    </div>
+                    <span style="font-size:11px;color:#888;" id="parentingUpdatedAt"></span>
+                </div>
+
+                <div class="parenting-stats" id="parentingStats"></div>
+
+                <div class="parenting-tabs" id="parentingTabs"></div>
+
+                <!-- 安全快讯 -->
+                <div id="parentingNewsView">
+                    <div class="parenting-toolbar" style="margin-bottom:10px;">
+                        <span style="font-size:13px;color:#888;">婴儿用品安全、召回、风险提示</span>
+                        <button class="book-btn primary" onclick="openParentingNewsModal()">＋ 添加资讯</button>
+                    </div>
+                    <div id="parentingNewsList"></div>
+                </div>
+
+                <!-- 我的理念 -->
+                <div id="parentingPrinciplesView" style="display:none;">
+                    <div class="parenting-form" style="margin-bottom:12px;">
+                        <div><label>我的育儿理念 / 原则</label><textarea id="parentingPrincipleInput" placeholder="例如：优先选择成分简单的洗护用品；不盲目追新，新产品观望 3 个月再入手；关注国家市场监管总局召回公告..."></textarea></div>
+                        <div style="display:flex;justify-content:flex-end;"><button class="book-btn primary" onclick="addParentingPrinciple()">保存理念</button></div>
+                    </div>
+                    <div id="parentingPrinciplesList"></div>
+                </div>
+
+                <!-- 今日建议 -->
+                <div id="parentingAdviceView" style="display:none;">
+                    <div class="parenting-toolbar" style="margin-bottom:10px;">
+                        <span style="font-size:13px;color:#888;">结合安全资讯和你的理念，生成 actionable 建议</span>
+                        <button class="book-btn primary" onclick="generateParentingAdvice()">✨ 生成今日建议</button>
+                    </div>
+                    <div id="parentingAdviceBox" class="parenting-advice-box" style="display:none;"></div>
+                    <div id="parentingAdviceEmpty" class="parenting-empty" style="border:none;padding:20px 0;">点击上方按钮，基于当前资讯和理念生成建议</div>
+                </div>
+
+                <!-- 育儿清单 -->
+                <div id="parentingChecklistView" style="display:none;">
+                    <div class="parenting-form" style="margin-bottom:12px;">
+                        <div class="parenting-form-row">
+                            <div style="flex:2;"><label>清单项</label><input type="text" id="parentingCheckInput" placeholder="例如：检查奶粉批次是否在召回名单" onkeydown="if(event.key==='Enter')addParentingCheckItem()"></div>
+                            <div><label>分类</label><select id="parentingCheckCategory"><option value="日常">日常</option><option value="安全">安全</option><option value="健康">健康</option><option value="用品">用品</option></select></div>
+                        </div>
+                        <div style="display:flex;justify-content:flex-end;"><button class="book-btn primary" onclick="addParentingCheckItem()">＋ 添加清单</button></div>
+                    </div>
+                    <div id="parentingChecklist"></div>
+                </div>
+            </div>
+
+            <!-- 添加安全资讯弹窗 -->
+            <div class="modal-mask" id="parentingNewsModal" onclick="if(event.target===this)closeParentingNewsModal()">
+                <div class="modal" style="width:520px;">
+                    <h3>📰 添加安全资讯</h3>
+                    <div class="book-form-grid">
+                        <div class="book-form-row">
+                            <div><label>标题 *</label><input id="parentingNewsTitle" placeholder="如：某品牌婴儿米粉重金属超标"></div>
+                            <div><label>分类</label><select id="parentingNewsCategory"><option value="食品安全">食品安全</option><option value="用品召回">用品召回</option><option value="疾病预警">疾病预警</option><option value="养育误区">养育误区</option><option value="其他">其他</option></select></div>
+                        </div>
+                        <div class="book-form-row">
+                            <div><label>来源</label><input id="parentingNewsSource" placeholder="如：央视新闻 / 市场监管总局"></div>
+                            <div><label>日期</label><input type="date" id="parentingNewsDate"></div>
+                        </div>
+                        <div><label>内容摘要 / 关键信息</label><textarea id="parentingNewsContent" placeholder="发生了什么问题？影响哪些产品？家长应该怎么做？"></textarea></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="closeParentingNewsModal()">取消</button>
+                        <button class="btn primary" onclick="saveParentingNews()">保存</button>
                     </div>
                 </div>
             </div>
@@ -7345,6 +7585,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <span class="data-meta-tag">已读记录 <span class="count" id="exportReadCount">0</span></span>
                     <span class="data-meta-tag">会员 <span class="count" id="exportMemberCount">0</span></span>
                     <span class="data-meta-tag">游戏时间 <span class="count" id="exportGameTimeCount">0</span></span>
+                    <span class="data-meta-tag">育儿手册 <span class="count" id="exportParentingCount">0</span></span>
                     <span class="data-meta-tag">标签</span>
                     <span class="data-meta-tag">颜色配置</span>
                     <span class="data-meta-tag">深色模式</span>
@@ -7767,7 +8008,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         function switchPage(page) {
             currentPage = page;
             document.querySelectorAll('.sidebar-left .nav-item').forEach((item, idx) => {
-                const pages = ['today', 'plan', 'hot', 'meme', 'copy', 'notes', 'book', 'diary', 'member', 'game'];
+                const pages = ['today', 'plan', 'hot', 'meme', 'copy', 'notes', 'book', 'diary', 'member', 'game', 'parenting'];
                 item.classList.toggle('active', pages[idx] === page);
             });
             // 同步底部 Tab 栏激活态（手机端）
@@ -7792,6 +8033,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 renderMemberPage();
             } else if (page === 'game') {
                 renderGameTimePage();
+            } else if (page === 'parenting') {
+                renderParentingPage();
             } else {
                 render();
             }
@@ -8445,8 +8688,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             if (badge) badge.textContent = `${doneCount}/${habits.length}`;
         }
 
-        // 管理弹窗
-        function openHabits() {
+        let habitEditId = null;
+
+        function resetHabitForm() {
+            habitEditId = null;
             habitIconPick = '💪';
             const nameInput = document.getElementById('habitNameInput');
             if (nameInput) nameInput.value = '';
@@ -8454,11 +8699,41 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             if (goalInput) goalInput.value = '7';
             const rewardInput = document.getElementById('habitRewardInput');
             if (rewardInput) rewardInput.value = '0';
+            const btn = document.getElementById('habitAddBtn');
+            if (btn) { btn.textContent = '＋ 添加'; btn.classList.add('primary'); }
+            const cancel = document.getElementById('habitEditCancel');
+            if (cancel) cancel.style.display = 'none';
             renderHabitIconPick();
+        }
+
+        // 管理弹窗
+        function openHabits() {
+            resetHabitForm();
             renderHabitStats();
             document.getElementById('habitsModal').classList.add('show');
         }
         function closeHabits() { document.getElementById('habitsModal').classList.remove('show'); }
+
+        function editHabit(id) {
+            const h = habitList().find(x => x.id === id);
+            if (!h) return;
+            habitEditId = id;
+            habitIconPick = h.icon || '🎯';
+            const nameInput = document.getElementById('habitNameInput');
+            if (nameInput) nameInput.value = h.name || '';
+            const goalInput = document.getElementById('habitGoalInput');
+            if (goalInput) goalInput.value = String(h.goal || 7);
+            const rewardInput = document.getElementById('habitRewardInput');
+            if (rewardInput) rewardInput.value = String(Number(h.rewardMin) || 0);
+            renderHabitIconPick();
+            const btn = document.getElementById('habitAddBtn');
+            if (btn) { btn.textContent = '💾 保存修改'; btn.classList.add('primary'); }
+            const cancel = document.getElementById('habitEditCancel');
+            if (cancel) cancel.style.display = '';
+            if (typeof showToast === 'function') showToast('正在编辑：' + h.name);
+        }
+
+        function cancelEditHabit() { resetHabitForm(); }
 
         function renderHabitIconPick() {
             const box = document.getElementById('habitIconPick');
@@ -8471,8 +8746,6 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             const nameInput = document.getElementById('habitNameInput');
             const name = (nameInput && nameInput.value || '').trim();
             if (!name) { if (typeof showToast === 'function') showToast('请输入习惯名称'); return; }
-            const habits = habitList();
-            if (habits.some(h => h.name === name)) { if (typeof showToast === 'function') showToast('这个习惯已经存在'); return; }
             const goalInput = document.getElementById('habitGoalInput');
             const goalRaw = Number(goalInput && goalInput.value);
             const goal = (!goalRaw || goalRaw < 1) ? 7 : Math.min(28, Math.round(goalRaw));
@@ -8480,12 +8753,30 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             let rewardMin = Math.round(Number(rewardInput && rewardInput.value) || 0);
             if (rewardMin < 0) rewardMin = 0;
             if (rewardMin > 480) rewardMin = 480;
-            habits.push({ id: 'hb_' + Date.now(), name, icon: habitIconPick, goal, rewardMin, createdAt: new Date().toISOString() });
-            habitSaveList(habits);
-            if (typeof showToast === 'function') showToast(rewardMin > 0 ? `🎯 习惯已添加，打卡奖励 ${rewardMin} 分钟游戏时间` : '🎯 习惯已添加');
-            if (nameInput) nameInput.value = '';
-            const rewardInput2 = document.getElementById('habitRewardInput');
-            if (rewardInput2) rewardInput2.value = '0';
+
+            const habits = habitList();
+            if (habitEditId) {
+                // 编辑模式
+                const idx = habits.findIndex(h => h.id === habitEditId);
+                if (idx < 0) { if (typeof showToast === 'function') showToast('未找到要编辑的习惯'); return; }
+                const dup = habits.find(h => h.name === name && h.id !== habitEditId);
+                if (dup) { if (typeof showToast === 'function') showToast('这个习惯已经存在'); return; }
+                habits[idx] = { ...habits[idx], name, icon: habitIconPick, goal, rewardMin };
+                habitSaveList(habits);
+                if (typeof showToast === 'function') showToast('✏️ 习惯已更新');
+                resetHabitForm();
+            } else {
+                // 新增模式
+                if (habits.some(h => h.name === name)) { if (typeof showToast === 'function') showToast('这个习惯已经存在'); return; }
+                habits.push({ id: 'hb_' + Date.now(), name, icon: habitIconPick, goal, rewardMin, createdAt: new Date().toISOString() });
+                habitSaveList(habits);
+                if (typeof showToast === 'function') showToast(rewardMin > 0 ? `🎯 习惯已添加，打卡奖励 ${rewardMin} 分钟游戏时间` : '🎯 习惯已添加');
+                if (nameInput) nameInput.value = '';
+                const rewardInput2 = document.getElementById('habitRewardInput');
+                if (rewardInput2) rewardInput2.value = '0';
+                const goalInput2 = document.getElementById('habitGoalInput');
+                if (goalInput2) goalInput2.value = '7';
+            }
             renderHabitStats();
             renderTodayHabits();
         }
@@ -8538,6 +8829,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <span class="habit-icon">${h.icon || '🎯'}</span>
                             <span class="habit-name">${escapeHtml(h.name)}</span>
                             <span class="habit-streak">🔥 ${streak} 天</span>
+                            <button class="habit-edit" onclick="event.stopPropagation();editHabit('${h.id}')" title="编辑">✏️</button>
                             <button class="habit-del" onclick="deleteHabit('${h.id}')">🗑</button>
                         </div>
                         <div class="habit-progress">
@@ -12542,10 +12834,162 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             showToast('💾 已保存');
         }
 
+        // ===== 识图添加书籍（微信读书截图 OCR） =====
+        let bookOcrWorker = null;
+        function bookOcrLoadTesseract() {
+            return new Promise((resolve, reject) => {
+                if (window.Tesseract) return resolve(window.Tesseract);
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+                s.onload = () => resolve(window.Tesseract);
+                s.onerror = () => reject(new Error('Tesseract.js 加载失败'));
+                document.head.appendChild(s);
+            });
+        }
+        function openBookOcrModal() {
+            document.getElementById('bookOcrModal').classList.add('show');
+            document.getElementById('bookOcrDrop').style.display = '';
+            document.getElementById('bookOcrPreviewWrap').style.display = 'none';
+            document.getElementById('bookOcrPreview').src = '';
+            document.getElementById('bookOcrStatus').textContent = '';
+            document.getElementById('bookOcrFields').style.display = 'none';
+            document.getElementById('bookOcrReparseBtn').style.display = 'none';
+            document.getElementById('bookOcrAddBtn').style.display = 'none';
+            document.getElementById('bookOcrRaw').value = '';
+            ['bookOcrTitle','bookOcrAuthor','bookOcrProgress'].forEach(id => document.getElementById(id).value = '');
+            const cat = document.getElementById('bookOcrCategory');
+            cat.innerHTML = '<option value="">不分类</option>' + BOOK_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+            // 绑定粘贴
+            setTimeout(() => {
+                const modal = document.getElementById('bookOcrModal');
+                modal.onpaste = (e) => {
+                    const items = (e.clipboardData && e.clipboardData.items) ? Array.from(e.clipboardData.items) : [];
+                    const imgItem = items.find(it => it.type && it.type.startsWith('image/'));
+                    if (imgItem) {
+                        const file = imgItem.getAsFile();
+                        if (file) bookOcrHandleFile(file);
+                    }
+                };
+            }, 0);
+        }
+        function closeBookOcrModal() {
+            document.getElementById('bookOcrModal').classList.remove('show');
+            const modal = document.getElementById('bookOcrModal');
+            modal.onpaste = null;
+        }
+        function bookOcrHandleFile(file) {
+            if (!file || !file.type.startsWith('image/')) { showToast('请选择图片文件'); return; }
+            const url = URL.createObjectURL(file);
+            document.getElementById('bookOcrPreview').src = url;
+            document.getElementById('bookOcrPreviewWrap').style.display = '';
+            document.getElementById('bookOcrDrop').style.display = 'none';
+            document.getElementById('bookOcrStatus').textContent = '正在识别文字，请稍候…';
+            bookOcrRun(url);
+        }
+        async function bookOcrRun(imageUrl) {
+            try {
+                const T = await bookOcrLoadTesseract();
+                if (!bookOcrWorker) {
+                    bookOcrWorker = await T.createWorker('chi_sim+eng');
+                }
+                const ret = await bookOcrWorker.recognize(imageUrl);
+                const text = (ret && ret.data && ret.data.text) || '';
+                document.getElementById('bookOcrRaw').value = text;
+                bookOcrParseRaw();
+                document.getElementById('bookOcrStatus').textContent = '✅ 识别完成，请检查并补充后加入书架';
+                document.getElementById('bookOcrFields').style.display = 'grid';
+                document.getElementById('bookOcrReparseBtn').style.display = '';
+                document.getElementById('bookOcrAddBtn').style.display = '';
+            } catch (err) {
+                console.error('OCR failed', err);
+                document.getElementById('bookOcrStatus').textContent = '❌ 识别失败：' + (err.message || '未知错误') + '。可手动输入书名作者后添加。';
+                document.getElementById('bookOcrFields').style.display = 'grid';
+                document.getElementById('bookOcrAddBtn').style.display = '';
+            }
+        }
+        function bookOcrParseRaw() {
+            const raw = (document.getElementById('bookOcrRaw').value || '').trim();
+            const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && l.length < 60);
+            // 进度
+            const progressMatch = raw.match(/(\d{1,3})\s*%/) || raw.match(/已读[：:]?\s*(\d{1,3})/);
+            const progress = progressMatch ? Math.min(100, Math.max(0, parseInt(progressMatch[1], 10))) : '';
+            // 作者
+            const authorLine = lines.find(l => /作者[：:]/.test(l));
+            let author = '';
+            if (authorLine) {
+                author = authorLine.replace(/.*作者[：:]\s*/, '').replace(/[著编译]$/, '').trim();
+            }
+            // 书名：取第一行非进度、非作者、非时间、非页码的行
+            let title = '';
+            for (const line of lines) {
+                if (/作者[：:]/.test(line)) continue;
+                if (/\d{1,3}\s*%/.test(line)) continue;
+                if (/已读[：:]?\s*\d+/.test(line)) continue;
+                if (/^第[\d一二三四五六七八九十]+[章节]/.test(line)) continue;
+                if (/^\d{1,2}:\d{2}/.test(line)) continue;
+                if (/^[\d\-—]+$/.test(line)) continue;
+                if (line.length < 2) continue;
+                title = line.replace(/[《》]/g, '').trim();
+                break;
+            }
+            if (title) document.getElementById('bookOcrTitle').value = title;
+            if (author) document.getElementById('bookOcrAuthor').value = author;
+            if (progress !== '') document.getElementById('bookOcrProgress').value = progress;
+        }
+        function bookOcrAdd() {
+            const title = document.getElementById('bookOcrTitle').value.trim();
+            if (!title) { showToast('⚠️ 书名不能为空'); return; }
+            const author = document.getElementById('bookOcrAuthor').value.trim();
+            const category = document.getElementById('bookOcrCategory').value;
+            const progress = Number(document.getElementById('bookOcrProgress').value) || 0;
+            books.unshift({
+                id: 'bk_' + Date.now(), title, author, category,
+                status: progress > 0 ? 'reading' : 'wish',
+                rating: 0, progress, startedDate: progress > 0 ? bookTodayStr() : '',
+                finishedDate: '', reason: '从微信读书截图识别添加', src: 'ocr', recId: null, addedDate: bookTodayStr()
+            });
+            bookSaveBooks();
+            closeBookOcrModal();
+            renderBookPage();
+            showToast('📖 已加入书架');
+        }
+
         // ===== AI 推荐 =====
         function renderBookRec() {
             const el = document.getElementById('bookRecGrid');
+            const personalEl = document.getElementById('bookRecPersonal');
             if (!el) return;
+            // 基于在读书籍的个性化推荐
+            const reading = books.filter(b => b.status === 'reading');
+            const readingCats = [...new Set(reading.map(b => b.category).filter(Boolean))];
+            const personal = [];
+            if (readingCats.length) {
+                // 按匹配分类排序，并排除已在书架的
+                const scored = bookRec.map(r => {
+                    const joined = books.find(b => b.recId === r.id);
+                    const match = readingCats.includes(r.category) ? 2 : 0;
+                    return { ...r, joined, score: match + (joined ? -10 : 0) };
+                }).filter(r => !r.joined).sort((a, b) => b.score - a.score);
+                personal.push(...scored.slice(0, 6));
+            }
+            if (personalEl) {
+                if (!readingCats.length) {
+                    personalEl.innerHTML = '<div class="book-rec-personal-empty">💡 在书架里标记几本「在读」，这里会按分类推荐相关好书</div>';
+                } else if (!personal.length) {
+                    personalEl.innerHTML = '<div class="book-rec-personal-empty">🎉 推荐列表里相关的书你都加进书架了，去下方看看更多好书</div>';
+                } else {
+                    personalEl.innerHTML = `<div class="book-rec-personal-hd">🎯 基于你正在读的 ${reading.map(b => `《${escapeHtml(b.title)}》`).join('、')} 推荐</div>
+                    <div id="bookRecPersonalGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(225px, 1fr));gap:10px;">
+                        ${personal.map(r => `<div class="book-rec-card">
+                            <span class="book-rec-cat">${escapeHtml(r.category)}</span>
+                            <div class="book-rec-title">《${escapeHtml(r.title)}》</div>
+                            <div class="book-rec-author">${escapeHtml(r.author)}</div>
+                            <div class="book-rec-why">${escapeHtml(r.why)}</div>
+                            <div class="book-rec-foot"><button class="book-btn primary" onclick="joinBookFromRec('${r.id}')">＋ 加入书架</button></div>
+                        </div>`).join('')}
+                    </div>`;
+                }
+            }
             if (!bookRec.length) { el.innerHTML = '<div class="book-empty">暂无推荐</div>'; return; }
             el.innerHTML = bookRec.map(r => {
                 const joined = books.find(b => b.recId === r.id);
@@ -12561,6 +13005,20 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     </div>
                 </div>`;
             }).join('');
+        }
+        function copyBookRecPrompt() {
+            const reading = books.filter(b => b.status === 'reading');
+            const cats = [...new Set(reading.map(b => b.category).filter(Boolean))];
+            const list = reading.length
+                ? reading.map(b => `《${b.title}》${b.author ? '（' + b.author + '）' : ''}${b.category ? '[' + b.category + ']' : ''}`).join('\n')
+                : '（暂无在读书籍）';
+            const prompt = `我正在读以下这些书，请结合它们给我推荐 5 本能帮我拓展视野、更上一层楼的书，并简要说明每本为什么适合我：\n\n${list}\n\n请按「书名 / 作者 / 推荐理由」的格式输出。`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(prompt).then(() => showToast('📋 已复制 AI 提问词，去问问 AI 吧')).catch(() => showToast('复制失败，请手动复制'));
+            } else {
+                // 降级
+                const ta = document.createElement('textarea'); ta.value = prompt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('📋 已复制 AI 提问词');
+            }
         }
         function joinBookFromRec(id) {
             const r = bookRec.find(x => x.id === id);
@@ -12935,8 +13393,23 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 });
             }
             diarySaveEntries();
+            diaryAutoCheckHabit(ds);
             renderDiaryPage();
             showToast('💾 已保存 ' + ds);
+        }
+
+        // 写日记自动打卡「写日记」习惯并赚取游戏时间（仅当天日记）
+        function diaryAutoCheckHabit(dateStr) {
+            const today = diaryTodayStr();
+            if (dateStr !== today) return;
+            const habits = safeStorage.get('niko_habits', []);
+            const diaryHabit = habits.find(h => /日记|journal|diary/i.test(h.name || ''));
+            if (!diaryHabit) return;
+            const done = (safeStorage.get('niko_habit_logs', []) || []).some(l => l.habitId === diaryHabit.id && l.date === today);
+            if (!done && typeof habitToggle === 'function') {
+                habitToggle(diaryHabit.id);
+                if (typeof showToast === 'function') showToast('📝 已自动打卡「' + diaryHabit.name + '」习惯' + ((Number(diaryHabit.rewardMin) || 0) > 0 ? '，+' + diaryHabit.rewardMin + ' 分钟游戏时间' : ''));
+            }
         }
         function diaryDeleteCurrent() {
             const ds = diarySelectedDate;
@@ -14816,6 +15289,223 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         if (typeof window.__NIKO_GAME_TEST__ !== 'undefined' && window.__NIKO_GAME_TEST__) {
             renderGameTimePage();
         }
+// ===== 育儿手册 =====
+        const PARENTING_CATEGORIES = ['食品安全', '用品召回', '疾病预警', '养育误区', '其他'];
+        const PARENTING_SEED_VERSION = 'v2026-08-16';
+        const PARENTING_SEED_NEWS = [
+            { id: 'pn_seed_1', title: '婴儿米粉 / 辅食注意重金属风险', category: '食品安全', source: '综合安全提示', date: '2026-08-01', content: '大米基辅食可能含无机砷，建议轮换食材（燕麦、小麦、蔬果等），不要长期只吃单一米糊。关注产品检测报告。' },
+            { id: 'pn_seed_2', title: '婴儿睡眠安全：仰卧、硬床垫、无杂物', category: '养育误区', source: 'AAP 安全指南', date: '2026-08-01', content: '1 岁前建议仰卧入睡；床垫要硬实；床上避免枕头、毛绒玩具、防撞垫；同室不同床可降低 SIDS 风险。' },
+            { id: 'pn_seed_3', title: '婴儿护肤品避免香精、酒精、激素', category: '用品召回', source: '皮肤科建议', date: '2026-08-01', content: '选择成分简单、无香精、无酒精的产品；湿疹膏慎用非医嘱的「消字号」产品；新护肤品先做小面积测试。' }
+        ];
+        const PARENTING_SEED_CHECKLIST = [
+            { id: 'pc_seed_1', text: '检查宝宝用品是否在最新召回名单', category: '安全', done: false },
+            { id: 'pc_seed_2', text: '确认奶粉/辅食批次与储存条件', category: '日常', done: false },
+            { id: 'pc_seed_3', text: '新护肤品先在耳后/手腕小面积试用', category: '健康', done: false }
+        ];
+
+        let parentingNews = [];
+        let parentingPrinciples = [];
+        let parentingChecklist = [];
+        let parentingView = 'news';
+
+        function parentingTodayStr() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+        function parentingSave() {
+            safeStorage.set('niko_parenting_news', parentingNews);
+            safeStorage.set('niko_parenting_principles', parentingPrinciples);
+            safeStorage.set('niko_parenting_checklist', parentingChecklist);
+            safeStorage.set('niko_parenting_updated_at', new Date().toISOString());
+        }
+        function parentingSeed() {
+            const version = safeStorage.get('niko_parenting_seed_version', null);
+            if (version === PARENTING_SEED_VERSION) return;
+            if (!parentingNews.length) parentingNews = PARENTING_SEED_NEWS.slice();
+            if (!parentingChecklist.length) parentingChecklist = PARENTING_SEED_CHECKLIST.slice();
+            parentingSave();
+            safeStorage.set('niko_parenting_seed_version', PARENTING_SEED_VERSION);
+        }
+
+        function renderParentingPage() {
+            parentingNews = safeStorage.get('niko_parenting_news', []);
+            parentingPrinciples = safeStorage.get('niko_parenting_principles', []);
+            parentingChecklist = safeStorage.get('niko_parenting_checklist', []);
+            parentingSeed();
+            renderParentingStats();
+            renderParentingTabs();
+            renderParentingNews();
+            renderParentingPrinciples();
+            renderParentingAdvice();
+            renderParentingChecklist();
+            showParentingView();
+            const upd = safeStorage.get('niko_parenting_updated_at', null);
+            document.getElementById('parentingUpdatedAt').textContent = upd ? '数据更新于 ' + upd.slice(0, 10) : '';
+        }
+        function showParentingView() {
+            document.getElementById('parentingNewsView').style.display = parentingView === 'news' ? '' : 'none';
+            document.getElementById('parentingPrinciplesView').style.display = parentingView === 'principles' ? '' : 'none';
+            document.getElementById('parentingAdviceView').style.display = parentingView === 'advice' ? '' : 'none';
+            document.getElementById('parentingChecklistView').style.display = parentingView === 'checklist' ? '' : 'none';
+        }
+        function switchParentingView(v) { parentingView = v; renderParentingTabs(); showParentingView(); if (v === 'advice') renderParentingAdvice(); }
+        function renderParentingTabs() {
+            const el = document.getElementById('parentingTabs');
+            if (!el) return;
+            const defs = [['news', '安全快讯'], ['principles', '我的理念'], ['advice', '今日建议'], ['checklist', '育儿清单']];
+            el.innerHTML = defs.map(([k, label]) =>
+                `<span class="parenting-tab${parentingView === k ? ' active' : ''}" onclick="switchParentingView('${k}')">${label}</span>`
+            ).join('');
+        }
+        function renderParentingStats() {
+            const el = document.getElementById('parentingStats');
+            if (!el) return;
+            const done = parentingChecklist.filter(c => c.done).length;
+            el.innerHTML = `
+                <div class="parenting-stat"><div class="parenting-stat-label">安全资讯</div><div class="parenting-stat-value">${parentingNews.length}</div></div>
+                <div class="parenting-stat"><div class="parenting-stat-label">育儿理念</div><div class="parenting-stat-value">${parentingPrinciples.length}</div></div>
+                <div class="parenting-stat"><div class="parenting-stat-label">清单完成</div><div class="parenting-stat-value">${done}/${parentingChecklist.length}</div></div>
+            `;
+        }
+
+        // 安全快讯
+        function renderParentingNews() {
+            const el = document.getElementById('parentingNewsList');
+            if (!el) return;
+            const sorted = parentingNews.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            if (!sorted.length) { el.innerHTML = '<div class="parenting-empty">暂无安全资讯，点击右上角添加</div>'; return; }
+            el.innerHTML = sorted.map(n => `
+                <div class="parenting-card">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                        <div class="parenting-card-title">${escapeHtml(n.title)}</div>
+                        <span class="parenting-tag">${escapeHtml(n.category || '其他')}</span>
+                    </div>
+                    <div class="parenting-card-meta">${escapeHtml(n.source || '未知来源')} · ${escapeHtml(n.date || '')}</div>
+                    <div class="parenting-card-body">${escapeHtml(n.content)}</div>
+                    <div style="display:flex;justify-content:flex-end;gap:6px;">
+                        <button class="book-btn danger" onclick="deleteParentingNews('${n.id}')">🗑 删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function openParentingNewsModal() {
+            document.getElementById('parentingNewsModal').classList.add('show');
+            document.getElementById('parentingNewsTitle').value = '';
+            document.getElementById('parentingNewsSource').value = '';
+            document.getElementById('parentingNewsDate').value = parentingTodayStr();
+            document.getElementById('parentingNewsContent').value = '';
+        }
+        function closeParentingNewsModal() { document.getElementById('parentingNewsModal').classList.remove('show'); }
+        function saveParentingNews() {
+            const title = document.getElementById('parentingNewsTitle').value.trim();
+            if (!title) { showToast('⚠️ 标题不能为空'); return; }
+            parentingNews.unshift({
+                id: 'pn_' + Date.now(), title,
+                category: document.getElementById('parentingNewsCategory').value,
+                source: document.getElementById('parentingNewsSource').value.trim(),
+                date: document.getElementById('parentingNewsDate').value || parentingTodayStr(),
+                content: document.getElementById('parentingNewsContent').value.trim()
+            });
+            parentingSave();
+            closeParentingNewsModal();
+            renderParentingPage();
+            showToast('📰 安全资讯已保存');
+        }
+        function deleteParentingNews(id) {
+            if (!confirm('确定删除这条资讯吗？')) return;
+            parentingNews = parentingNews.filter(n => n.id !== id);
+            parentingSave();
+            renderParentingPage();
+        }
+
+        // 我的理念
+        function renderParentingPrinciples() {
+            const el = document.getElementById('parentingPrinciplesList');
+            if (!el) return;
+            if (!parentingPrinciples.length) { el.innerHTML = '<div class="parenting-empty">还没有记录育儿理念，先写几条你的原则吧</div>'; return; }
+            el.innerHTML = parentingPrinciples.map(p => `
+                <div class="parenting-principle-item">
+                    <div class="parenting-principle-text">${escapeHtml(p.text)}</div>
+                    <button class="book-btn danger" onclick="deleteParentingPrinciple('${p.id}')">🗑</button>
+                </div>
+            `).join('');
+        }
+        function addParentingPrinciple() {
+            const input = document.getElementById('parentingPrincipleInput');
+            const text = (input && input.value || '').trim();
+            if (!text) { showToast('请输入理念内容'); return; }
+            parentingPrinciples.unshift({ id: 'pp_' + Date.now(), text, addedAt: new Date().toISOString() });
+            parentingSave();
+            input.value = '';
+            renderParentingPage();
+            showToast('💡 理念已保存');
+        }
+        function deleteParentingPrinciple(id) {
+            parentingPrinciples = parentingPrinciples.filter(p => p.id !== id);
+            parentingSave();
+            renderParentingPage();
+        }
+
+        // 今日建议
+        function renderParentingAdvice() {
+            const box = document.getElementById('parentingAdviceBox');
+            const empty = document.getElementById('parentingAdviceEmpty');
+            const saved = safeStorage.get('niko_parenting_advice', '');
+            if (!saved) { if (box) box.style.display = 'none'; if (empty) empty.style.display = ''; return; }
+            if (box) { box.textContent = saved; box.style.display = ''; }
+            if (empty) empty.style.display = 'none';
+        }
+        function generateParentingAdvice() {
+            const recentNews = parentingNews.slice(0, 5);
+            const principles = parentingPrinciples.slice(0, 5);
+            if (!recentNews.length && !principles.length) { showToast('请先添加一些安全资讯或育儿理念'); return; }
+            const newsText = recentNews.length ? recentNews.map(n => `- ${n.title}（${n.category}）：${n.content}`).join('\n') : '（暂无安全资讯）';
+            const principleText = principles.length ? principles.map(p => `- ${p.text}`).join('\n') : '（暂无育儿理念）';
+            const prompt = `你是一位关注婴儿安全的育儿顾问。请结合以下最新安全资讯和我的育儿理念，给出 3-5 条今天就可以执行的具体建议或检查方案。\n\n【安全资讯】\n${newsText}\n\n【我的育儿理念】\n${principleText}\n\n请用中文输出，每条建议包含：做法 + 原因 + 简单步骤。`;
+            safeStorage.set('niko_parenting_advice', '[已生成 AI 提问词，请复制后到 AI 对话框获取建议]\n\n' + prompt);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(prompt).then(() => showToast('📋 已复制提问词，去问问 AI 吧')).catch(() => showToast('提问词已保存，可复制失败'));
+            } else {
+                showToast('✨ 建议已生成，已保存到今日建议页面');
+            }
+            renderParentingAdvice();
+        }
+
+        // 育儿清单
+        function renderParentingChecklist() {
+            const el = document.getElementById('parentingChecklist');
+            if (!el) return;
+            if (!parentingChecklist.length) { el.innerHTML = '<div class="parenting-empty">还没有清单项，先添加几个日常/安全检查吧</div>'; return; }
+            el.innerHTML = parentingChecklist.map(c => `
+                <div class="parenting-checklist-item ${c.done ? 'done' : ''}">
+                    <input type="checkbox" ${c.done ? 'checked' : ''} onchange="toggleParentingCheck('${c.id}')">
+                    <div class="text"><span class="parenting-tag" style="margin-right:6px;">${escapeHtml(c.category)}</span>${escapeHtml(c.text)}</div>
+                    <button class="book-btn danger" onclick="deleteParentingCheck('${c.id}')">🗑</button>
+                </div>
+            `).join('');
+        }
+        function addParentingCheckItem() {
+            const input = document.getElementById('parentingCheckInput');
+            const text = (input && input.value || '').trim();
+            if (!text) { showToast('请输入清单项'); return; }
+            const category = document.getElementById('parentingCheckCategory').value;
+            parentingChecklist.unshift({ id: 'pc_' + Date.now(), text, category, done: false });
+            parentingSave();
+            input.value = '';
+            renderParentingPage();
+            showToast('✅ 清单项已添加');
+        }
+        function toggleParentingCheck(id) {
+            const c = parentingChecklist.find(x => x.id === id);
+            if (c) { c.done = !c.done; parentingSave(); renderParentingPage(); }
+        }
+        function deleteParentingCheck(id) {
+            parentingChecklist = parentingChecklist.filter(c => c.id !== id);
+            parentingSave();
+            renderParentingPage();
+        }
+
+        renderParentingPage();
 
         // ========== 云同步数据变更 → 跨面板刷新 ==========
         // 当云同步模块拉取数据写入 localStorage 后，派发 niko:datachanged 事件
@@ -15002,6 +15692,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             document.getElementById('exportReadCount').textContent = dataItemCount('niko_hot_read', {});
             document.getElementById('exportMemberCount').textContent = dataItemCount('niko_memberships', []);
             document.getElementById('exportGameTimeCount').textContent = dataItemCount('niko_game_time', {});
+            document.getElementById('exportParentingCount').textContent =
+                dataItemCount('niko_parenting_news', []) + dataItemCount('niko_parenting_principles', []) + dataItemCount('niko_parenting_checklist', []);
             document.getElementById('importPreviewArea').innerHTML = '';
             pendingImportData = null;
         }
@@ -15232,6 +15924,9 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             });
             safeStorage.get('niko_book_recommend', []).forEach(r => push('🤖', '《' + r.title + '》', '推荐书单 · ' + (r.category || ''), 'book'));
             safeStorage.get('niko_book_notes', []).forEach(n => push('📝', n.quote, '读书笔记' + (n.page ? ' · P' + n.page : ''), 'book'));
+            safeStorage.get('niko_parenting_news', []).forEach(n => push('👶', n.title, '育儿安全 · ' + (n.category || ''), 'parenting'));
+            safeStorage.get('niko_parenting_principles', []).forEach(p => push('💡', p.text, '育儿理念', 'parenting'));
+            safeStorage.get('niko_parenting_checklist', []).forEach(c => push('✅', c.text, '育儿清单 · ' + (c.category || ''), 'parenting'));
             safeStorage.get('niko_memes', []).forEach(m => push('🈯', m.term || m.name || '', '我的梗 · ' + (m.region || ''), 'meme'));
             safeStorage.get('niko_meme_recommend', []).forEach(m => push('🈯', m.term || '', '推荐梗 · ' + (m.region || ''), 'meme'));
             safeStorage.get('niko_copy_library', []).forEach(c => push('✍️', c.title || c.name || '', '我的文案 · ' + (c.region || ''), 'copy'));
@@ -15284,7 +15979,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             }
             const actions = gsResults.filter(it => it.type === 'action');
             const data = gsResults.filter(it => it.type !== 'action');
-            const gsPageName = (it) => it.type === 'action' ? '⚡ 执行' : (it.page === 'hot' ? '热点' : it.page === 'book' ? '读书' : it.page === 'meme' ? '梗文化' : it.page === 'copy' ? '文案库' : it.page === 'notes' ? '便签' : '计划');
+            const gsPageName = (it) => it.type === 'action' ? '⚡ 执行' : (it.page === 'hot' ? '热点' : it.page === 'book' ? '读书' : it.page === 'meme' ? '梗文化' : it.page === 'copy' ? '文案库' : it.page === 'notes' ? '便签' : it.page === 'parenting' ? '育儿' : '计划');
             const itemHtml = (it, i) => `
                 <div class="global-search-item${i === gsActiveIdx ? ' active' : ''}" onclick="gsPick(${i})" onmouseenter="gsHover(${i})">
                     <span class="gs-icon">${it.icon}</span>
