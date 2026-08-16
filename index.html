@@ -1818,28 +1818,36 @@
         }
         body.dark-mode .today-habits-badge { background: #064e3b; color: #6ee7b7; }
         .today-habits-more { margin-left: auto; font-size: 11px; color: #667eea; cursor: pointer; white-space: nowrap; }
-        .today-habits-list { display: flex; flex-direction: column; gap: 6px; }
-        .habit-row {
+        .today-habits-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+        /* 习惯卡片：图标 + 名称 + 打卡，横向铺满不留长条 */
+        .habit-card {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 10px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 10px 12px;
             background: #faf9f7;
             border: 1px solid #f0eeea;
-            border-radius: 8px;
+            border-radius: 10px;
+            position: relative;
+            cursor: default;
+            transition: all 0.15s;
         }
-        body.dark-mode .habit-row { background: #252535; border-color: #333345; }
-        .habit-row .habit-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
-        .habit-row .habit-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .habit-reward {
-            font-size: 10.5px; padding: 1px 7px; border-radius: 999px; flex-shrink: 0;
+        body.dark-mode .habit-card { background: #252535; border-color: #333345; }
+        .habit-card:active { transform: scale(0.98); }
+        .habit-card-top { display: flex; align-items: center; gap: 6px; width: 100%; }
+        .habit-card .habit-icon { font-size: 17px; flex-shrink: 0; }
+        .habit-card .habit-name { font-size: 13px; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .habit-card .habit-reward {
+            font-size: 10px; padding: 1px 7px; border-radius: 999px; flex-shrink: 0;
             background: #ede9fe; color: #6d28d9; font-weight: 600;
         }
-        body.dark-mode .habit-reward { background: #3b3560; color: #c4b5fd; }
-        .habit-row .habit-week { font-size: 10px; color: #888; white-space: nowrap; flex-shrink: 0; }
-        body.dark-mode .habit-row .habit-week { color: #999; }
-        .habit-check {
-            width: 24px; height: 24px;
+        body.dark-mode .habit-card .habit-reward { background: #3b3560; color: #c4b5fd; }
+        .habit-card-foot { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .habit-card .habit-week { font-size: 10.5px; color: #888; white-space: nowrap; }
+        body.dark-mode .habit-card .habit-week { color: #999; }
+        .habit-card .habit-check {
+            width: 26px; height: 26px;
             border-radius: 50%;
             border: 2px solid #d1d5db;
             background: #fff;
@@ -1850,7 +1858,7 @@
             flex-shrink: 0;
             transition: all 0.15s;
         }
-        .habit-check.done { background: #10b981; border-color: #10b981; color: #fff; }
+        .habit-card .habit-check.done { background: #10b981; border-color: #10b981; color: #fff; }
         .habit-empty { font-size: 11px; color: #aaa; padding: 4px 0; }
         body.dark-mode .habit-empty { color: #777; }
 
@@ -2343,6 +2351,18 @@
             justify-content: space-between;
             align-items: center;
             transition: color 0.3s ease;
+        }
+        /* 星期标签：桌面 28 天格子小默认隐藏，手机端当周列表显示 */
+        .day-weekday {
+            display: none;
+            font-size: 11px;
+            font-weight: 400;
+            color: #999;
+            margin-right: 2px;
+        }
+        body.dark-mode .day-weekday { color: #777; }
+        @media (max-width: 768px) {
+            .day-weekday { display: inline; }
         }
         .day-count {
             font-size: 10px;
@@ -4826,8 +4846,38 @@
         .nb-card.selected .nb-batch-check { background: #667eea; border-color: #667eea; color: #fff; }
 
         /* 便签墙 */
-        .nb-wall { columns: 4 220px; column-gap: 14px; padding: 4px 2px; }
-        .nb-wall .nb-card { break-inside: avoid; margin-bottom: 14px; transform: rotate(var(--rot, 0deg)); }
+        .nb-tag-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 2px 2px 6px;
+            flex-shrink: 0;
+        }
+        .nb-tag-chip {
+            font-size: 12px;
+            padding: 4px 11px;
+            border-radius: 999px;
+            background: #f1f3f5;
+            border: 1px solid transparent;
+            color: #666;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        body.dark-mode .nb-tag-chip { background: #26263a; color: #aaa; }
+        .nb-tag-chip small { font-size: 10px; opacity: 0.7; margin-left: 2px; }
+        .nb-tag-chip.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: #fff;
+            font-weight: 600;
+        }
+        .nb-tag-chip:hover { border-color: #667eea; }
+        .nb-wall { columns: 4 220px; column-gap: 14px; padding: 4px 2px; }        .nb-wall .nb-card { break-inside: avoid; margin-bottom: 14px; transform: rotate(var(--rot, 0deg)); }
         .nb-wall .nb-card:hover { transform: rotate(0deg) translateY(-2px); }
 
         /* 时间线 */
@@ -5565,6 +5615,36 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         body.dark-mode .member-empty { border-color: #333345; color: #777; }
         .member-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .member-form-grid .form-item.full { grid-column: 1 / -1; }
+        .member-renew-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .member-renew-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12.5px; color: #444; white-space: nowrap; }
+        .member-renew-label input { accent-color: #7c3aed; }
+        .member-renew-days { font-size: 12px; color: #888; white-space: nowrap; }
+        /* 终身/续费徽章 */
+        .member-badge {
+            font-size: 10.5px; padding: 1px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap;
+            background: #ede9fe; color: #6d28d9;
+        }
+        body.dark-mode .member-badge { background: #3b3560; color: #c4b5fd; }
+        .member-badge.lifetime { background: #fae8ff; color: #a21caf; }
+        body.dark-mode .member-badge.lifetime { background: #4a1d52; color: #f0abfc; }
+        .member-badge.renewing { background: #d1fae5; color: #047857; }
+        body.dark-mode .member-badge.renewing { background: #064e3b; color: #6ee7b7; }
+        .member-badge.no-renew { background: #fee2e2; color: #b91c1c; }
+        body.dark-mode .member-badge.no-renew { background: #7f1d1d; color: #fca5a5; }
+        .member-badge.expired { background: #fef3c7; color: #b45309; }
+        body.dark-mode .member-badge.expired { background: #78350f; color: #fcd34d; }
+        /* 平替建议 */
+        .member-alt {
+            margin-top: 8px; padding: 8px 10px; border-radius: 8px;
+            background: #eff6ff; border: 1px solid #dbeafe; font-size: 12px; color: #1e40af;
+            display: flex; gap: 6px; align-items: flex-start;
+        }
+        body.dark-mode .member-alt { background: #17283f; border-color: #1e3a5f; color: #93c5fd; }
+        .member-alt-cost {
+            margin-top: 6px; padding: 6px 10px; border-radius: 8px;
+            background: #f0fdf4; border: 1px solid #dcfce7; font-size: 12px; color: #166534;
+        }
+        body.dark-mode .member-alt-cost { background: #12301d; border-color: #14532d; color: #86efac; }
         @media (max-width: 640px) {
             .member-form-grid { grid-template-columns: 1fr; }
             .member-card { flex-direction: column; align-items: flex-start; }
@@ -6830,6 +6910,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         <button class="nb-btn" onclick="nbExport()" title="导出为 Markdown">⬇ 导出</button>
                     </div>
                 </div>
+                <!-- 分类筛选：全部 + 各标签 chips（便签墙 / 时间线通用） -->
+                <div class="nb-tag-filter-bar" id="nbTagFilterBar"></div>
                 <div class="nb-content" id="nbContent"></div>
             </div>
         </div>
@@ -7027,6 +7109,13 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <input type="number" id="memberAmountInput" placeholder="0" min="0" step="0.01">
                         </div>
                         <div class="form-item">
+                            <label>会员类型</label>
+                            <select id="memberTypeInput" onchange="memberTypeChanged()">
+                                <option value="sub">订阅制（月/年付）</option>
+                                <option value="lifetime">♾ 终身制</option>
+                            </select>
+                        </div>
+                        <div class="form-item" id="memberExpireWrap">
                             <label>到期日期</label>
                             <input type="date" id="memberExpireInput">
                         </div>
@@ -7035,8 +7124,16 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <input type="date" id="memberStartInput">
                         </div>
                         <div class="form-item">
-                            <label>使用次数（自动累计）</label>
-                            <input type="number" id="memberUseCountInput" placeholder="0" min="0" step="1" readonly style="background:#f5f5f5;color:#999;">
+                            <label>使用次数（可手动改）</label>
+                            <input type="number" id="memberUseCountInput" placeholder="0" min="0" step="1" title="点击「使用」会自动 +1，也可以手动改成总数">
+                        </div>
+                        <div class="form-item full member-renew-row">
+                            <label class="member-renew-label">
+                                <input type="checkbox" id="memberRenewInput" checked> 已开启自动续费
+                            </label>
+                            <span class="member-renew-days">每周约用</span>
+                            <input type="number" id="memberWeeklyDaysInput" min="0" max="7" step="1" placeholder="0-7 天" title="每周大约使用几天，用于估算单天成本" style="width:76px;">
+                            <span class="member-renew-days">天</span>
                         </div>
                         <div class="form-item full">
                             <label>备注</label>
@@ -8312,7 +8409,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             if (hm && hm.classList.contains('show')) renderHabitStats();
         }
 
-        // 今日习惯区块
+        // 今日习惯区块（卡片网格）
         function renderTodayHabits() {
             const box = document.getElementById('todayHabitsList');
             if (!box) return;
@@ -8332,12 +8429,16 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 const wc = habitWeekCount(h.id);
                 const goal = h.goal || 7;
                 const pct = Math.min(100, Math.round(wc / goal * 100));
-                return `<div class="habit-row">
-                    <span class="habit-icon">${h.icon || '🎯'}</span>
-                    <span class="habit-name">${escapeHtml(h.name)}</span>
-                    ${(Number(h.rewardMin) || 0) > 0 ? `<span class="habit-reward">+${Number(h.rewardMin)}分</span>` : ''}
-                    <span class="habit-week">本周 ${wc}/${goal}${pct >= 100 ? ' ✅' : ''}</span>
-                    <span class="habit-check ${d ? 'done' : ''}" onclick="habitToggle('${h.id}')" title="${d ? '取消打卡' : '打卡'}">${d ? '✓' : ''}</span>
+                return `<div class="habit-card" onclick="habitToggle('${h.id}')">
+                    <div class="habit-card-top">
+                        <span class="habit-icon">${h.icon || '🎯'}</span>
+                        <span class="habit-name">${escapeHtml(h.name)}</span>
+                        ${(Number(h.rewardMin) || 0) > 0 ? `<span class="habit-reward">+${Number(h.rewardMin)}分</span>` : ''}
+                    </div>
+                    <div class="habit-card-foot">
+                        <span class="habit-week">本周 ${wc}/${goal}${pct >= 100 ? ' ✅' : ''}</span>
+                        <span class="habit-check ${d ? 'done' : ''}" onclick="event.stopPropagation();habitToggle('${h.id}')" title="${d ? '取消打卡' : '打卡'}">${d ? '✓' : ''}</span>
+                    </div>
                 </div>`;
             }).join('');
             box.innerHTML = rows;
@@ -8721,7 +8822,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 if (isSameDay(date, today)) cell.classList.add('today');
                 const dateHeader = document.createElement('div');
                 dateHeader.className = 'day-date';
-                dateHeader.innerHTML = `<span>${date.getDate()}</span>${dayEvents.length ? `<span class="day-count">${dayEvents.length}</span>` : ''}`;
+                const wdName = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
+                dateHeader.innerHTML = `<span><span class="day-weekday">${wdName}</span>${date.getDate()}</span>${dayEvents.length ? `<span class="day-count">${dayEvents.length}</span>` : ''}`;
                 cell.appendChild(dateHeader);
                 const eventsContainer = document.createElement('div');
                 eventsContainer.className = 'events-container';
@@ -11841,6 +11943,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         let nbSpecial = null;        // null | 'recycle' | 'archive'
         let nbSort = 'newest';       // newest | oldest
         let nbSearch = '';
+        let nbTagFilter = null;      // null=全部 | tag key=只看该分类
         let nbBatch = false;
         let nbSelected = new Set();
         let nbEditingId = null;
@@ -11857,11 +11960,32 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 const k = nbSearch.toLowerCase();
                 list = list.filter(n => n.content.toLowerCase().includes(k));
             }
+            if (nbTagFilter) {
+                list = list.filter(n => n.tag === nbTagFilter);
+            }
             return list.slice().sort((a, b) => {
                 if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1; // 置顶永远优先
                 const ta = new Date(a.createdAt), tb = new Date(b.createdAt);
                 return nbSort === 'oldest' ? ta - tb : tb - ta;
             });
+        }
+
+        // 分类筛选 chips 渲染 + 切换
+        function renderNbTagFilter() {
+            const bar = document.getElementById('nbTagFilterBar');
+            if (!bar) return;
+            const dict = noteTagDict();
+            const entries = Object.entries(dict);
+            let html = `<span class="nb-tag-chip ${!nbTagFilter ? 'active' : ''}" onclick="nbSetTagFilter(null)">全部</span>`;
+            entries.forEach(([key, tag]) => {
+                const cnt = (nbSpecial === 'recycle' ? recycledNotes() : nbSpecial === 'archive' ? archivedNotes() : activeNotes()).filter(n => n.tag === key).length;
+                html += `<span class="nb-tag-chip ${nbTagFilter === key ? 'active' : ''}" onclick="nbSetTagFilter('${key}')" style="${nbTagFilter === key ? 'background:' + tag.chipBg + ';' : ''}">${tag.icon} ${tag.name}${cnt ? `<small>${cnt}</small>` : ''}</span>`;
+            });
+            bar.innerHTML = html;
+        }
+        function nbSetTagFilter(key) {
+            nbTagFilter = nbTagFilter === key ? null : key; // 再点一次取消
+            renderNotesPage();
         }
 
         function nbSetView(v) {
@@ -11900,6 +12024,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             syncNotes();
             renderNotes();          // 同步右侧灵感侧栏列表
             renderNotesFilter();    // 同步侧栏分类计数
+            renderNbTagFilter();    // 同步工具栏分类筛选
             updateTriggerCount();   // 同步侧边栏徽标数
             renderNbStats();
             document.getElementById('nbSelCount').textContent = nbSelected.size;
@@ -11939,14 +12064,16 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 
         function renderNotesWallView(c) {
             const list = visibleList();
+            const filterTip = nbTagFilter ? '该分类下没有便签' : (nbSearch ? '没有匹配的便签' : '便签墙空空如也');
+            const filterHint = nbTagFilter || nbSearch ? '换个筛选条件试试' : '贴几张便签再上墙';
             c.innerHTML = list.length
                 ? `<div class="nb-wall">${list.map(n => nbCardHtml(n)).join('')}</div>`
-                : nbEmptyHtml(nbSearch ? '没有匹配的便签' : '便签墙空空如也', '贴几张便签再上墙');
+                : nbEmptyHtml(filterTip, filterHint);
         }
 
         function renderNotesTimelineView(c) {
             const list = visibleList();
-            if (!list.length) { c.innerHTML = nbEmptyHtml(nbSearch ? '没有匹配的便签' : '还没有便签', ''); return; }
+            if (!list.length) { c.innerHTML = nbEmptyHtml(nbTagFilter ? '该分类下没有便签' : (nbSearch ? '没有匹配的便签' : '还没有便签'), nbTagFilter || nbSearch ? '换个筛选条件试试' : ''); return; }
             const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const groups = { '今天': [], '昨天': [], '本周': [], '更早': [] };
             list.forEach(n => {
@@ -14262,15 +14389,72 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 // ===== 会员看板专属JS =====
         let memberEditId = null;
 
+        // 常见会员的省钱建议（按名称关键词匹配；仅供参考，价格随时可能变动）
+        const MEMBER_ALTERNATIVES = [
+            { kw: ['b站', 'bilibili', '哔哩哔哩', '大会员'], tip: 'B站大会员多在双11/618或年度活动时约8折；「B站+视频/音乐」联合会员比单买划算；只看番可等直播抽奖/答题活动免费天数' },
+            { kw: ['wps', '稻壳'], tip: 'WPS 会员常年活动价（约7折）；若只用编辑/PDF基础功能，免费版+按需单功能包更便宜；校园版或家庭版更划算' },
+            { kw: ['网盘', '百度', '夸克', '阿里云盘', '迅雷'], tip: '网盘会员建议拼团/双11（常5折）；多设备可开家庭组共享分摊；夸克/迅雷常有新用户首月低价' },
+            { kw: ['爱奇艺', '优酷', '腾讯视频', '芒果', '视频'], tip: '视频会员优先「联合会员」（视频+音乐+外卖）或家庭共享，年费省30-50%；每月用不到10天建议改单月订阅' },
+            { kw: ['网易云', 'qq音乐', '酷狗', '酷我', '音乐'], tip: '音乐会员建议校园优惠或「视频+音乐」联合会员；双11年费活动常有；家庭共享6人更划算' },
+            { kw: ['steam', 'psn', 'playstation', 'xbox', 'game pass', 'switch', '任天堂'], tip: '游戏订阅（PSN/Game Pass/Switch Online）趁打折期囤会员；家庭组共享更划算；非重度玩家可只在大促月开' },
+            { kw: ['chatgpt', 'openai', 'claude', 'gemini', 'midjourney', 'ai工具'], tip: 'AI 会员关注年付优惠（约省2个月）或团队版分摊；对比同类替代（如 Claude/DeepSeek/Gemini 免费额度）按需选择' },
+            { kw: ['淘宝', '京东', '拼多多', '88vip', 'plus'], tip: '88VIP/京东PLUS 多在购物节打折（常与视频/音乐/外卖捆绑）；如果只为了免运费，可对比单次运费成本' },
+            { kw: ['微博', '知乎', '小红书', '知识星球', '得到'], tip: '内容平台会员建议等大促/新人优惠；很多内容可免费获取，先看月度使用频率再决定是否续费' }
+        ];
+
         function memberList() { return safeStorage.get('niko_memberships', []); }
         function memberSave(list) { safeStorage.set('niko_memberships', list); }
 
-        // 剩余天数：正=还剩 N 天，负=已过期 |N| 天
+        // 剩余天数：正=还剩 N 天，负=已过期 |N| 天，终身制返回 null
         function memberDaysLeft(expire) {
             if (!expire) return null;
             const today = new Date(); today.setHours(0, 0, 0, 0);
             const e = new Date(expire + 'T00:00:00');
             return Math.round((e - today) / 86400000);
+        }
+
+        // 平替建议：按名称关键词匹配
+        function memberAlternative(name) {
+            if (!name) return null;
+            const n = name.toLowerCase();
+            for (const alt of MEMBER_ALTERNATIVES) {
+                if (alt.kw.some(k => n.includes(k))) return alt.tip;
+            }
+            return null;
+        }
+
+        // 成本估算：年费平摊到每周使用天数 → 单天成本
+        function memberCostTip(m) {
+            const amt = Number(m.amount) || 0;
+            const weeklyDays = Number(m.weeklyDays) || 0;
+            if (!m.isLifetime && m.expireDate && weeklyDays > 0 && amt > 0) {
+                const dl = memberDaysLeft(m.expireDate);
+                const spanDays = (m.startDate && m.expireDate) ? Math.max(1, Math.round((new Date(m.expireDate) - new Date(m.startDate)) / 86400000)) : (dl && dl > 0 ? dl : 30);
+                const perDay = amt / spanDays;
+                return `📊 按每周用 ${weeklyDays} 天估算：整个周期约 ${Math.round(spanDays * weeklyDays / 7)} 次使用，单次成本约 ¥${(amt / Math.max(1, Math.round(spanDays * weeklyDays / 7))).toFixed(2)}，日均成本约 ¥${perDay.toFixed(2)}`;
+            }
+            if (weeklyDays > 0 && amt > 0) {
+                const yearUses = weeklyDays * 52;
+                return `📊 按每周用 ${weeklyDays} 天估算：一年约 ${yearUses} 次使用，单次成本约 ¥${(amt / yearUses).toFixed(2)}`;
+            }
+            if (amt > 0 && (Number(m.useCount) || 0) > 0) {
+                return `📊 目前使用了 ${Number(m.useCount)} 次，单次成本约 ¥${(amt / Number(m.useCount)).toFixed(2)}`;
+            }
+            return null;
+        }
+
+        // 续费状态徽章
+        function memberStatusBadge(m) {
+            if (m.isLifetime) return '<span class="member-badge lifetime">♾ 终身制</span>';
+            const dl = memberDaysLeft(m.expireDate);
+            if (m.renew === false) {
+                return dl !== null && dl < 0
+                    ? '<span class="member-badge expired">⏹ 已停续费 · 已过期</span>'
+                    : '<span class="member-badge no-renew">⏹ 未续费</span>';
+            }
+            if (dl !== null && dl < 0) return '<span class="member-badge expired">⏰ 已过期 · 待续费</span>';
+            if (dl !== null && dl <= 30) return '<span class="member-badge no-renew">🔁 即将续费</span>';
+            return '<span class="member-badge renewing">🔁 续费中</span>';
         }
 
         function renderMemberPage() {
@@ -14282,12 +14466,14 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             const box = document.getElementById('memberStatCards');
             if (!box) return;
             const list = memberList();
-            let total = 0, active = 0, soon = 0, uses = 0;
+            let total = 0, active = 0, soon = 0, uses = 0, lifetime = 0, renewing = 0;
             const now = new Date(); now.setHours(0, 0, 0, 0);
             list.forEach(m => {
                 const amt = Number(m.amount) || 0;
                 total += amt;
                 uses += Number(m.useCount) || 0;
+                if (m.isLifetime) { lifetime++; active++; return; }
+                if (m.renew !== false) renewing++;
                 const dl = memberDaysLeft(m.expireDate);
                 if (dl === null || dl >= 0) active++;
                 if (dl !== null && dl >= 0 && dl <= 30) soon++;
@@ -14295,8 +14481,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             box.innerHTML = `
                 <div class="member-stat"><div class="member-stat-label">💰 总投入</div><div class="member-stat-value money">¥${total.toFixed(2)}</div></div>
                 <div class="member-stat"><div class="member-stat-label">🟢 有效会员</div><div class="member-stat-value count">${active} 个</div></div>
-                <div class="member-stat"><div class="member-stat-label">⏰ 30 天内到期</div><div class="member-stat-value ${soon > 0 ? 'warn' : 'count'}">${soon} 个</div></div>
-                <div class="member-stat"><div class="member-stat-label">🖱 累计使用</div><div class="member-stat-value count">${uses} 次</div></div>`;
+                <div class="member-stat"><div class="member-stat-label">♾ 终身制</div><div class="member-stat-value count">${lifetime} 个</div></div>
+                <div class="member-stat"><div class="member-stat-label">⏰ 30 天内到期</div><div class="member-stat-value ${soon > 0 ? 'warn' : 'count'}">${soon} 个</div></div>`;
         }
 
         function renderMemberList() {
@@ -14320,22 +14506,32 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 const amt = Number(m.amount) || 0;
                 const uses = Number(m.useCount) || 0;
                 const dl = memberDaysLeft(m.expireDate);
-                let daysHtml = '<span style="font-size:12px;color:#888;">' + (m.expireDate ? escapeHtml(m.expireDate) : '未设到期') + '</span>';
-                if (dl !== null) {
-                    if (dl < 0) daysHtml = `<span class="member-days overdue">已过期 ${-dl} 天</span>`;
-                    else if (dl <= 7) daysHtml += `<span class="member-days soon">剩 ${dl} 天</span>`;
-                    else if (dl <= 30) daysHtml += `<span class="member-days soon">剩 ${dl} 天</span>`;
-                    else daysHtml += `<span class="member-days">剩 ${dl} 天</span>`;
+                const statusBadge = memberStatusBadge(m);
+                let daysHtml = '';
+                if (m.isLifetime) {
+                    daysHtml = '<span style="font-size:12px;color:#888;">♾ 无到期日期</span>';
+                } else {
+                    daysHtml = '<span style="font-size:12px;color:#888;">' + (m.expireDate ? escapeHtml(m.expireDate) : '未设到期') + '</span>';
+                    if (dl !== null) {
+                        if (dl < 0) daysHtml += `<span class="member-days overdue">已过期 ${-dl} 天</span>`;
+                        else if (dl <= 7) daysHtml += `<span class="member-days soon">剩 ${dl} 天</span>`;
+                        else if (dl <= 30) daysHtml += `<span class="member-days soon">剩 ${dl} 天</span>`;
+                        else daysHtml += `<span class="member-days">剩 ${dl} 天</span>`;
+                    }
                 }
+                const altTip = memberAlternative(m.name);
+                const costTip = memberCostTip(m);
                 return `<div class="member-card">
                     <div class="member-card-icon">${m.name ? escapeHtml(m.name).slice(0, 1) : '👤'}</div>
                     <div class="member-card-main">
-                        <div class="member-card-name">${escapeHtml(m.name || '未命名')}${m.startDate ? '<span style="font-size:11px;color:#bbb;font-weight:400;">' + escapeHtml(m.startDate) + ' 起</span>' : ''}</div>
+                        <div class="member-card-name">${escapeHtml(m.name || '未命名')} ${statusBadge}${m.startDate ? '<span style="font-size:11px;color:#bbb;font-weight:400;">' + escapeHtml(m.startDate) + ' 起</span>' : ''}</div>
                         ${m.note ? `<div class="member-card-note">${escapeHtml(m.note)}</div>` : ''}
                         <div class="member-card-meta">
                             <span class="member-amount">¥${amt.toFixed(2)}</span>
-                            <span class="member-uses">🖱 已使用 <b>${uses}</b> 次</span>
+                            <span class="member-uses">🖱 已使用 <b>${uses}</b> 次${Number(m.weeklyDays) > 0 ? ` · 每周约 ${Number(m.weeklyDays)} 天` : ''}</span>
                         </div>
+                        ${costTip ? `<div class="member-alt-cost">${costTip}</div>` : ''}
+                        ${altTip ? `<div class="member-alt">💡 省钱建议：${altTip}</div>` : ''}
                     </div>
                     <div class="member-expire">${daysHtml}</div>
                     <div class="member-ops">
@@ -14359,11 +14555,29 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             setVal('memberExpireInput', m ? m.expireDate : '');
             setVal('memberStartInput', m ? m.startDate : '');
             setVal('memberNoteInput', m ? m.note : '');
+            const typeSel = document.getElementById('memberTypeInput');
+            if (typeSel) typeSel.value = m && m.isLifetime ? 'lifetime' : 'sub';
+            const renewChk = document.getElementById('memberRenewInput');
+            if (renewChk) renewChk.checked = m ? (m.renew !== false) : true;
+            const wdInput = document.getElementById('memberWeeklyDaysInput');
+            if (wdInput) wdInput.value = m && m.weeklyDays ? m.weeklyDays : '';
             const uc = document.getElementById('memberUseCountInput');
             if (uc) uc.value = m ? (Number(m.useCount) || 0) : 0;
+            memberTypeChanged();
             document.getElementById('memberModal').classList.add('show');
             const nameInput = document.getElementById('memberNameInput');
             if (nameInput) setTimeout(function () { try { nameInput.focus(); } catch (e) {} }, 80);
+        }
+
+        // 会员类型切换联动：终身制隐藏到期日期
+        function memberTypeChanged() {
+            const typeSel = document.getElementById('memberTypeInput');
+            const wrap = document.getElementById('memberExpireWrap');
+            const expireInput = document.getElementById('memberExpireInput');
+            if (!typeSel || !wrap) return;
+            const isLifetime = typeSel.value === 'lifetime';
+            wrap.style.display = isLifetime ? 'none' : '';
+            if (isLifetime && expireInput) expireInput.value = '';
         }
 
         function closeMemberModal() { document.getElementById('memberModal').classList.remove('show'); memberEditId = null; }
@@ -14373,15 +14587,24 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             const name = (nameInput && nameInput.value || '').trim();
             if (!name) { if (typeof showToast === 'function') showToast('请输入名称/平台'); return; }
             const amount = Number((document.getElementById('memberAmountInput') || {}).value) || 0;
-            const expireDate = ((document.getElementById('memberExpireInput') || {}).value || '').trim();
+            const isLifetime = ((document.getElementById('memberTypeInput') || {}).value) === 'lifetime';
+            const expireDate = isLifetime ? '' : ((document.getElementById('memberExpireInput') || {}).value || '').trim();
             const startDate = ((document.getElementById('memberStartInput') || {}).value || '').trim();
             const note = ((document.getElementById('memberNoteInput') || {}).value || '').trim();
+            const renew = isLifetime ? false : ((document.getElementById('memberRenewInput') || {}).checked !== false);
+            let weeklyDays = Math.round(Number((document.getElementById('memberWeeklyDaysInput') || {}).value) || 0);
+            if (weeklyDays < 0) weeklyDays = 0;
+            if (weeklyDays > 7) weeklyDays = 7;
+            let useCount = Math.round(Number((document.getElementById('memberUseCountInput') || {}).value) || 0);
+            if (useCount < 0) useCount = 0;
             const list = memberList();
             if (memberEditId) {
                 const m = list.find(x => x.id === memberEditId);
                 if (m) {
                     m.name = name; m.amount = amount; m.expireDate = expireDate;
                     m.startDate = startDate; m.note = note;
+                    m.isLifetime = isLifetime; m.renew = renew;
+                    m.weeklyDays = weeklyDays; m.useCount = useCount;
                 }
                 if (typeof showToast === 'function') showToast('✏️ 会员已更新');
             } else {
@@ -14389,7 +14612,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     id: 'mb_' + Date.now(),
                     name: name, amount: amount,
                     startDate: startDate, expireDate: expireDate,
-                    note: note, useCount: 0,
+                    note: note, useCount: useCount,
+                    isLifetime: isLifetime, renew: renew, weeklyDays: weeklyDays,
                     createdAt: new Date().toISOString()
                 });
                 if (typeof showToast === 'function') showToast('✅ 会员已添加，数据已自动同步云端');
