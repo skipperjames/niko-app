@@ -298,25 +298,32 @@
         .modal-close-x:active { background: rgba(0, 0, 0, 0.2); }
         body.dark-mode .modal-close-x { background: #2f2f45; color: #aaa; }
         body.dark-mode .modal-close-x:hover { background: #3d3d58; color: #fff; }
-        /* 云端同步状态胶囊（全板块常驻右上角） */
-        .sync-status-pill {
-            position: fixed; top: 12px; right: 16px; z-index: 800;
-            display: flex; align-items: center; gap: 7px;
-            background: rgba(255,255,255,.94);
-            border: 1px solid #e0ded9; border-radius: 999px;
-            padding: 6px 13px; font-size: 12px; color: #555;
-            box-shadow: 0 2px 10px rgba(0,0,0,.08);
-            cursor: pointer; user-select: none;
-            max-width: 60vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        /* 手机端底部快捷 Tab 栏（替代繁琐的侧边栏滚动） */
+        .niko-mobile-tabbar {
+            display: none;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 56px;
+            background: rgba(255,255,255,.96);
+            border-top: 1px solid #e0ded9;
+            z-index: 700;
+            padding-bottom: env(safe-area-inset-bottom, 0);
+            box-shadow: 0 -2px 12px rgba(0,0,0,.05);
         }
-        body.dark-mode .sync-status-pill { background: rgba(31,31,46,.94); border-color: #333345; color: #bbb; }
-        .sync-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .sync-status-dot.syncing { background: #f59e0b; animation: nikoPulse 1s infinite; }
-        .sync-status-dot.synced { background: #10b981; }
-        .sync-status-dot.connected { background: #10b981; }
-        .sync-status-dot.offline { background: #9ca3af; }
-        .sync-status-dot.manual { background: #f59e0b; }
-        @keyframes nikoPulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+        body.dark-mode .niko-mobile-tabbar { background: rgba(26,26,31,.96); border-color: #333; }
+        .niko-mobile-tab {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 11px; color: #888; cursor: pointer; user-select: none; gap: 1px;
+            transition: color .2s;
+            padding: 4px 0;
+        }
+        body.dark-mode .niko-mobile-tab { color: #999; }
+        .niko-mobile-tab:active { background: rgba(102,126,234,.12); }
+        .niko-mobile-tab.active { color: #667eea; font-weight: 600; }
+        .niko-mobile-tab .tab-icon { font-size: 18px; line-height: 1; }
+        @media (max-width: 768px) {
+            .niko-mobile-tabbar { display: flex; }
+            body { padding-bottom: 56px; }
+        }
         .modal h3 {
             margin-bottom: 14px;
             font-size: 16px;
@@ -2279,19 +2286,18 @@
         }
         .event-item {
             font-size: 12px;
-            padding: 2px 4px;
+            padding: 3px 5px;
             border-radius: 3px;
             display: flex;
-            align-items: center;
-            gap: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1px;
             cursor: grab;
             transition: all 0.15s;
             user-select: none;
             color: #fff;
             position: relative;
+            overflow: hidden;
         }
         .event-item:active {
             cursor: grabbing;
@@ -2323,9 +2329,24 @@
             font-size: 10px;
         }
         .event-text {
-            flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .event-desc {
+            font-size: 10.5px;
+            opacity: 0.85;
+            line-height: 1.25;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        /* 手机端隐藏 remark 行，避免任务块过高挤不下 */
+        @media (max-width: 768px) {
+            .event-desc { display: none; }
         }
         .more-events {
             font-size: 10px;
@@ -6013,9 +6034,24 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 
     <!-- 手机端「⋯ 更多」浮层 -->
     <div class="nav-more-panel" id="navMorePanel">
+        <div class="nav-more-item" id="navMoreSync" onclick="openDataManager();hideNavMore()" style="font-size:12.5px;">☁ 云端：未连接</div>
         <div class="nav-more-item" onclick="toggleDarkMode();hideNavMore()">🌙 深色模式</div>
         <div class="nav-more-item" onclick="openColorSettings();hideNavMore()">🎨 颜色设置</div>
         <div class="nav-more-item" onclick="openDataManager();hideNavMore()">💾 数据管理</div>
+        <div class="nav-more-item" onclick="switchPage('hot');hideNavMore()">🔥 热点</div>
+        <div class="nav-more-item" onclick="switchPage('meme');hideNavMore()">🈯 梗文化</div>
+        <div class="nav-more-item" onclick="switchPage('copy');hideNavMore()">✍️ 文案库</div>
+        <div class="nav-more-item" onclick="switchPage('notes');hideNavMore()">🗂 便签看板</div>
+        <div class="nav-more-item" onclick="switchPage('book');hideNavMore()">📚 读书</div>
+    </div>
+
+    <!-- 手机端底部 Tab 栏：一键直达最常用 5 个板块 -->
+    <div class="niko-mobile-tabbar" id="nikoMobileTabbar">
+        <div class="niko-mobile-tab active" data-page="today" onclick="switchPage('today')"><span class="tab-icon">📌</span><span>今日</span></div>
+        <div class="niko-mobile-tab" data-page="plan" onclick="switchPage('plan')"><span class="tab-icon">📋</span><span>计划</span></div>
+        <div class="niko-mobile-tab" data-page="diary" onclick="switchPage('diary')"><span class="tab-icon">📔</span><span>日记</span></div>
+        <div class="niko-mobile-tab" data-page="member" onclick="switchPage('member')"><span class="tab-icon">💰</span><span>会员</span></div>
+        <div class="niko-mobile-tab" data-page="game" onclick="switchPage('game')"><span class="tab-icon">🎮</span><span>游戏</span></div>
     </div>
 
 
@@ -7024,12 +7060,6 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         </div>
     </div>
 
-    <!-- 云端同步状态胶囊：所有板块右上角常驻，点击打开数据管理 -->
-    <div class="sync-status-pill" id="syncStatusPill" onclick="openDataManager()" title="云同步状态，点击管理">
-        <span class="sync-status-dot offline" id="syncStatusDot"></span>
-        <span id="syncStatusTxt">云端：未连接</span>
-    </div>
-
     <!-- 便签侧边栏 & 弹窗注入区 -->
 <!-- ===== 灵感便签侧边栏 ===== -->
     <div class="notes-sidebar" id="notesSidebar">
@@ -7580,6 +7610,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             document.querySelectorAll('.sidebar-left .nav-item').forEach((item, idx) => {
                 const pages = ['today', 'plan', 'hot', 'meme', 'copy', 'notes', 'book', 'diary', 'member', 'game'];
                 item.classList.toggle('active', pages[idx] === page);
+            });
+            // 同步底部 Tab 栏激活态（手机端）
+            document.querySelectorAll('.niko-mobile-tab').forEach(t => {
+                t.classList.toggle('active', t.getAttribute('data-page') === page);
             });
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(page + 'Page').classList.add('active');
@@ -8640,7 +8674,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     item.draggable = true;
                     item.dataset.eventId = ev.id;
                     const repeatIcon = isRepeatEvent ? '🔄 ' : '';
-                    item.innerHTML = `<span class="event-checkbox" onclick="toggleComplete('${ev.id}', event)">✓</span><span class="event-text">${repeatIcon}${(planTimeShow && ev.startTime) ? ev.startTime+' ' : ''}${ev.title}</span>`;
+                    const timePrefix = (planTimeShow && ev.startTime) ? ev.startTime + ' ' : '';
+                    const safeTitle = escapeHtml(ev.title || '');
+                    const safeDesc = ev.desc ? escapeHtml(ev.desc) : '';
+                    item.innerHTML = `<span class="event-checkbox" onclick="toggleComplete('${ev.id}', event)">✓</span><span class="event-text">${repeatIcon}${escapeHtml(timePrefix)}${safeTitle}</span>${safeDesc ? `<span class="event-desc">${safeDesc}</span>` : ''}`;
                     item.addEventListener('dragstart', (e) => { draggedEventId = ev.id; e.dataTransfer.effectAllowed = 'move'; e.stopPropagation(); });
                     item.addEventListener('dragend', () => { draggedEventId = null; document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('drag-over')); });
                     item.addEventListener('click', (e) => { e.stopPropagation(); openEventModal(ev.id); });
@@ -13727,6 +13764,14 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         if (pushed + pulled === 0) addLog(`[${channelName(channel || 'fs')}] 同步完成：数据已是最新`, 'ok');
         else addLog(`[${channelName(channel || 'fs')}] 同步完成：推送 ${pushed} 项，拉取 ${pulled} 项`, 'ok');
 
+        // 数据已落云端，弹个小 toast 让用户放心关页面
+        try {
+            if (typeof showToast === 'function') {
+                if (pushed + pulled > 0) showToast('✓ 已同步云端（' + fmtTime(new Date().toISOString()) + '）');
+                else showToast('☁ 数据已是最新');
+            }
+        } catch (e) {}
+
         // 拉取的数据写入 localStorage 后，通知面板刷新
         if (pullKeys && pullKeys.length > 0) {
             notifyDataChanged(pullKeys);
@@ -15792,16 +15837,21 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             mo.observe(document.documentElement, { childList: true, subtree: true });
         } catch (e) {}
 
-        /* ---- 4. 云端同步状态胶囊：监听云同步模块广播的状态事件 ---- */
-        var pillTxt = document.getElementById('syncStatusTxt');
-        var pillDot = document.getElementById('syncStatusDot');
+        /* ---- 4. 云端同步状态：监听云同步模块广播的状态事件 ----
+           状态展示位置：桌面端看侧边栏底部 syncIndicator（永远可见）；
+           手机端看「⋯ 更多」浮层里新增的 ☁ 云端状态项。已移除板块右上角胶囊以免遮挡标题。 */
+        var navMoreSync = document.getElementById('navMoreSync');
         window.addEventListener('niko:sync-status', function (e) {
             var d = e.detail || {};
             var st = d.status || 'offline';
-            var label = d.label || '未知';
             var hint = d.hint || '';
-            if (pillTxt) pillTxt.textContent = st === 'synced' ? '已同步 ✓ ' + (hint || '') : (st === 'syncing' ? '同步中…' : (st === 'connected' ? '已连接云端' : (st === 'manual' ? '手动模式' : '云端：未连接')));
-            if (pillDot) pillDot.className = 'sync-status-dot ' + (['syncing', 'synced', 'connected', 'offline', 'manual'].indexOf(st) >= 0 ? st : 'offline');
+            if (navMoreSync) {
+                var shortTxt = st === 'synced' ? '✓ 已同步 ' + (hint || '').slice(11, 16)
+                    : st === 'syncing' ? '⏳ 同步中…'
+                    : st === 'connected' ? '🟢 已连接云端'
+                    : st === 'manual' ? '🟠 手动模式' : '⚪ 云端未连接';
+                navMoreSync.textContent = '☁ ' + shortTxt;
+            }
         });
 
         /* ---- 5. 防鸿蒙/手机浏览器"保存到密码簿"弹窗 ----
