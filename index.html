@@ -274,6 +274,10 @@
             overflow-y: auto;
             transition: background 0.3s ease;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain; /* 滚动被限制在弹窗内，不再穿透触发页面/浏览器下拉 */
         }
         /* 弹窗右上角全局关闭按钮（JS 自动注入到每个 .modal） */
         .modal-close-x {
@@ -298,6 +302,65 @@
         .modal-close-x:active { background: rgba(0, 0, 0, 0.2); }
         body.dark-mode .modal-close-x { background: #2f2f45; color: #aaa; }
         body.dark-mode .modal-close-x:hover { background: #3d3d58; color: #fff; }
+        /* 手机端右下角浮动 dock：同步状态小圆点 + ⋮ 入口 */
+        .niko-float-dock {
+            position: fixed; top: 10px; right: 12px; z-index: 750;
+            display: none; align-items: center; gap: 8px;
+        }
+        .niko-float-dot {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: #10b981; border: 2px solid #fff;
+            cursor: pointer; padding: 0; position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,.18);
+            display: flex; align-items: center; justify-content: center;
+        }
+        body.dark-mode .niko-float-dot { border-color: #1f1f2e; }
+        .niko-float-dot-inner {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: rgba(255,255,255,.95);
+        }
+        .niko-float-dot.offline { background: #9ca3af; }
+        .niko-float-dot.synced { background: #10b981; }
+        .niko-float-dot.connected { background: #10b981; }
+        .niko-float-dot.manual { background: #f59e0b; }
+        .niko-float-dot.syncing { background: #f59e0b; }
+        .niko-float-dot.syncing .niko-float-dot-inner { animation: nikoPulse 1s infinite; }
+        .niko-float-dot:active { transform: scale(0.92); }
+        @keyframes nikoPulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+        .niko-float-more {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,.95);
+            border: 1px solid rgba(0,0,0,.08);
+            font-size: 19px; font-weight: 700; cursor: pointer; padding: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #555; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+            -webkit-tap-highlight-color: transparent;
+        }
+        body.dark-mode .niko-float-more { background: rgba(31,31,46,.95); border-color: #333; color: #ccc; }
+        .niko-float-more:active { transform: scale(0.92); }
+        /* 同步状态详情 popover */
+        .niko-sync-popover {
+            position: fixed; top: 56px; right: 12px; z-index: 760;
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.18);
+            padding: 14px 16px; display: none; min-width: 220px; max-width: 86vw;
+            font-size: 13px;
+        }
+        body.dark-mode .niko-sync-popover { background: #1f1f2e; border-color: #333; color: #ddd; }
+        .niko-sync-popover.show { display: block; }
+        .niko-sync-popover-head { display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 8px; }
+        .niko-sync-popover-head .dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; flex-shrink: 0; }
+        .niko-sync-popover-head .dot.offline { background: #9ca3af; }
+        .niko-sync-popover-head .dot.syncing { background: #f59e0b; animation: nikoPulse 1s infinite; }
+        .niko-sync-popover-head .dot.manual { background: #f59e0b; }
+        .niko-sync-popover-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: #777; margin-top: 4px; }
+        body.dark-mode .niko-sync-popover-row { color: #aaa; }
+        .niko-sync-popover-actions { margin-top: 10px; display: flex; gap: 6px; }
+        .niko-sync-popover-actions .btn { flex: 1; padding: 7px 10px; font-size: 12px; text-align: center; }
+        @media (min-width: 769px) {
+            .niko-float-dock { display: none !important; }
+            .niko-sync-popover { display: none !important; }
+        }
         /* 手机端底部快捷 Tab 栏（替代繁琐的侧边栏滚动） */
         .niko-mobile-tabbar {
             display: none;
@@ -384,6 +447,18 @@
             margin-top: 16px;
             align-items: center;
         }
+        /* 关键：footer 吸附在弹窗可视区底部（高特异性，覆盖板块各自的 .modal-footer），
+           内容再多按钮也始终可见——手机上不再被遮挡、不用滑到底 */
+        .modal-mask .modal-footer {
+            margin-top: auto;
+            position: sticky;
+            bottom: 0;
+            background: #fff;
+            padding-top: 10px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        body.dark-mode .modal-footer { background: #1f1f2e; }
         .btn {
             padding: 6px 14px;
             border-radius: 6px;
@@ -2343,10 +2418,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-        }
-        /* 手机端隐藏 remark 行，避免任务块过高挤不下 */
-        @media (max-width: 768px) {
-            .event-desc { display: none; }
         }
         .more-events {
             font-size: 10px;
@@ -5588,54 +5659,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 /* ===== 手机端适配（<=768px：侧栏→底部Tab / 弹窗全屏 / 卡片单列） ===== */
 @media (max-width: 768px) {
     body { overflow: auto; }
-    .sidebar-left {
-        position: fixed;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: auto;
-        min-height: 58px;
-        flex-direction: row;
-        align-items: center;
-        padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
-        overflow-x: auto;
-        overflow-y: hidden;
-        z-index: 1200;
-        border-top: 1px solid rgba(255,255,255,0.08);
-    }
-    .sidebar-left .logo { display: none; }
-    .sidebar-left .nav-title { display: none; }
-    .sidebar-left .nav-section {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 2px;
-        margin: 0;
-    }
-    .sidebar-left .nav-item {
-        padding: 9px 11px;
-        font-size: 12px;
-        border-left: none;
-        border-radius: 8px;
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-    .sidebar-left .nav-item.active {
-        background: #667eea;
-        border-left: none;
-        color: #fff;
-    }
-    .sidebar-left .nav-badge { margin-left: 4px; }
-    .sidebar-left .dark-mode-toggle {
-        margin: 0 0 0 8px;
-        padding: 9px 11px;
-        width: auto;
-        flex-shrink: 0;
-        white-space: nowrap;
-        border-radius: 8px;
-    }
+    /* 手机端完全隐藏侧栏（12 项横排仍是地狱），用底部 tabbar + 浮动 ⋮ 入口 */
+    .sidebar-left { display: none !important; }
+    .niko-mobile-tabbar { display: flex; }
+    .niko-float-dock { display: flex; }
     .main-container {
         padding-bottom: 66px;
     }
@@ -5646,15 +5673,22 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     #planContentArea { overflow: visible !important; height: auto; }
     #hotViewMain, #aiViewMain { min-height: 0; }
 
-    /* 弹窗全屏（底部抽屉式） */
+    /* 弹窗全屏（底部抽屉式，footer 吸附底部始终可见） */
     .modal-mask { align-items: flex-end; }
     .modal {
         width: 100vw !important;
         max-width: 100vw !important;
-        max-height: 92vh;
+        max-height: 88vh;
         border-radius: 16px 16px 0 0;
-        padding: 18px 16px;
+        padding: 18px 16px calc(14px + env(safe-area-inset-bottom, 0));
     }
+    .modal-footer {
+        margin-top: auto;
+        padding-top: 12px;
+        padding-bottom: 2px;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0));
+    }
+    .modal-mask .modal-footer { bottom: calc(14px + env(safe-area-inset-bottom, 0)); }
     .niko-toast { bottom: 78px; }
     .floating-dock { right: 12px; bottom: 76px; }
     .dock-btn { width: 42px; height: 42px; font-size: 18px; }
@@ -6259,7 +6293,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <h3 id="eventModalTitle">新建任务</h3>
             <input type="hidden" id="eventId">
             <div class="form-item"><label>任务标题</label><input type="text" id="eventTitle" placeholder="例如：核心玩法原型开发"></div>
-            <div class="form-item"><label>任务描述</label><textarea id="eventDesc" rows="2" placeholder="补充任务细节（可选）"></textarea></div>
+            <div class="form-item"><label>备注（补充任务细节或说明）</label><textarea id="eventDesc" rows="2" placeholder="例：竞品对标稿 / 准备素材 / 风险点 等"></textarea></div>
             <div class="form-row">
                 <div class="form-item"><label>开始日期</label><input type="date" id="eventStartDate"></div>
                 <div class="form-item"><label>结束日期</label><input type="date" id="eventEndDate"></div>
@@ -7057,6 +7091,34 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 手机端右上角浮动 dock：同步状态小圆点 + ⋮ 更多入口 -->
+    <div class="niko-float-dock">
+        <button class="niko-float-dot synced" id="nikoFloatDot" onclick="toggleSyncPopover()" aria-label="同步状态">
+            <span class="niko-float-dot-inner"></span>
+        </button>
+        <button class="niko-float-more" onclick="toggleNavMore(event)" aria-label="更多">⋮</button>
+    </div>
+    <!-- 同步详情 popover（点击小圆点展开） -->
+    <div class="niko-sync-popover" id="nikoSyncPopover" onclick="event.stopPropagation()">
+        <div class="niko-sync-popover-head">
+            <span class="dot synced" id="nikoSyncPopoverDot"></span>
+            <span id="nikoSyncPopoverLabel">已同步 ✓</span>
+        </div>
+        <div class="niko-sync-popover-row">
+            <span>通道</span><span id="nikoSyncPopoverCh">—</span>
+        </div>
+        <div class="niko-sync-popover-row">
+            <span>最后同步</span><span id="nikoSyncPopoverAt">—</span>
+        </div>
+        <div class="niko-sync-popover-row">
+            <span>推送/拉取</span><span id="nikoSyncPopoverN">0 / 0</span>
+        </div>
+        <div class="niko-sync-popover-actions">
+            <button class="btn" onclick="hideSyncPopover();toggleNavMore()">📋 更多</button>
+            <button class="btn primary" onclick="hideSyncPopover();openDataManager()">⚙ 数据管理</button>
         </div>
     </div>
 
@@ -15838,13 +15900,29 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         } catch (e) {}
 
         /* ---- 4. 云端同步状态：监听云同步模块广播的状态事件 ----
-           状态展示位置：桌面端看侧边栏底部 syncIndicator（永远可见）；
-           手机端看「⋯ 更多」浮层里新增的 ☁ 云端状态项。已移除板块右上角胶囊以免遮挡标题。 */
+           状态展示：桌面端看侧边栏底部 syncIndicator；手机端看右上角小圆点 + 点开 popover 看详情。
+           同步完成通过 toast 提醒，旧版右上角全局胶囊已移除以免遮挡标题。 */
+        var floatDot = document.getElementById('nikoFloatDot');
+        var popover = document.getElementById('nikoSyncPopover');
+        var popDot = document.getElementById('nikoSyncPopoverDot');
+        var popLabel = document.getElementById('nikoSyncPopoverLabel');
+        var popCh = document.getElementById('nikoSyncPopoverCh');
+        var popAt = document.getElementById('nikoSyncPopoverAt');
+        var popN = document.getElementById('nikoSyncPopoverN');
         var navMoreSync = document.getElementById('navMoreSync');
+        var lastSyncLabel = '';
+        var lastSyncChan = '—';
+        var lastSyncN = '0 / 0';
         window.addEventListener('niko:sync-status', function (e) {
             var d = e.detail || {};
             var st = d.status || 'offline';
             var hint = d.hint || '';
+            // 侧边栏底部指示器（桌面端可见）
+            var sbTxt = document.getElementById('syncIndicatorTxt');
+            var sbDot = document.getElementById('syncIndicatorDot');
+            if (sbTxt) sbTxt.textContent = d.label || '未连接';
+            if (sbDot) sbDot.className = 'sync-indicator-dot ' + (['syncing', 'synced', 'connected', 'offline', 'manual'].indexOf(st) >= 0 ? st : 'offline');
+            // 手机 nav-more 浮层里的状态项
             if (navMoreSync) {
                 var shortTxt = st === 'synced' ? '✓ 已同步 ' + (hint || '').slice(11, 16)
                     : st === 'syncing' ? '⏳ 同步中…'
@@ -15852,6 +15930,36 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     : st === 'manual' ? '🟠 手动模式' : '⚪ 云端未连接';
                 navMoreSync.textContent = '☁ ' + shortTxt;
             }
+            // 手机端浮动 dock 小圆点（颜色稿与 popover 同步）
+            if (floatDot) floatDot.className = 'niko-float-dot ' + (['syncing', 'synced', 'connected', 'offline', 'manual'].indexOf(st) >= 0 ? st : 'offline');
+            lastSyncLabel = st === 'synced' ? '已同步 ✓' : st === 'syncing' ? '同步中…' : st === 'connected' ? '已连接云端' : st === 'manual' ? '手动模式' : '未连接云端';
+            lastSyncChan = (hint && st === 'synced') ? hint : '—';
+            lastSyncN = (window.NikoSync && window.NikoSync.__internals && window.NikoSync.__internals.state && window.NikoSync.__internals.state.lastResult) ? (window.NikoSync.__internals.state.lastResult.pushed + ' / ' + window.NikoSync.__internals.state.lastResult.pulled) : '0 / 0';
+            if (popDot) popDot.className = 'dot ' + (['syncing', 'synced', 'connected', 'offline', 'manual'].indexOf(st) >= 0 ? st : 'offline');
+            if (popLabel) popLabel.textContent = lastSyncLabel;
+            if (popCh) popCh.textContent = lastSyncChan;
+            if (popAt) popAt.textContent = (hint && st === 'synced') ? hint : '—';
+            if (popN) popN.textContent = lastSyncN;
+        });
+        function toggleSyncPopover() {
+            if (!popover) return;
+            var wasShown = popover.classList.contains('show');
+            // 互斥：同步 popover 和 navMorePanel 不能同时显示
+            hideSyncPopover();
+            var nm = document.getElementById('navMorePanel');
+            if (nm && nm.classList.contains('show')) nm.classList.remove('show');
+            if (!wasShown) popover.classList.add('show');
+        }
+        function hideSyncPopover() {
+            if (popover) popover.classList.remove('show');
+        }
+        window.toggleSyncPopover = toggleSyncPopover;
+        window.hideSyncPopover = hideSyncPopover;
+        // 点击 popover/圆点/⋮ 之外关闭
+        document.addEventListener('click', function (e) {
+            if (!popover || !popover.classList.contains('show')) return;
+            if (e.target.closest('#nikoSyncPopover') || e.target.closest('#nikoFloatDot')) return;
+            hideSyncPopover();
         });
 
         /* ---- 5. 防鸿蒙/手机浏览器"保存到密码簿"弹窗 ----
