@@ -298,6 +298,25 @@
         .modal-close-x:active { background: rgba(0, 0, 0, 0.2); }
         body.dark-mode .modal-close-x { background: #2f2f45; color: #aaa; }
         body.dark-mode .modal-close-x:hover { background: #3d3d58; color: #fff; }
+        /* 云端同步状态胶囊（全板块常驻右上角） */
+        .sync-status-pill {
+            position: fixed; top: 12px; right: 16px; z-index: 800;
+            display: flex; align-items: center; gap: 7px;
+            background: rgba(255,255,255,.94);
+            border: 1px solid #e0ded9; border-radius: 999px;
+            padding: 6px 13px; font-size: 12px; color: #555;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+            cursor: pointer; user-select: none;
+            max-width: 60vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        body.dark-mode .sync-status-pill { background: rgba(31,31,46,.94); border-color: #333345; color: #bbb; }
+        .sync-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .sync-status-dot.syncing { background: #f59e0b; animation: nikoPulse 1s infinite; }
+        .sync-status-dot.synced { background: #10b981; }
+        .sync-status-dot.connected { background: #10b981; }
+        .sync-status-dot.offline { background: #9ca3af; }
+        .sync-status-dot.manual { background: #f59e0b; }
+        @keyframes nikoPulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
         .modal h3 {
             margin-bottom: 14px;
             font-size: 16px;
@@ -1730,6 +1749,11 @@
         body.dark-mode .habit-row { background: #252535; border-color: #333345; }
         .habit-row .habit-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
         .habit-row .habit-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .habit-reward {
+            font-size: 10.5px; padding: 1px 7px; border-radius: 999px; flex-shrink: 0;
+            background: #ede9fe; color: #6d28d9; font-weight: 600;
+        }
+        body.dark-mode .habit-reward { background: #3b3560; color: #c4b5fd; }
         .habit-row .habit-week { font-size: 10px; color: #888; white-space: nowrap; flex-shrink: 0; }
         body.dark-mode .habit-row .habit-week { color: #999; }
         .habit-check {
@@ -5390,6 +5414,155 @@ body.dark-mode .cloudsync-conflict-foot { border-color: #333a48; }
 body.dark-mode .sync-indicator { color: #888; }
 body.dark-mode .sync-indicator:hover { background: #2a2a2a; color: #ccc; }
 body.dark-mode .sync-indicator-sub { color: #555; }
+/* ===== 会员看板专属CSS ===== */
+        .member-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .member-stat {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 14px;
+            padding: 12px 16px;
+        }
+        body.dark-mode .member-stat { background: #1f1f2e; border-color: #333345; }
+        .member-stat-label { font-size: 12px; color: #888; }
+        .member-stat-value { font-size: 22px; font-weight: 700; margin-top: 3px; }
+        .member-stat-value.money { color: #d97706; }
+        body.dark-mode .member-stat-value.money { color: #fbbf24; }
+        .member-stat-value.count { color: #7c3aed; }
+        body.dark-mode .member-stat-value.count { color: #a78bfa; }
+        .member-stat-value.warn { color: #ef4444; }
+        .member-list { display: flex; flex-direction: column; gap: 8px; }
+        .member-card {
+            background: #fff; border: 1px solid #eee; border-radius: 14px;
+            padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+            flex-wrap: wrap;
+        }
+        body.dark-mode .member-card { background: #1f1f2e; border-color: #333345; }
+        .member-card-icon {
+            width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .member-card-main { flex: 1; min-width: 180px; }
+        .member-card-name { font-size: 14.5px; font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .member-card-note { font-size: 11.5px; color: #999; margin-top: 2px; }
+        .member-card-meta { display: flex; align-items: center; gap: 14px; font-size: 13px; }
+        .member-amount { font-weight: 700; color: #d97706; font-size: 15px; }
+        body.dark-mode .member-amount { color: #fbbf24; }
+        .member-expire { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .member-days {
+            font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600;
+            background: #d1fae5; color: #047857;
+        }
+        body.dark-mode .member-days { background: #064e3b; color: #6ee7b7; }
+        .member-days.soon { background: #fef3c7; color: #b45309; }
+        body.dark-mode .member-days.soon { background: #78350f; color: #fcd34d; }
+        .member-days.overdue { background: #fee2e2; color: #b91c1c; }
+        body.dark-mode .member-days.overdue { background: #7f1d1d; color: #fca5a5; }
+        .member-uses { font-size: 12px; color: #888; white-space: nowrap; }
+        .member-ops { display: flex; gap: 6px; align-items: center; }
+        .member-ops .btn { white-space: nowrap; }
+        .member-empty {
+            text-align: center; color: #999; font-size: 13px;
+            padding: 42px 0; border: 1px dashed #ddd; border-radius: 12px;
+        }
+        body.dark-mode .member-empty { border-color: #333345; color: #777; }
+        .member-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .member-form-grid .form-item.full { grid-column: 1 / -1; }
+        @media (max-width: 640px) {
+            .member-form-grid { grid-template-columns: 1fr; }
+            .member-card { flex-direction: column; align-items: flex-start; }
+            .member-card-meta { width: 100%; justify-content: space-between; }
+        }
+/* ===== 游戏时间奖励专属CSS ===== */
+        .gt-balance-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 60%, #7c3aed 100%);
+            border-radius: 16px; padding: 20px 24px; color: #fff;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 14px; flex-shrink: 0;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, .25);
+        }
+        .gt-balance-left { display: flex; flex-direction: column; gap: 4px; }
+        .gt-balance-label { font-size: 12px; color: rgba(255,255,255,.7); }
+        .gt-balance-num { font-size: 40px; font-weight: 800; line-height: 1.1; }
+        .gt-balance-num small { font-size: 15px; font-weight: 500; opacity: .75; }
+        .gt-balance-sub { font-size: 12px; color: rgba(255,255,255,.75); }
+        .gt-balance-right { display: flex; gap: 8px; align-items: center; }
+        .gt-spend-box {
+            background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
+            border-radius: 12px; padding: 8px 12px; display: flex; gap: 8px; align-items: center;
+        }
+        .gt-spend-box input {
+            width: 80px; padding: 7px 10px; border-radius: 8px; border: none; outline: none;
+            background: rgba(255,255,255,.9); color: #333; font-size: 14px;
+        }
+        .gt-spend-box button {
+            border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer;
+            background: #f59e0b; color: #fff; font-size: 13px; font-weight: 600;
+        }
+        .gt-spend-box button:disabled { opacity: .45; cursor: not-allowed; }
+        .gt-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; flex-shrink: 0; }
+        .gt-stat {
+            background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 12px 16px;
+        }
+        body.dark-mode .gt-stat { background: #1f1f2e; border-color: #333345; }
+        .gt-stat-label { font-size: 12px; color: #888; }
+        .gt-stat-value { font-size: 20px; font-weight: 700; margin-top: 3px; }
+        .gt-stat-value.earn { color: #10b981; }
+        body.dark-mode .gt-stat-value.earn { color: #34d399; }
+        .gt-stat-value.use { color: #ef4444; }
+        .gt-stat-value.today { color: #f59e0b; }
+        .gt-card {
+            background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 14px 16px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        body.dark-mode .gt-card { background: #1f1f2e; border-color: #333345; }
+        .gt-card-title { font-size: 13.5px; font-weight: 600; color: #444; }
+        body.dark-mode .gt-card-title { color: #ddd; }
+        .gt-card-title span { font-size: 11px; font-weight: 400; color: #999; }
+        .gt-rule-row {
+            display: flex; align-items: center; gap: 10px; padding: 7px 0;
+            border-bottom: 1px dashed #eee; flex-wrap: wrap;
+        }
+        body.dark-mode .gt-rule-row { border-bottom-color: #2a2a3d; }
+        .gt-rule-row:last-child { border-bottom: none; }
+        .gt-rule-icon { font-size: 16px; width: 24px; text-align: center; flex-shrink: 0; }
+        .gt-rule-name { flex: 1; font-size: 13.5px; font-weight: 500; min-width: 90px; }
+        .gt-rule-input { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; }
+        .gt-rule-input input {
+            width: 62px; padding: 5px 8px; border: 1px solid #e0ded9; border-radius: 8px;
+            font-size: 13px; outline: none; background: #faf9f7; text-align: center;
+        }
+        body.dark-mode .gt-rule-input input { background: #252535; border-color: #444; color: #eee; }
+        .gt-rule-input input:focus { border-color: #7c3aed; }
+        .gt-rule-reward { font-size: 11.5px; padding: 2px 8px; border-radius: 999px; background: #ede9fe; color: #6d28d9; font-weight: 600; }
+        body.dark-mode .gt-rule-reward { background: #3b3560; color: #c4b5fd; }
+        .gt-rule-tip { font-size: 11.5px; color: #999; }
+        .gt-history { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+        .gt-h-item {
+            display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+            background: #faf9f7; border-radius: 10px; font-size: 13px;
+        }
+        body.dark-mode .gt-h-item { background: #232335; }
+        .gt-h-type { font-weight: 700; width: 34px; flex-shrink: 0; }
+        .gt-h-type.earn { color: #10b981; }
+        .gt-h-type.use { color: #ef4444; }
+        .gt-h-type.refund { color: #9ca3af; }
+        .gt-h-main { flex: 1; min-width: 0; }
+        .gt-h-reason { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .gt-h-date { font-size: 11px; color: #999; }
+        .gt-h-min { font-weight: 700; flex-shrink: 0; }
+        .gt-h-min.earn { color: #10b981; }
+        .gt-h-min.use { color: #ef4444; }
+        .gt-h-min.refund { color: #9ca3af; }
+        .gt-empty { text-align: center; color: #999; font-size: 13px; padding: 26px 0; }
+        body.dark-mode .gt-empty { color: #777; }
+        .gt-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+        @media (max-width: 860px) { .gt-layout { grid-template-columns: 1fr; } }
 
 /* ===== 手机端适配（<=768px：侧栏→底部Tab / 弹窗全屏 / 卡片单列） ===== */
 @media (max-width: 768px) {
@@ -5815,6 +5988,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="nav-item" onclick="switchPage('notes')">🗂️ 便签看板</div>
             <div class="nav-item" onclick="switchPage('book')">📚 读书</div>
             <div class="nav-item" onclick="switchPage('diary')">📔 日记</div>
+            <div class="nav-item" onclick="switchPage('member')">💰 会员</div>
+            <div class="nav-item" onclick="switchPage('game')">🎮 游戏时间</div>
         </div>
         <div class="nav-section settings-section" style="margin-top:auto;">
             <div class="nav-title">Settings</div>
@@ -5942,6 +6117,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <span class="habit-goal-label">每周</span>
                             <input type="number" class="habit-goal" id="habitGoalInput" min="1" max="28" step="1" value="7" title="每周目标次数，可自定义（1-28）">
                             <span class="habit-goal-unit">次</span>
+                        </span>
+                        <span class="habit-goal-wrap">
+                            <span class="habit-goal-label">打卡奖励</span>
+                            <input type="number" class="habit-goal" id="habitRewardInput" min="0" max="480" step="1" value="0" title="每次打卡奖励的游戏分钟数（0=不奖励），去「游戏时间」看板可随时修改">
+                            <span class="habit-goal-unit">分钟/次</span>
                         </span>
                         <button class="btn primary" onclick="addHabit()">＋ 添加</button>
                     </div>
@@ -6743,6 +6923,111 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 </div>
             </div>
         </div>
+        <div class="page" id="memberPage">
+<div style="padding:20px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:8px;">
+                    <div>
+                        <h1 style="font-size:22px;font-weight:600;display:flex;align-items:center;gap:10px;">
+                            💰 会员充值
+                        </h1>
+                        <p style="color:#888;font-size:13px;margin-top:2px;">所有会员充值的金额、到期时间、使用次数一目了然，数据自动同步云端</p>
+                    </div>
+                    <button class="btn primary" onclick="openMemberModal()" style="padding:8px 16px;font-size:13px;">➕ 添加会员</button>
+                </div>
+
+                <div class="member-stats" id="memberStatCards"></div>
+
+                <div>
+                    <div style="font-size:13px;font-weight:500;margin-bottom:8px;color:#555;">📋 会员列表（点击「使用」记录一次使用）</div>
+                    <div class="member-list" id="memberList"></div>
+                </div>
+            </div>
+
+            <!-- 会员编辑弹窗 -->
+            <div class="modal-mask" id="memberModal">
+                <div class="modal" style="width:460px;">
+                    <h3 id="memberModalTitle">➕ 添加会员</h3>
+                    <div class="member-form-grid">
+                        <div class="form-item full">
+                            <label>名称 / 平台</label>
+                            <input type="text" id="memberNameInput" placeholder="如：WPS 会员 / B站大会员 / 网盘超级会员" maxlength="40">
+                        </div>
+                        <div class="form-item">
+                            <label>充值金额（元）</label>
+                            <input type="number" id="memberAmountInput" placeholder="0" min="0" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <label>到期日期</label>
+                            <input type="date" id="memberExpireInput">
+                        </div>
+                        <div class="form-item">
+                            <label>开始日期</label>
+                            <input type="date" id="memberStartInput">
+                        </div>
+                        <div class="form-item">
+                            <label>使用次数（自动累计）</label>
+                            <input type="number" id="memberUseCountInput" placeholder="0" min="0" step="1" readonly style="background:#f5f5f5;color:#999;">
+                        </div>
+                        <div class="form-item full">
+                            <label>备注</label>
+                            <input type="text" id="memberNoteInput" placeholder="选填：套餐内容、账号信息等" maxlength="80">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="closeMemberModal()">取消</button>
+                        <button class="btn primary" onclick="saveMember()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page" id="gamePage">
+<div style="padding:20px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;">
+                <div style="flex-shrink:0;">
+                    <h1 style="font-size:22px;font-weight:600;display:flex;align-items:center;gap:10px;">
+                        🎮 游戏时间
+                    </h1>
+                    <p style="color:#888;font-size:13px;margin-top:2px;">用良好习惯换取游戏时间——打卡习惯自动入账，这里随时查看余额与流水</p>
+                </div>
+
+                <div class="gt-balance-card">
+                    <div class="gt-balance-left">
+                        <div class="gt-balance-label">⏱ 当前可玩游戏时长</div>
+                        <div class="gt-balance-num" id="gtBalanceNum">0<small> 分钟</small></div>
+                        <div class="gt-balance-sub" id="gtBalanceSub">累计赚取 0 · 累计消耗 0</div>
+                    </div>
+                    <div class="gt-balance-right">
+                        <div class="gt-spend-box">
+                            <input type="number" id="gtSpendInput" placeholder="分钟" min="1" step="1" value="">
+                            <button id="gtSpendBtn" onclick="gtSpend()">消耗</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gt-stats">
+                    <div class="gt-stat"><div class="gt-stat-label">🎁 累计赚取</div><div class="gt-stat-value earn" id="gtStatEarned">0 分钟</div></div>
+                    <div class="gt-stat"><div class="gt-stat-label">🔥 累计消耗</div><div class="gt-stat-value use" id="gtStatUsed">0 分钟</div></div>
+                    <div class="gt-stat"><div class="gt-stat-label">📅 今日赚取</div><div class="gt-stat-value today" id="gtStatToday">0 分钟</div></div>
+                    <div class="gt-stat"><div class="gt-stat-label">🖱 最近一次</div><div class="gt-stat-value" id="gtStatLast" style="font-size:15px;font-weight:500;color:#888;">—</div></div>
+                </div>
+
+                <div class="gt-layout">
+                    <div class="gt-card">
+                        <div class="gt-card-title">🎯 奖励规则 <span>每次打卡自动赚取分钟数</span></div>
+                        <div id="gtRulesList"></div>
+                    </div>
+                    <div class="gt-card">
+                        <div class="gt-card-title">📜 最近流水</div>
+                        <div class="gt-history" id="gtHistory"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 云端同步状态胶囊：所有板块右上角常驻，点击打开数据管理 -->
+    <div class="sync-status-pill" id="syncStatusPill" onclick="openDataManager()" title="云同步状态，点击管理">
+        <span class="sync-status-dot offline" id="syncStatusDot"></span>
+        <span id="syncStatusTxt">云端：未连接</span>
     </div>
 
     <!-- 便签侧边栏 & 弹窗注入区 -->
@@ -6869,6 +7154,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <span class="data-meta-tag">收件箱 <span class="count" id="exportInboxCount">0</span></span>
                     <span class="data-meta-tag">热点收藏 <span class="count" id="exportFavCount">0</span></span>
                     <span class="data-meta-tag">已读记录 <span class="count" id="exportReadCount">0</span></span>
+                    <span class="data-meta-tag">会员 <span class="count" id="exportMemberCount">0</span></span>
+                    <span class="data-meta-tag">游戏时间 <span class="count" id="exportGameTimeCount">0</span></span>
                     <span class="data-meta-tag">标签</span>
                     <span class="data-meta-tag">颜色配置</span>
                     <span class="data-meta-tag">深色模式</span>
@@ -7291,7 +7578,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         function switchPage(page) {
             currentPage = page;
             document.querySelectorAll('.sidebar-left .nav-item').forEach((item, idx) => {
-                const pages = ['today', 'plan', 'hot', 'meme', 'copy', 'notes', 'book', 'diary'];
+                const pages = ['today', 'plan', 'hot', 'meme', 'copy', 'notes', 'book', 'diary', 'member', 'game'];
                 item.classList.toggle('active', pages[idx] === page);
             });
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -7308,6 +7595,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 renderBookPage();
             } else if (page === 'diary') {
                 renderDiaryPage();
+            } else if (page === 'member') {
+                renderMemberPage();
+            } else if (page === 'game') {
+                renderGameTimePage();
             } else {
                 render();
             }
@@ -7890,7 +8181,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             return streak;
         }
 
-        // 今日打卡/取消
+        // 今日打卡/取消（打卡成功且习惯设置了奖励 → 自动赚取游戏时间）
         function habitToggle(id) {
             const today = formatDate(new Date());
             const logs = habitLogs();
@@ -7898,11 +8189,27 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             if (idx >= 0) {
                 logs.splice(idx, 1);
                 habitSaveLogs(logs);
+                // 取消打卡 → 回滚当天该习惯赚到的游戏时间
+                if (typeof window.gameTimeRefund === 'function') {
+                    try { window.gameTimeRefund(id, today); } catch (e) {}
+                }
                 if (typeof showToast === 'function') showToast('已取消今日打卡');
             } else {
                 logs.push({ id: 'hl_' + Date.now(), habitId: id, date: today, doneAt: new Date().toISOString() });
                 habitSaveLogs(logs);
-                if (typeof showToast === 'function') showToast('✅ 打卡成功');
+                const h = habitList().find(x => x.id === id);
+                const rewardMin = h ? (Number(h.rewardMin) || 0) : 0;
+                if (rewardMin > 0 && typeof window.gameTimeEarn === 'function') {
+                    try {
+                        const ok = window.gameTimeEarn(id, rewardMin, h.name, today);
+                        if (ok && typeof showToast === 'function') showToast(`✅ 打卡成功 +${rewardMin} 分钟游戏时间`);
+                        else if (typeof showToast === 'function') showToast('✅ 打卡成功');
+                    } catch (e) {
+                        if (typeof showToast === 'function') showToast('✅ 打卡成功');
+                    }
+                } else {
+                    if (typeof showToast === 'function') showToast('✅ 打卡成功');
+                }
             }
             renderTodayHabits();
             const hm = document.getElementById('habitsModal');
@@ -7932,6 +8239,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 return `<div class="habit-row">
                     <span class="habit-icon">${h.icon || '🎯'}</span>
                     <span class="habit-name">${escapeHtml(h.name)}</span>
+                    ${(Number(h.rewardMin) || 0) > 0 ? `<span class="habit-reward">+${Number(h.rewardMin)}分</span>` : ''}
                     <span class="habit-week">本周 ${wc}/${goal}${pct >= 100 ? ' ✅' : ''}</span>
                     <span class="habit-check ${d ? 'done' : ''}" onclick="habitToggle('${h.id}')" title="${d ? '取消打卡' : '打卡'}">${d ? '✓' : ''}</span>
                 </div>`;
@@ -7947,6 +8255,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             if (nameInput) nameInput.value = '';
             const goalInput = document.getElementById('habitGoalInput');
             if (goalInput) goalInput.value = '7';
+            const rewardInput = document.getElementById('habitRewardInput');
+            if (rewardInput) rewardInput.value = '0';
             renderHabitIconPick();
             renderHabitStats();
             document.getElementById('habitsModal').classList.add('show');
@@ -7969,10 +8279,16 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             const goalInput = document.getElementById('habitGoalInput');
             const goalRaw = Number(goalInput && goalInput.value);
             const goal = (!goalRaw || goalRaw < 1) ? 7 : Math.min(28, Math.round(goalRaw));
-            habits.push({ id: 'hb_' + Date.now(), name, icon: habitIconPick, goal, createdAt: new Date().toISOString() });
+            const rewardInput = document.getElementById('habitRewardInput');
+            let rewardMin = Math.round(Number(rewardInput && rewardInput.value) || 0);
+            if (rewardMin < 0) rewardMin = 0;
+            if (rewardMin > 480) rewardMin = 480;
+            habits.push({ id: 'hb_' + Date.now(), name, icon: habitIconPick, goal, rewardMin, createdAt: new Date().toISOString() });
             habitSaveList(habits);
-            if (typeof showToast === 'function') showToast('🎯 习惯已添加');
+            if (typeof showToast === 'function') showToast(rewardMin > 0 ? `🎯 习惯已添加，打卡奖励 ${rewardMin} 分钟游戏时间` : '🎯 习惯已添加');
             if (nameInput) nameInput.value = '';
+            const rewardInput2 = document.getElementById('habitRewardInput');
+            if (rewardInput2) rewardInput2.value = '0';
             renderHabitStats();
             renderTodayHabits();
         }
@@ -13772,6 +14088,13 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         dot.className = 'sync-indicator-dot ' + cls;
         txt.textContent = label;
         if (sub) sub.textContent = hint;
+
+        // 广播给全局右上角状态胶囊（所有板块可见）
+        try {
+            window.dispatchEvent(new CustomEvent('niko:sync-status', {
+                detail: { status: cls, label: label, hint: hint }
+            }));
+        } catch (e) {}
     }
 
     function openDataManagerFromSidebar() {
@@ -13829,6 +14152,339 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         init();
     }
 })();
+// ===== 会员看板专属JS =====
+        let memberEditId = null;
+
+        function memberList() { return safeStorage.get('niko_memberships', []); }
+        function memberSave(list) { safeStorage.set('niko_memberships', list); }
+
+        // 剩余天数：正=还剩 N 天，负=已过期 |N| 天
+        function memberDaysLeft(expire) {
+            if (!expire) return null;
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const e = new Date(expire + 'T00:00:00');
+            return Math.round((e - today) / 86400000);
+        }
+
+        function renderMemberPage() {
+            renderMemberStats();
+            renderMemberList();
+        }
+
+        function renderMemberStats() {
+            const box = document.getElementById('memberStatCards');
+            if (!box) return;
+            const list = memberList();
+            let total = 0, active = 0, soon = 0, uses = 0;
+            const now = new Date(); now.setHours(0, 0, 0, 0);
+            list.forEach(m => {
+                const amt = Number(m.amount) || 0;
+                total += amt;
+                uses += Number(m.useCount) || 0;
+                const dl = memberDaysLeft(m.expireDate);
+                if (dl === null || dl >= 0) active++;
+                if (dl !== null && dl >= 0 && dl <= 30) soon++;
+            });
+            box.innerHTML = `
+                <div class="member-stat"><div class="member-stat-label">💰 总投入</div><div class="member-stat-value money">¥${total.toFixed(2)}</div></div>
+                <div class="member-stat"><div class="member-stat-label">🟢 有效会员</div><div class="member-stat-value count">${active} 个</div></div>
+                <div class="member-stat"><div class="member-stat-label">⏰ 30 天内到期</div><div class="member-stat-value ${soon > 0 ? 'warn' : 'count'}">${soon} 个</div></div>
+                <div class="member-stat"><div class="member-stat-label">🖱 累计使用</div><div class="member-stat-value count">${uses} 次</div></div>`;
+        }
+
+        function renderMemberList() {
+            const box = document.getElementById('memberList');
+            if (!box) return;
+            const list = memberList();
+            if (!list.length) {
+                box.innerHTML = '<div class="member-empty">还没有会员记录，点右上角「➕ 添加会员」开始记录你的充值</div>';
+                return;
+            }
+            // 排序：未过期的按剩余天数升序（快到期在前），已过期的排最后
+            const sorted = list.slice().sort((a, b) => {
+                const da = memberDaysLeft(a.expireDate);
+                const db = memberDaysLeft(b.expireDate);
+                const oa = (da !== null && da >= 0) ? 0 : 1;
+                const ob = (db !== null && db >= 0) ? 0 : 1;
+                if (oa !== ob) return oa - ob;
+                return (da === null ? 9999 : da) - (db === null ? 9999 : db);
+            });
+            const rows = sorted.map(m => {
+                const amt = Number(m.amount) || 0;
+                const uses = Number(m.useCount) || 0;
+                const dl = memberDaysLeft(m.expireDate);
+                let daysHtml = '<span style="font-size:12px;color:#888;">' + (m.expireDate ? escapeHtml(m.expireDate) : '未设到期') + '</span>';
+                if (dl !== null) {
+                    if (dl < 0) daysHtml = `<span class="member-days overdue">已过期 ${-dl} 天</span>`;
+                    else if (dl <= 7) daysHtml += `<span class="member-days soon">剩 ${dl} 天</span>`;
+                    else if (dl <= 30) daysHtml += `<span class="member-days soon">剩 ${dl} 天</span>`;
+                    else daysHtml += `<span class="member-days">剩 ${dl} 天</span>`;
+                }
+                return `<div class="member-card">
+                    <div class="member-card-icon">${m.name ? escapeHtml(m.name).slice(0, 1) : '👤'}</div>
+                    <div class="member-card-main">
+                        <div class="member-card-name">${escapeHtml(m.name || '未命名')}${m.startDate ? '<span style="font-size:11px;color:#bbb;font-weight:400;">' + escapeHtml(m.startDate) + ' 起</span>' : ''}</div>
+                        ${m.note ? `<div class="member-card-note">${escapeHtml(m.note)}</div>` : ''}
+                        <div class="member-card-meta">
+                            <span class="member-amount">¥${amt.toFixed(2)}</span>
+                            <span class="member-uses">🖱 已使用 <b>${uses}</b> 次</span>
+                        </div>
+                    </div>
+                    <div class="member-expire">${daysHtml}</div>
+                    <div class="member-ops">
+                        <button class="btn primary" onclick="memberUse('${m.id}')" title="记录一次使用">使用</button>
+                        <button class="btn" onclick="openMemberModal('${m.id}')">编辑</button>
+                        <button class="btn danger" onclick="deleteMember('${m.id}')">删除</button>
+                    </div>
+                </div>`;
+            }).join('');
+            box.innerHTML = rows;
+        }
+
+        function openMemberModal(id) {
+            memberEditId = id || null;
+            const m = id ? memberList().find(x => x.id === id) : null;
+            const title = document.getElementById('memberModalTitle');
+            if (title) title.textContent = m ? '✏️ 编辑会员' : '➕ 添加会员';
+            const setVal = (el, v) => { const n = document.getElementById(el); if (n) n.value = v || ''; };
+            setVal('memberNameInput', m ? m.name : '');
+            setVal('memberAmountInput', m ? m.amount : '');
+            setVal('memberExpireInput', m ? m.expireDate : '');
+            setVal('memberStartInput', m ? m.startDate : '');
+            setVal('memberNoteInput', m ? m.note : '');
+            const uc = document.getElementById('memberUseCountInput');
+            if (uc) uc.value = m ? (Number(m.useCount) || 0) : 0;
+            document.getElementById('memberModal').classList.add('show');
+            const nameInput = document.getElementById('memberNameInput');
+            if (nameInput) setTimeout(function () { try { nameInput.focus(); } catch (e) {} }, 80);
+        }
+
+        function closeMemberModal() { document.getElementById('memberModal').classList.remove('show'); memberEditId = null; }
+
+        function saveMember() {
+            const nameInput = document.getElementById('memberNameInput');
+            const name = (nameInput && nameInput.value || '').trim();
+            if (!name) { if (typeof showToast === 'function') showToast('请输入名称/平台'); return; }
+            const amount = Number((document.getElementById('memberAmountInput') || {}).value) || 0;
+            const expireDate = ((document.getElementById('memberExpireInput') || {}).value || '').trim();
+            const startDate = ((document.getElementById('memberStartInput') || {}).value || '').trim();
+            const note = ((document.getElementById('memberNoteInput') || {}).value || '').trim();
+            const list = memberList();
+            if (memberEditId) {
+                const m = list.find(x => x.id === memberEditId);
+                if (m) {
+                    m.name = name; m.amount = amount; m.expireDate = expireDate;
+                    m.startDate = startDate; m.note = note;
+                }
+                if (typeof showToast === 'function') showToast('✏️ 会员已更新');
+            } else {
+                list.push({
+                    id: 'mb_' + Date.now(),
+                    name: name, amount: amount,
+                    startDate: startDate, expireDate: expireDate,
+                    note: note, useCount: 0,
+                    createdAt: new Date().toISOString()
+                });
+                if (typeof showToast === 'function') showToast('✅ 会员已添加，数据已自动同步云端');
+            }
+            memberSave(list);
+            closeMemberModal();
+            renderMemberPage();
+        }
+
+        // 点击「使用」：使用次数 +1
+        function memberUse(id) {
+            const list = memberList();
+            const m = list.find(x => x.id === id);
+            if (!m) return;
+            m.useCount = (Number(m.useCount) || 0) + 1;
+            memberSave(list);
+            if (typeof showToast === 'function') showToast(`🖱 已使用 ${m.name}（第 ${m.useCount} 次）`);
+            renderMemberPage();
+        }
+
+        function deleteMember(id) {
+            if (typeof confirm === 'function' && !confirm('确定删除这条会员记录吗？')) return;
+            const list = memberList().filter(x => x.id !== id);
+            memberSave(list);
+            if (typeof showToast === 'function') showToast('🗑 已删除');
+            renderMemberPage();
+        }
+
+        // 初始化渲染
+        if (typeof window.__NIKO_MEMBER_TEST__ !== 'undefined' && window.__NIKO_MEMBER_TEST__) {
+            renderMemberPage();
+        }
+// ===== 游戏时间奖励专属JS =====
+        const GT_MAX_HISTORY = 100;
+
+        function gtData() {
+            return safeStorage.get('niko_game_time', { balance: 0, totalEarned: 0, totalUsed: 0, history: [] });
+        }
+        function gtSave(d) { safeStorage.set('niko_game_time', d); }
+
+        function fmtMin(min) {
+            min = Math.round(min || 0);
+            if (min >= 60) {
+                const h = Math.floor(min / 60);
+                const m = min % 60;
+                return m ? `${h} 小时 ${m} 分` : `${h} 小时`;
+            }
+            return `${min} 分钟`;
+        }
+
+        // 打卡入账（由今日看板习惯打卡调用）。同一天同一习惯不会重复入账。
+        function gtEarn(habitId, min, habitName, dateStr) {
+            if (!habitId || !min || min <= 0) return false;
+            const d = gtData();
+            const date = dateStr || (new Date().toISOString().slice(0, 10));
+            const dup = d.history.some(e => e.type === 'earn' && e.habitId === habitId && e.date === date);
+            if (dup) return false;
+            d.balance = (d.balance || 0) + min;
+            d.totalEarned = (d.totalEarned || 0) + min;
+            d.history.unshift({
+                id: 'ge_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                type: 'earn', min: min, reason: habitName || '习惯打卡',
+                habitId: habitId, date: date, at: new Date().toISOString()
+            });
+            if (d.history.length > GT_MAX_HISTORY) d.history.length = GT_MAX_HISTORY;
+            gtSave(d);
+            if (typeof renderGameTimePage === 'function' && document.getElementById('gamePage') &&
+                document.getElementById('gamePage').classList.contains('active')) renderGameTimePage();
+            return true;
+        }
+
+        // 取消打卡 → 回滚当天该习惯的奖励
+        function gtRefund(habitId, dateStr) {
+            if (!habitId) return;
+            const d = gtData();
+            const date = dateStr || (new Date().toISOString().slice(0, 10));
+            const idx = d.history.findIndex(e => e.type === 'earn' && e.habitId === habitId && e.date === date);
+            if (idx < 0) return;
+            const e = d.history[idx];
+            d.balance = Math.max(0, (d.balance || 0) - e.min);
+            d.totalEarned = Math.max(0, (d.totalEarned || 0) - e.min);
+            d.history.splice(idx, 1);
+            gtSave(d);
+            if (typeof renderGameTimePage === 'function' && document.getElementById('gamePage') &&
+                document.getElementById('gamePage').classList.contains('active')) renderGameTimePage();
+        }
+
+        // 手动消耗游戏时间
+        function gtSpend() {
+            const input = document.getElementById('gtSpendInput');
+            const min = Math.round(Number(input && input.value) || 0);
+            if (min <= 0) { if (typeof showToast === 'function') showToast('请输入要消耗的分钟数'); return; }
+            const d = gtData();
+            if ((d.balance || 0) < min) {
+                if (typeof showToast === 'function') showToast(`余额不足：当前只剩 ${fmtMin(d.balance || 0)}`);
+                return;
+            }
+            d.balance -= min;
+            d.totalUsed = (d.totalUsed || 0) + min;
+            d.history.unshift({ id: 'gu_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), type: 'use', min: min, reason: '手动消耗', date: new Date().toISOString().slice(0, 10), at: new Date().toISOString() });
+            if (d.history.length > GT_MAX_HISTORY) d.history.length = GT_MAX_HISTORY;
+            gtSave(d);
+            if (input) input.value = '';
+            if (typeof showToast === 'function') showToast(`🎮 消耗 ${fmtMin(min)} 玩游戏，剩余 ${fmtMin(d.balance)}`);
+            renderGameTimePage();
+        }
+
+        // 设置某习惯的每次打卡奖励分钟数
+        function gtSetReward(habitId, min) {
+            const habits = safeStorage.get('niko_habits', []);
+            const h = habits.find(x => x.id === habitId);
+            if (!h) { if (typeof showToast === 'function') showToast('习惯不存在'); return; }
+            min = Math.round(Number(min) || 0);
+            if (min < 0) min = 0;
+            if (min > 480) min = 480; // 上限 8 小时，防误填
+            h.rewardMin = min;
+            safeStorage.set('niko_habits', habits);
+            if (typeof showToast === 'function') showToast(min > 0 ? `✅ ${h.name}：每次打卡 +${min} 分钟` : `已关闭 ${h.name} 的奖励`);
+            renderGameTimeRules();
+            renderGameTimePage();
+        }
+
+        function renderGameTimeRules() {
+            const box = document.getElementById('gtRulesList');
+            if (!box) return;
+            const habits = safeStorage.get('niko_habits', []);
+            if (!habits.length) {
+                box.innerHTML = '<div class="gt-empty">还没有习惯。先去「今日」看板添加习惯（如早睡、读书、学习、开发、写日记），再回来设置奖励分钟数</div>';
+                return;
+            }
+            box.innerHTML = habits.map(h => {
+                const rm = Number(h.rewardMin) || 0;
+                return `<div class="gt-rule-row">
+                    <span class="gt-rule-icon">${h.icon || '🎯'}</span>
+                    <span class="gt-rule-name">${escapeHtml(h.name)}</span>
+                    ${rm > 0 ? `<span class="gt-rule-reward">每次 +${rm} 分钟</span>` : ''}
+                    <span class="gt-rule-input">
+                        <input type="number" id="gtReward_${h.id}" min="0" max="480" step="1" value="${rm}" placeholder="0">
+                        <span>分钟/次</span>
+                        <button class="btn primary" style="padding:5px 10px;font-size:12px;" onclick="gtSetReward('${h.id}', document.getElementById('gtReward_${h.id}').value)">保存</button>
+                    </span>
+                </div>`;
+            }).join('');
+        }
+
+        function renderGameTimePage() {
+            const d = gtData();
+            const balance = d.balance || 0;
+            const num = document.getElementById('gtBalanceNum');
+            if (num) num.innerHTML = `${balance}<small> 分钟</small>`;
+            const sub = document.getElementById('gtBalanceSub');
+            if (sub) sub.textContent = `累计赚取 ${fmtMin(d.totalEarned || 0)} · 累计消耗 ${fmtMin(d.totalUsed || 0)}`;
+            const statEarned = document.getElementById('gtStatEarned');
+            if (statEarned) statEarned.textContent = fmtMin(d.totalEarned || 0);
+            const statUsed = document.getElementById('gtStatUsed');
+            if (statUsed) statUsed.textContent = fmtMin(d.totalUsed || 0);
+            const today = new Date().toISOString().slice(0, 10);
+            const todayEarn = (d.history || []).filter(e => e.type === 'earn' && e.date === today).reduce((s, e) => s + e.min, 0);
+            const statToday = document.getElementById('gtStatToday');
+            if (statToday) statToday.textContent = fmtMin(todayEarn);
+            const last = (d.history || [])[0];
+            const statLast = document.getElementById('gtStatLast');
+            if (statLast) statLast.textContent = last ? ((last.type === 'earn' ? '赚取 ' : last.type === 'use' ? '消耗 ' : '') + fmtMin(last.min) + ' · ' + (last.reason || '')) : '—';
+            const spendBtn = document.getElementById('gtSpendBtn');
+            if (spendBtn) spendBtn.disabled = balance <= 0;
+            renderGameTimeRules();
+            renderGtHistory();
+        }
+
+        function renderGtHistory() {
+            const box = document.getElementById('gtHistory');
+            if (!box) return;
+            const d = gtData();
+            const list = (d.history || []).slice(0, 30);
+            if (!list.length) {
+                box.innerHTML = '<div class="gt-empty">还没有流水。完成设置了奖励的习惯打卡，游戏时间会自动入账</div>';
+                return;
+            }
+            box.innerHTML = list.map(e => {
+                const cls = e.type === 'earn' ? 'earn' : (e.type === 'use' ? 'use' : 'refund');
+                const sign = e.type === 'earn' ? '+' : '-';
+                const dateTxt = e.at ? new Date(e.at).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : (e.date || '');
+                return `<div class="gt-h-item">
+                    <span class="gt-h-type ${cls}">${e.type === 'earn' ? '赚取' : e.type === 'use' ? '消耗' : '回滚'}</span>
+                    <span class="gt-h-main">
+                        <div class="gt-h-reason">${escapeHtml(e.reason || '')}</div>
+                        <div class="gt-h-date">${dateTxt}</div>
+                    </span>
+                    <span class="gt-h-min ${cls}">${sign}${e.min} 分</span>
+                </div>`;
+            }).join('');
+        }
+
+        // 暴露给今日看板习惯打卡调用的全局 API
+        window.gameTimeEarn = gtEarn;
+        window.gameTimeRefund = gtRefund;
+        window.gameTimeBalance = function () { return gtData().balance || 0; };
+
+        // 初始化渲染（合并后由 switchPage 调用 renderGameTimePage，此处在独立测试时兜底）
+        if (typeof window.__NIKO_GAME_TEST__ !== 'undefined' && window.__NIKO_GAME_TEST__) {
+            renderGameTimePage();
+        }
 
         // ========== 云同步数据变更 → 跨面板刷新 ==========
         // 当云同步模块拉取数据写入 localStorage 后，派发 niko:datachanged 事件
@@ -14013,6 +14669,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             document.getElementById('exportInboxCount').textContent = dataItemCount('niko_inbox', []);
             document.getElementById('exportFavCount').textContent = dataItemCount('niko_hot_favorites', []);
             document.getElementById('exportReadCount').textContent = dataItemCount('niko_hot_read', {});
+            document.getElementById('exportMemberCount').textContent = dataItemCount('niko_memberships', []);
+            document.getElementById('exportGameTimeCount').textContent = dataItemCount('niko_game_time', {});
             document.getElementById('importPreviewArea').innerHTML = '';
             pendingImportData = null;
         }
@@ -15134,7 +15792,19 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             mo.observe(document.documentElement, { childList: true, subtree: true });
         } catch (e) {}
 
-        /* ---- 4. 防鸿蒙/手机浏览器"保存到密码簿"弹窗 ----
+        /* ---- 4. 云端同步状态胶囊：监听云同步模块广播的状态事件 ---- */
+        var pillTxt = document.getElementById('syncStatusTxt');
+        var pillDot = document.getElementById('syncStatusDot');
+        window.addEventListener('niko:sync-status', function (e) {
+            var d = e.detail || {};
+            var st = d.status || 'offline';
+            var label = d.label || '未知';
+            var hint = d.hint || '';
+            if (pillTxt) pillTxt.textContent = st === 'synced' ? '已同步 ✓ ' + (hint || '') : (st === 'syncing' ? '同步中…' : (st === 'connected' ? '已连接云端' : (st === 'manual' ? '手动模式' : '云端：未连接')));
+            if (pillDot) pillDot.className = 'sync-status-dot ' + (['syncing', 'synced', 'connected', 'offline', 'manual'].indexOf(st) >= 0 ? st : 'offline');
+        });
+
+        /* ---- 5. 防鸿蒙/手机浏览器"保存到密码簿"弹窗 ----
            原理：把密码框换成 text 输入 + CSS 圆点渲染（-webkit-text-security），
            密码管理器不认为是密码输入，就不会弹保存提示。不支持该 CSS 的浏览器保持原样。 */
         var supportsDisc = false;
