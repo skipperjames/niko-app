@@ -7830,11 +7830,12 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     <div class="modal-mask" id="ocrModal">
         <div class="modal" style="width:560px;">
             <h3>📷 截图识别便签</h3>
-            <div style="font-size:11.5px;color:#999;margin-bottom:10px;">Ctrl+V 粘贴任意截图（微信读书划线 / 广告素材 / 灵感图），本地 OCR 自动提取文字并推荐标签，一键存为便签</div>
+            <div style="font-size:11.5px;color:#999;margin-bottom:10px;">粘贴 / 拍照后自动识别，本地 PaddleOCR 提取文字并推荐标签，一键存为便签</div>
             <div class="ocr-drop" id="ocrDrop" onclick="ocrPickFile()">
                 <div class="ocr-drop-empty" id="ocrDropEmpty">📋 按 Ctrl+V 粘贴截图<br><span style="font-size:12px;color:#999;">或点击选择图片文件</span></div>
                 <img id="ocrPreview" alt="截图预览" style="display:none;">
                 <input type="file" id="ocrFileInput" accept="image/*" style="display:none;" onchange="ocrOnFile(this)">
+                <input type="file" id="ocrCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="ocrOnFile(this)">
             </div>
             <div class="ocr-progress" id="ocrProgress" style="display:none;">
                 <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocrProgressFill" style="width:0%;"></div></div>
@@ -7842,9 +7843,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             </div>
             <div class="ocr-warn" id="ocrWarn" style="display:none;"></div>
             <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                <button class="btn primary" id="ocrRunBtn" onclick="ocrRun()">🔍 开始识别</button>
-                <button class="btn" onclick="ocrReset()">↺ 清空</button>
-                <span style="font-size:11.5px;color:#aaa;">首次识别需下载语言包（约 10MB），之后会缓存</span>
+                <button class="btn primary" id="ocrRunBtn" onclick="ocrRun()">开始识别</button>
+                <button class="btn" onclick="ocrReset()">清空</button>
+                <button class="btn" onclick="ocrPickCamera()">拍照</button>
+                <label style="font-size:11.5px;color:#888;display:inline-flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="ocrHighQuality" onchange="ocrToggleQuality(this)">高清识别（更准，模型约 20MB）</label>
+                <span style="font-size:11.5px;color:#aaa;" id="ocrEngineInfo">引擎：待机</span>
             </div>
             <textarea class="ocr-result" id="ocrResult" placeholder="识别出的文字会显示在这里，可手动修改、补充，再点「存为便签」"></textarea>
             <div class="ocr-tag-row">
@@ -12835,17 +12838,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         }
 
         // ===== 识图添加书籍（微信读书截图 OCR） =====
-        let bookOcrWorker = null;
-        function bookOcrLoadTesseract() {
-            return new Promise((resolve, reject) => {
-                if (window.Tesseract) return resolve(window.Tesseract);
-                const s = document.createElement('script');
-                s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-                s.onload = () => resolve(window.Tesseract);
-                s.onerror = () => reject(new Error('Tesseract.js 加载失败'));
-                document.head.appendChild(s);
-            });
-        }
+        // ===== 识图添加书籍（微信读书截图 OCR，共用 NikoOcr 引擎层） =====
         function openBookOcrModal() {
             document.getElementById('bookOcrModal').classList.add('show');
             document.getElementById('bookOcrDrop').style.display = '';
@@ -12884,29 +12877,28 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             document.getElementById('bookOcrPreviewWrap').style.display = '';
             document.getElementById('bookOcrDrop').style.display = 'none';
             document.getElementById('bookOcrStatus').textContent = '正在识别文字，请稍候…';
-            bookOcrRun(url);
+            bookOcrRun(file);
         }
-        async function bookOcrRun(imageUrl) {
+        async function bookOcrRun(blob) {
             try {
-                const T = await bookOcrLoadTesseract();
-                if (!bookOcrWorker) {
-                    bookOcrWorker = await T.createWorker('chi_sim+eng');
-                }
-                const ret = await bookOcrWorker.recognize(imageUrl);
-                const text = (ret && ret.data && ret.data.text) || '';
+                const statusEl = document.getElementById('bookOcrStatus');
+                const { text } = await NikoOcr.recognize(blob, (pct, txt) => {
+                    if (statusEl) statusEl.textContent = (txt || '识别中…');
+                });
                 document.getElementById('bookOcrRaw').value = text;
                 bookOcrParseRaw();
-                document.getElementById('bookOcrStatus').textContent = '✅ 识别完成，请检查并补充后加入书架';
+                document.getElementById('bookOcrStatus').textContent = '识别完成，请检查并补充后加入书架';
                 document.getElementById('bookOcrFields').style.display = 'grid';
                 document.getElementById('bookOcrReparseBtn').style.display = '';
                 document.getElementById('bookOcrAddBtn').style.display = '';
             } catch (err) {
                 console.error('OCR failed', err);
-                document.getElementById('bookOcrStatus').textContent = '❌ 识别失败：' + (err.message || '未知错误') + '。可手动输入书名作者后添加。';
+                document.getElementById('bookOcrStatus').textContent = '识别失败：' + (err.message || '未知错误') + '。可手动输入书名作者后添加。';
                 document.getElementById('bookOcrFields').style.display = 'grid';
                 document.getElementById('bookOcrAddBtn').style.display = '';
             }
         }
+
         function bookOcrParseRaw() {
             const raw = (document.getElementById('bookOcrRaw').value || '').trim();
             const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && l.length < 60);
@@ -16043,10 +16035,176 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         // 本地 Tesseract.js OCR：粘贴/选择截图 → 提取文字 → 关键词自动打标 → 存为便签（数据写 niko_inspiration_notes）
         let ocrImageBlob = null;
         let ocrSelectedTag = 'other';
-        let ocrWorker = null;
         let ocrBusy = false;
-        const OCR_LANG = 'chi_sim';
-        const OCR_LANG_PATH = 'https://cdn.jsdelivr.net/npm/@tesseract.js-data/chi_sim/4.0.0_best_int';
+        // ===== NIKO 通用 OCR 引擎层 =====
+        // 主引擎：PaddleOCR.js（官方浏览器 SDK，PP-OCRv6_tiny 模型约 6MB，模型来自百度云国内直连）
+        // 兜底引擎：Tesseract.js（原有，保留）
+        const NikoOcr = (function () {
+            const SDK_URLS = [
+                'https://fastly.jsdelivr.net/npm/@paddleocr/paddleocr-js@0.4.2/+esm',
+                'https://gcore.jsdelivr.net/npm/@paddleocr/paddleocr-js@0.4.2/+esm',
+                'https://cdn.jsdelivr.net/npm/@paddleocr/paddleocr-js@0.4.2/+esm',
+                'https://esm.sh/@paddleocr/paddleocr-js@0.4.2'
+            ];
+            const WASM_PATHS = [
+                'https://registry.npmmirror.com/onnxruntime-web/1.24.3/files/dist/',
+                'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.24.3/dist/'
+            ];
+            const TESS_LANG_PATH = 'https://cdn.jsdelivr.net/npm/@tesseract.js-data/chi_sim/4.0.0_best_int';
+            let paddle = null;
+            let ready = false;
+            let failed = false;
+            let lastError = '';
+            let loading = null;
+            let tesseractWorker = null;
+            const OCR_CJK = '\\u3400-\\u4dbf\\u4e00-\\u9fff\\uf900-\\ufaff\\uff00-\\uffef';
+            function cleanOcrText(text) {
+                if (!text) return '';
+                return String(text)
+                    .replace(new RegExp('([' + OCR_CJK + ']) +(?=[' + OCR_CJK + '])', 'g'), '$1')
+                    .replace(new RegExp('([' + OCR_CJK + ']) +(?=[0-9])', 'g'), '$1')
+                    .replace(new RegExp('([0-9]) +(?=[' + OCR_CJK + '])', 'g'), '$1')
+                    .replace(/[ \t]+/g, ' ')
+                    .trim();
+            }
+            function canRun() {
+                return typeof Tesseract !== 'undefined' ||
+                    (typeof Worker === 'function' && typeof Blob === 'function' && typeof fetch === 'function');
+            }
+            async function loadSdk() {
+                let lastErr = null;
+                for (const url of SDK_URLS) {
+                    try {
+                        return await import(url);
+                    } catch (e) { lastErr = e; }
+                }
+                throw (lastErr || new Error('PaddleOCR SDK 加载失败'));
+            }
+            function ensureEngine(onProgress) {
+                if (ready) return Promise.resolve(paddle);
+                if (loading) return loading;
+                loading = (async () => {
+                    try {
+                        if (onProgress) onProgress(5, '加载 PaddleOCR 引擎…');
+                        const mod = await loadSdk();
+                        const quality = safeStorage.get('niko_ocr_quality', false);
+                        const det = quality ? 'PP-OCRv5_mobile_det' : 'PP-OCRv6_tiny_det';
+                        const rec = quality ? 'PP-OCRv5_mobile_rec' : 'PP-OCRv6_tiny_rec';
+                        if (onProgress) onProgress(20, '初始化识别引擎（首次约 6MB，之后走缓存）…');
+                        let lastErr2 = null;
+                        let instance = null;
+                        for (const wasmPath of WASM_PATHS) {
+                            try {
+                                instance = await mod.PaddleOCR.create({
+                                    textDetectionModelName: det,
+                                    textRecognitionModelName: rec,
+                                    worker: true,
+                                    ortOptions: { backend: 'wasm', wasmPaths: wasmPath, numThreads: 1, simd: true }
+                                });
+                                lastErr2 = null;
+                                break;
+                            } catch (e) { lastErr2 = e; }
+                        }
+                        if (!instance) throw (lastErr2 || new Error('引擎初始化失败'));
+                        paddle = instance;
+                        if (onProgress) onProgress(75, '引擎就绪，正在加载模型…');
+                        await paddle.initialize();
+                        ready = true;
+                        failed = false;
+                        lastError = '';
+                        return paddle;
+                    } catch (e) {
+                        failed = true;
+                        lastError = (e && e.message) ? e.message : String(e);
+                        console.warn('[NikoOcr] PaddleOCR 不可用，自动改用 Tesseract 兜底:', lastError);
+                        return null;
+                    } finally {
+                        loading = null;
+                    }
+                })();
+                return loading;
+            }
+            async function tesseractRecognize(blob, onProgress) {
+                if (typeof Tesseract === 'undefined') throw new Error('Tesseract 未加载');
+                if (!tesseractWorker) {
+                    if (onProgress) onProgress(10, '加载 Tesseract 引擎（兜底）…');
+                    tesseractWorker = await Tesseract.createWorker('chi_sim', 1, {
+                        logger: function (m) {
+                            if (!onProgress) return;
+                            const st = m && m.status;
+                            if (st === 'loading tesseract core') onProgress(15, '加载引擎核心…');
+                            else if (st === 'initializing tesseract') onProgress(30, '初始化引擎…');
+                            else if (st === 'loading language traineddata') onProgress(45, '下载中文语言包（首次约 10MB）…');
+                            else if (st === 'initializing api') onProgress(75, '初始化识别器…');
+                            else if (st === 'recognizing text') onProgress(85, '正在识别文字…');
+                            else if (typeof m.progress === 'number' && (st === 'recognizing text' || st === 'loading language traineddata')) {
+                                onProgress(50 + m.progress * 40, st === 'loading language traineddata' ? '下载语言包…' : '正在识别文字…');
+                            }
+                        },
+                        langPath: TESS_LANG_PATH
+                    });
+                }
+                if (onProgress) onProgress(85, '正在识别文字…');
+                const { data } = await tesseractWorker.recognize(blob);
+                return { text: cleanOcrText((data && data.text) ? data.text : ''), engine: 'tesseract' };
+            }
+            async function recognize(blob, onProgress) {
+                const eng = await ensureEngine(onProgress);
+                if (eng) {
+                    try {
+                        if (onProgress) onProgress(85, '正在识别文字…');
+                        const list = await eng.predict(blob);
+                        const res = list && list[0];
+                        const items = (res && res.items) || [];
+                        const lines = items.map(function (it) { return cleanOcrText(it && it.text ? it.text : ''); }).filter(Boolean);
+                        const text = lines.join('\n');
+                        return { text: text, engine: 'paddle', items: items };
+                    } catch (e) {
+                        console.warn('[NikoOcr] PaddleOCR 识别失败，改用 Tesseract 兜底:', e);
+                    }
+                }
+                return tesseractRecognize(blob, onProgress);
+            }
+            function reset() {
+                try { if (paddle && paddle.dispose) paddle.dispose(); } catch (e) {}
+                paddle = null;
+                ready = false;
+                failed = false;
+                lastError = '';
+                loading = null;
+            }
+            function prewarm() {
+                if (ready || failed || loading) return;
+                ensureEngine();
+            }
+            return {
+                canRun: canRun,
+                ensureEngine: ensureEngine,
+                recognize: recognize,
+                reset: reset,
+                prewarm: prewarm,
+                get ready() { return ready; },
+                get failed() { return failed; },
+                get loading() { return !!loading; },
+                get lastError() { return lastError; }
+            };
+        })();
+        setTimeout(function () { try { NikoOcr.prewarm(); } catch (e) {} }, 3000);
+        function ocrPickCamera() { const inp = document.getElementById('ocrCameraInput'); if (inp) inp.click(); }
+        function ocrToggleQuality(cb) {
+            try { safeStorage.set('niko_ocr_quality', !!(cb && cb.checked)); } catch (e) {}
+            NikoOcr.reset();
+            ocrRefreshEngineInfo();
+            showToast('已切换识别模式，下次识别生效');
+        }
+        function ocrRefreshEngineInfo() {
+            const el = document.getElementById('ocrEngineInfo');
+            if (!el) return;
+            if (NikoOcr.ready) el.textContent = '引擎：PaddleOCR 已就绪';
+            else if (NikoOcr.loading) el.textContent = '引擎：加载中…';
+            else if (NikoOcr.failed) el.textContent = '引擎：PaddleOCR 不可用，将用 Tesseract 兜底';
+            else el.textContent = '引擎：待机（首次识别自动加载）';
+        }
         // 关键词 → 标签（评分制：统计命中词数，最高分胜出；同分按数组顺序）
         const OCR_TAG_RULES = [
             { tag: 'hook', words: ['钩子', '点击', '下载', '限时', '免费', '福利', '领取', '立即', '首充', '零元', '秒杀', '返利'] },
@@ -16059,9 +16217,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             { tag: 'quote', words: ['感悟', '人生', '心态', '坚持', '成长', '道理', '值得', '慢下来', '生活'] },
             { tag: 'creative', words: ['创意', '灵感', 'idea', '点子'] }
         ];
-        function ocrEnvOk() {
-            return typeof Tesseract !== 'undefined' && typeof Worker === 'function' && typeof Blob === 'function';
-        }
+        function ocrEnvOk() { return NikoOcr.canRun(); }
+
         function ocrSuggestTag(text) {
             const t = String(text || '').toLowerCase();
             let best = null, bestScore = 0;
@@ -16109,13 +16266,16 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             const prog = document.getElementById('ocrProgress');
             if (prog) prog.style.display = 'none';
             renderOcrTagPick('');
+            const hq = document.getElementById('ocrHighQuality');
+            if (hq) hq.checked = !!safeStorage.get('niko_ocr_quality', false);
+            ocrRefreshEngineInfo();
             document.getElementById('ocrModal').classList.add('show');
             setTimeout(() => {
-                if (typeof ocrEnvOk === 'function' && !ocrEnvOk()) {
+                if (typeof NikoOcr !== 'undefined' && NikoOcr.failed) {
                     const w = document.getElementById('ocrWarn');
                     if (w) {
                         w.style.display = '';
-                        w.textContent = '⚠️ 未检测到 OCR 组件（离线打开时可能未加载成功）。可以先把文字直接粘贴到下方输入框，手动选标签保存。';
+                        w.textContent = 'OCR 引擎加载失败，可直接把文字粘贴到下方输入框手动选标签保存。';
                     }
                 }
             }, 300);
@@ -16148,7 +16308,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             if (res) res.value = '';
             const warn = document.getElementById('ocrWarn');
             if (warn) warn.style.display = 'none';
+            ocrRefreshEngineInfo();
+            setTimeout(function () { try { ocrRun(); } catch (e) {} }, 120);
         }
+
         function ocrPickFile() { const inp = document.getElementById('ocrFileInput'); if (inp) inp.click(); }
         function ocrOnFile(input) {
             const f = input.files && input.files[0];
@@ -16184,37 +16347,18 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             const warn = document.getElementById('ocrWarn');
             if (warn) warn.style.display = 'none';
             if (ocrBusy) return;
-            if (!ocrImageBlob) { showToast('📋 先粘贴一张截图再识别'); return; }
-            if (!ocrEnvOk()) {
+            if (!ocrImageBlob) { showToast('先粘贴一张截图再识别'); return; }
+            if (!NikoOcr.canRun()) {
                 if (warn) {
                     warn.style.display = '';
-                    warn.textContent = '⚠️ 当前环境无法运行本地 OCR（离线打开文件时浏览器会限制 Web Worker）。建议：① 在 WorkBuddy 预览面板中打开使用；② 或直接把文字粘贴到下方输入框手动保存。';
+                    warn.textContent = '当前环境无法运行本地 OCR（浏览器限制了 Web Worker）。建议：① 在 WorkBuddy 预览面板中打开使用；② 或直接把文字粘贴到下方输入框手动保存。';
                 }
                 return;
             }
             ocrBusy = true;
-            if (runBtn) runBtn.textContent = '⏳ 识别中…';
+            if (runBtn) runBtn.textContent = '识别中…';
             try {
-                if (!ocrWorker) {
-                    ocrSetProgress(2, '加载 OCR 引擎（首次约 10MB，之后走缓存）…');
-                    ocrWorker = await Tesseract.createWorker(OCR_LANG, 1, {
-                        logger: (m) => {
-                            const st = m && m.status;
-                            if (st === 'loading tesseract core') ocrSetProgress(8, '加载引擎核心…');
-                            else if (st === 'initializing tesseract') ocrSetProgress(30, '初始化引擎…');
-                            else if (st === 'loading language traineddata') ocrSetProgress(45, '下载中文语言包（首次约 10MB）…');
-                            else if (st === 'initializing api') ocrSetProgress(75, '初始化识别器…');
-                            else if (st === 'recognizing text') ocrSetProgress(85, '正在识别文字…');
-                            else if (typeof m.progress === 'number' && (st === 'recognizing text' || st === 'loading language traineddata')) {
-                                ocrSetProgress(50 + m.progress * 40, st === 'loading language traineddata' ? '下载语言包…' : '正在识别文字…');
-                            }
-                        },
-                        langPath: OCR_LANG_PATH
-                    });
-                }
-                ocrSetProgress(85, '正在识别文字…');
-                const { data } = await ocrWorker.recognize(ocrImageBlob);
-                const text = (data && data.text) ? data.text.trim() : '';
+                const { text } = await NikoOcr.recognize(ocrImageBlob, (pct, txt) => ocrSetProgress(pct, txt));
                 const res = document.getElementById('ocrResult');
                 if (res) res.value = text;
                 const rec = ocrSuggestTag(text);
@@ -16222,18 +16366,20 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 renderOcrTagPick(rec.tag);
                 const prog = document.getElementById('ocrProgress');
                 if (prog) prog.style.display = 'none';
-                showToast(text ? '✅ 识别完成，检查文字后存为便签' : '😕 没识别到文字，试试更清晰的截图，或手动输入');
+                ocrRefreshEngineInfo();
+                showToast(text ? '识别完成，检查文字后存为便签' : '没识别到文字，试试更清晰的截图，或手动输入');
             } catch (err) {
                 console.error('OCR 失败:', err);
                 if (warn) {
                     warn.style.display = '';
-                    warn.textContent = '⚠️ OCR 运行失败：' + (err && err.message ? err.message : err) + '。可以直接把文字粘贴到下方输入框手动保存，或换预览模式再试。';
+                    warn.textContent = 'OCR 运行失败：' + (err && err.message ? err.message : err) + '。可以直接把文字粘贴到下方输入框手动保存。';
                 }
             } finally {
                 ocrBusy = false;
-                if (runBtn) runBtn.textContent = '🔍 重新识别';
+                if (runBtn) runBtn.textContent = '重新识别';
             }
         }
+
         function ocrWriteNote(content, tag) {
             const all = safeStorage.get('niko_inspiration_notes', []);
             all.unshift({
