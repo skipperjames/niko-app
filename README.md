@@ -1,2 +1,1 @@
-# niko-app
-公开仓库
+NIKO auto-deploy via API
