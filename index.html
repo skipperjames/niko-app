@@ -5803,19 +5803,6 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <div class="fp-content" id="flightPlanContent"></div>
                 </div>
                 <div class="right-panel">
-                    <div class="panel-card">
-                        <h3>⚠️ 风险信号</h3>
-                        <div class="subtitle">自动扫描 3 天内截止/节点 + 手动维护</div>
-                        <div id="riskList"></div>
-                        <div class="risk-add-panel" id="riskAddPanel">
-                            <input id="riskAddCategory" placeholder="类别（如：装修 / 商单交付）" />
-                            <input id="riskAddContent" placeholder="风险内容…" />
-                            <div class="row">
-                                <button class="risk-btn" onclick="riskSubmitAdd()">✓ 添加</button>
-                                <button class="risk-btn" onclick="riskCancelAdd()">取消</button>
-                            </div>
-                        </div>
-                    </div>
                     <div class="panel-card hot-card">
                         <div class="hot-header">
                             <h3>🔥 行业热点 <span style="font-size:10px;color:#10b981;font-weight:400;" id="hotStatusBadge">实时获取</span></h3>
@@ -5836,19 +5823,6 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <span style="float:right;">
                                 <a onclick="refreshHot()" id="hotRefreshLink">🔄 刷新</a> · <a onclick="switchPage('hot')">查看全部 →</a>
                             </span>
-                        </div>
-                    </div>
-                    <div class="panel-card">
-                        <h3>📊 商单雷达</h3>
-                        <div class="subtitle">由真实商单档案实时派生</div>
-                        <div class="deal-stats">
-                            <div class="count"><strong>4</strong> 个真实商单在管线中 <span style="float:right;font-size:11px;color:#10b981;">Active</span></div>
-                            <div class="deal-cards">
-                                <div class="deal-card"><div class="num">2</div><div class="label">已确认</div></div>
-                                <div class="deal-card"><div class="num">1</div><div class="label">制作</div></div>
-                                <div class="deal-card"><div class="num">1</div><div class="label">审核</div></div>
-                            </div>
-                            <div class="deal-footer">已确认 2 · 制作 1 · 审核 1</div>
                         </div>
                     </div>
                 </div>
@@ -6841,11 +6815,19 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <button class="cloudsync-btn danger" id="cloudsyncDisconnectBtn" onclick="NikoSync.disconnect()" style="display:none;">断开</button>
         </div>
 
+        <div class="cloudsync-manual-row" style="gap:6px;">
+            <span>⏱️ 同步频率：</span>
+            <select id="cloudsyncInterval" onchange="NikoSync.setSyncInterval(this.value)"
+                style="font-size:12.5px;padding:6px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#333;outline:none;cursor:pointer;">
+            </select>
+            <span style="color:#999;font-size:11px;">本机修改仍会 3 秒内即时推送</span>
+        </div>
+
         <div class="cloudsync-hint" id="cloudsyncHint">
             ① 打开坚果云客户端（或网页版），新建文件夹 <b>WorkBuddy</b><br>
             ② 点击「连接坚果云文件夹」，选择该文件夹的<b>本地同步目录</b>（如 D:\坚果云\WorkBuddy）<br>
             ③ 数据将写入 <b>niko_data.json</b>，由坚果云客户端自动同步到云端<br>
-            <span style="color:#ef4444;">⚠ 仅支持 Chrome / Edge 浏览器；连接后每 8 秒自动检测一次变化</span>
+            <span style="color:#ef4444;">⚠ 仅支持 Chrome / Edge 浏览器；自动同步频率可在下方「同步频率」中调整</span>
         </div>
 
         <div class="cloudsync-cb" id="cloudsyncGh">
@@ -7417,7 +7399,6 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             renderMarketNodeAlerts();
             renderTodayTimeBlocks();
             renderFlightPlan();
-            renderRiskList();
             renderHot();
             renderWeeklyEntry();
         }
@@ -7524,111 +7505,6 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 </div>`;
             card.onclick = () => openEventModal(ev.id);
             return card;
-        }
-
-        // ===== 风险信号（自动派生 + 手动维护） =====
-        function todayEsc(s) { return (typeof escapeHtml === 'function') ? escapeHtml(s) : String(s == null ? '' : s); }
-        function riskToast(m) { if (typeof showToast === 'function') { showToast(m); } else { alert(m); } }
-        function riskDismissed() { return safeStorage.get('niko_risks_dismissed', []); }
-        function riskSaveDismissed(list) { safeStorage.set('niko_risks_dismissed', list); }
-        // 自动扫描：work_calendar_events 里 3 天内到期的截止日/项目节点（未完成）
-        function computeAutoRisks() {
-            const out = [];
-            const today = formatDate(new Date());
-            const in3d = formatDate(addDays(new Date(), 3));
-            const dismissed = riskDismissed();
-            (safeStorage.get('work_calendar_events', []) || []).forEach(ev => {
-                if (!ev || ev.status === 'done') return;
-                if (ev.type !== 'deadline' && ev.type !== 'node') return;
-                const due = ev.endDate || ev.startDate;
-                if (!due || due < today || due > in3d) return;
-                const left = Math.max(0, Math.round((new Date(due + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000));
-                const safeId = String(ev.id || '').replace(/[^a-zA-Z0-9_-]/g, '') || (ev.title + due).replace(/[^a-zA-Z0-9_-]/g, '');
-                const id = 'auto_' + safeId;
-                if (dismissed.indexOf(id) >= 0) return;
-                out.push({
-                    id: id,
-                    category: (ev.type === 'deadline' ? '⏰ 截止日' : '🎯 项目节点') + (left === 0 ? '（今天到期）' : '（还有 ' + left + ' 天）'),
-                    content: ev.title,
-                    handled: false,
-                    auto: true,
-                    due: due
-                });
-            });
-            return out;
-        }
-        function riskManualList() { return safeStorage.get('work_calendar_risks', []) || []; }
-        function riskSaveManual(list) { safeStorage.set('work_calendar_risks', list); }
-        function renderRiskList() {
-            const container = document.getElementById('riskList');
-            if (!container) return;
-            const auto = computeAutoRisks();
-            const manual = riskManualList().map(r => Object.assign({}, r, { auto: false }));
-            const items = auto.concat(manual);
-            // 排序：未处理在前；同状态下按到期日近的在前（无到期日的排后）
-            items.sort(function (a, b) {
-                if (!!a.handled !== !!b.handled) return a.handled ? 1 : -1;
-                const da = a.due || '9999-12-31', db = b.due || '9999-12-31';
-                return da < db ? -1 : da > db ? 1 : 0;
-            });
-            if (!items.length) {
-                container.innerHTML = '<div class="risk-empty">✅ 暂无风险信号 — 今天风平浪静</div><button class="risk-btn add" onclick="riskOpenAdd()">＋ 添加风险</button>';
-                return;
-            }
-            container.innerHTML = items.map(function (r) {
-                return '<div class="risk-item"' + (r.handled ? ' style="opacity:.55"' : '') + '>' +
-                    '<div class="category">' + todayEsc(r.category) + (r.auto ? '<span class="risk-tag">自动</span>' : '') + '</div>' +
-                    '<div class="content">' + todayEsc(r.content) + '</div>' +
-                    '<div class="risk-actions">' +
-                    (r.handled ? '<span class="handled">✅ 已处理</span>' : '<button class="risk-btn" onclick="riskHandle(\'' + r.id + '\')">✓ 处理</button>') +
-                    '<button class="risk-btn danger" onclick="riskDelete(\'' + r.id + '\')">✕</button>' +
-                    '</div></div>';
-            }).join('') + '<button class="risk-btn add" onclick="riskOpenAdd()">＋ 添加风险</button>';
-        }
-        function riskOpenAdd() {
-            const p = document.getElementById('riskAddPanel');
-            if (p) p.classList.add('show');
-        }
-        function riskCancelAdd() {
-            const p = document.getElementById('riskAddPanel');
-            if (p) p.classList.remove('show');
-        }
-        function riskSubmitAdd() {
-            const cat = document.getElementById('riskAddCategory').value.trim();
-            const con = document.getElementById('riskAddContent').value.trim();
-            if (!con) { riskToast('✏️ 写点风险内容再添加'); return; }
-            const list = riskManualList();
-            list.unshift({ id: 'r' + Date.now(), category: cat || '手动', content: con, handled: false });
-            riskSaveManual(list);
-            document.getElementById('riskAddCategory').value = '';
-            document.getElementById('riskAddContent').value = '';
-            riskCancelAdd();
-            renderRiskList();
-            riskToast('⚠️ 已添加风险');
-        }
-        function riskHandle(id) {
-            if (id.indexOf('auto_') === 0) {
-                const d = riskDismissed();
-                if (d.indexOf(id) < 0) d.push(id);
-                riskSaveDismissed(d);
-                riskToast('✅ 已忽略该自动风险');
-            } else {
-                const list = riskManualList();
-                const it = list.find(x => x.id === id);
-                if (it) { it.handled = true; riskSaveManual(list); riskToast('✅ 已处理'); }
-            }
-            renderRiskList();
-        }
-        function riskDelete(id) {
-            if (id.indexOf('auto_') === 0) {
-                const d = riskDismissed();
-                if (d.indexOf(id) < 0) d.push(id);
-                riskSaveDismissed(d);
-            } else {
-                riskSaveManual(riskManualList().filter(x => x.id !== id));
-            }
-            renderRiskList();
-            riskToast('🗑 已移除');
         }
 
         // ===== 每周复盘（聚合各面板数据，纯计算不新增存储） =====
@@ -12667,8 +12543,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         'niko_market_nodes_updated_at'   // 买量节点更新时间戳
     ];
     const SYNC_FILE = 'niko_data.json';
-    const POLL_INTERVAL = 8000;
-    const GH_POLL_INTERVAL = 30000; // GitHub 云端轮询更慢，减少跨设备冲突
+    const DEFAULT_SYNC_INTERVAL_SEC = 120; // 默认 2 分钟同步一次
+    const SYNC_INTERVAL_OPTIONS = [30, 60, 120, 180, 300, 600]; // 可选：30秒~10分钟
     const IDB_NAME = 'niko_sync_db';
     const IDB_STORE = 'handles';
 
@@ -12694,7 +12570,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         ghToken: '',
         ghConnected: false,
         ghConnecting: false,
-        ghBackOffUntil: 0
+        ghBackOffUntil: 0,
+        syncIntervalSec: DEFAULT_SYNC_INTERVAL_SEC
     };
 
     const log = []; // 日志（最新的在末尾）
@@ -12820,6 +12697,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         state.ghOwner = s.ghOwner || '';
         state.ghRepo = s.ghRepo || '';
         state.ghToken = s.ghToken || '';
+        const iv = parseInt(s.syncIntervalSec, 10);
+        state.syncIntervalSec = SYNC_INTERVAL_OPTIONS.includes(iv) ? iv : DEFAULT_SYNC_INTERVAL_SEC;
     }
     function saveSettings() {
         set('niko_sync_settings', {
@@ -12828,8 +12707,34 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             lastResult: state.lastResult || null,
             ghOwner: state.ghOwner || '',
             ghRepo: state.ghRepo || '',
-            ghToken: state.ghToken || ''
+            ghToken: state.ghToken || '',
+            syncIntervalSec: state.syncIntervalSec
         });
+    }
+
+    /* ---------- 同步频率 ---------- */
+    function getSyncIntervalMs() { return state.syncIntervalSec * 1000; }
+    function intervalLabel(sec) {
+        if (sec < 60) return sec + ' 秒';
+        if (sec % 60 === 0 && sec < 3600) return (sec / 60) + ' 分钟';
+        return sec + ' 秒';
+    }
+    function setSyncInterval(sec) {
+        sec = parseInt(sec, 10);
+        if (!SYNC_INTERVAL_OPTIONS.includes(sec)) return;
+        state.syncIntervalSec = sec;
+        saveSettings();
+        startPolling(); // 立即用新频率重启定时器
+        addLog(`同步频率已调整为每 ${intervalLabel(sec)} 一次`, 'ok');
+        renderIntervalUI();
+        updateSidebarIndicator();
+    }
+    function renderIntervalUI() {
+        const sel = $id('cloudsyncInterval');
+        if (!sel) return;
+        sel.innerHTML = SYNC_INTERVAL_OPTIONS.map(s =>
+            `<option value="${s}" ${s === state.syncIntervalSec ? 'selected' : ''}>每 ${intervalLabel(s)}</option>`
+        ).join('');
     }
 
     /* ---------- IndexedDB 句柄持久化 ---------- */
@@ -13110,16 +13015,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            // 409/422：读 SHA 和上传之间，云端文件被另一台设备更新了 → 指数退避重试
-            if ((res.status === 409 || res.status === 422) && _attempt < 3) {
-                addLog(`GitHub 云端有更新（SHA 冲突），自动重试 ${_attempt + 1}/3...`, 'warn');
-                await new Promise(r => setTimeout(r, 1000 * Math.pow(2, _attempt))); // 1s / 2s / 4s
-                return writeRemoteGh(data, _attempt + 1);
-            }
-            // 连续 3 次仍冲突：两台设备都在高频写 → 暂停 GitHub 通道 30 秒，等冲突平息
+            // 409/422：读 SHA 和上传之间，云端文件被另一台设备更新了
+            // 不在这里盲目重试（旧合并数据可能覆盖对方新数据），抛类型化错误，
+            // 由 doSyncChannel 整轮重试：重新读云端 → 重新三方合并 → 再写
             if (res.status === 409 || res.status === 422) {
-                state.ghBackOffUntil = Date.now() + 30000;
-                addLog('GitHub 云端更新过于频繁，暂停 30 秒后自动恢复', 'warn');
+                throw new Error(`GH_SHA_CONFLICT GitHub API ${res.status}: ${err.message || ''}`);
             }
             throw new Error(`GitHub API ${res.status}: ${err.message || ''}`);
         }
@@ -13301,7 +13201,31 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     }
 
     // 单通道同步（坚果云 fs / github 云端文件）
+    // 409/422 SHA 冲突时整轮重试：重新读云端、重新合并，确保不覆盖其他设备的新数据
+    const GH_CONFLICT_RETRIES = 3;
     async function doSyncChannel(channel) {
+        for (let attempt = 0; ; attempt++) {
+            try {
+                return await doSyncChannelOnce(channel);
+            } catch (e) {
+                if (/GH_SHA_CONFLICT/.test(e.message) && attempt < GH_CONFLICT_RETRIES) {
+                    const wait = 1000 * Math.pow(2, attempt); // 1s / 2s / 4s
+                    addLog(`[${channelName(channel)}] 云端有更新（SHA 冲突），${wait / 1000} 秒后重新合并重试 ${attempt + 1}/${GH_CONFLICT_RETRIES}...`, 'warn');
+                    await new Promise(r => setTimeout(r, wait));
+                    continue;
+                }
+                if (/GH_SHA_CONFLICT/.test(e.message)) {
+                    // 连续多次冲突：对方设备正在高频写入 → 暂停该通道 30 秒自动恢复
+                    state.ghBackOffUntil = Date.now() + 30000;
+                    addLog(`[${channelName(channel)}] 云端更新过于频繁，暂停 30 秒后自动恢复`, 'warn');
+                    throw new Error('GitHub API 409: 云端持续冲突，已暂停 30 秒');
+                }
+                throw e;
+            }
+        }
+    }
+
+    async function doSyncChannelOnce(channel) {
         addLog(`[${channelName(channel)}] 开始同步...`, 'info');
 
         const local = collectLocal();
@@ -13361,16 +13285,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 
         Object.keys(local).forEach(k => { snapshotNow[k] = local[k]; });
 
-        // 拉取：云端 → 本地
-        for (const k of pullKeys) {
-            if (remoteKeys[k]) {
-                localStorage.setItem(k, remoteKeys[k].value);
-                snapshotNow[k] = remoteKeys[k].value;
-                pulled++;
-                addLog(`拉取 ${k}`, 'ok');
-            }
-        }
-        // 推送：本地 → 云端
+        // 推送：本地 → 云端（先构造）
         for (const k of pushKeys) {
             nextRemoteKeys[k] = { value: local[k], updatedAt: nowIso() };
             pushed++;
@@ -13379,12 +13294,25 @@ body.dark-mode .sync-indicator-sub { color: #555; }
 
         // 删除本地已删但云端保留？暂不处理删除传播，保守策略
 
-        // 写回云端
-        const outRemote = {
-            version: '3.0', app: 'NIKO', deviceId: getDeviceId(),
-            updatedAt: nowIso(), keys: nextRemoteKeys
-        };
-        await writeRemote(outRemote, channel || 'fs');
+        // 先写云端，再改本地：写失败时本地状态不被污染，整轮重试才安全
+        // 关键：没有推送内容时绝不重写云端文件 —— 否则多设备互相作废 SHA，引发 409 风暴
+        if (pushed > 0) {
+            const outRemote = {
+                version: '3.0', app: 'NIKO', deviceId: getDeviceId(),
+                updatedAt: nowIso(), keys: nextRemoteKeys
+            };
+            await writeRemote(outRemote, channel || 'fs');
+        }
+
+        // 拉取：云端 → 本地（云端写成功后才应用）
+        for (const k of pullKeys) {
+            if (remoteKeys[k]) {
+                localStorage.setItem(k, remoteKeys[k].value);
+                snapshotNow[k] = remoteKeys[k].value;
+                pulled++;
+                addLog(`拉取 ${k}`, 'ok');
+            }
+        }
         saveSnapshot(snapshotNow);
 
         state.lastResult = { pushed, pulled, conflicts: 0 };
@@ -13573,15 +13501,16 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     /* ---------- 轮询 ---------- */
     function startPolling() {
         stopPolling();
+        const interval = getSyncIntervalMs();
         if ((state.connected || state.fsAvailable) && !state.manualOnly) {
             state.fsPollTimer = setInterval(() => {
                 if (!document.hidden && !state.syncing) doSyncChannel('fs');
-            }, POLL_INTERVAL);
+            }, interval);
         }
         if (state.ghConnected) {
             state.ghPollTimer = setInterval(() => {
                 if (!document.hidden && !state.syncing && Date.now() >= (state.ghBackOffUntil || 0)) doSyncChannel('github');
-            }, GH_POLL_INTERVAL);
+            }, interval);
         }
     }
     function stopPolling() {
@@ -13665,10 +13594,10 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         // 暴露内部函数供自动化测试
         window.NikoSync.__internals = {
             computeMerge, collectLocal, loadSnapshot, saveSnapshot,
-            getDeviceId, summarizeValue, state, POLL_INTERVAL, DATA_PREFIXES,
+            getDeviceId, summarizeValue, state, DATA_PREFIXES,
             readRemote, writeRemote, activeChannels, doSyncChannel,
             readRemoteGh, writeRemoteGh, applyPushPull,
-            notifyDataChanged, scheduleAutoPush
+            notifyDataChanged, scheduleAutoPush, getSyncIntervalMs
         };
         doSync();
         startPolling();
@@ -13762,8 +13691,9 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     /* ---------- 初始化 ---------- */
     async function init() {
         detectFs();
-        // 手动模式按钮：若卡片里有切换按钮，这里绑定
+        loadSettings();
         renderUI();
+        renderIntervalUI();
         updateSidebarIndicator();
         setupStorageHook();
         if (window.__NIKO_SYNC_TEST__) {
@@ -13791,6 +13721,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         refreshUI: () => { loadSettings(); renderUI(); renderGhUI(); updateSidebarIndicator(); },
         resetUI: () => { loadSettings(); state.conflictList = null; renderUI(); renderGhUI(); updateSidebarIndicator(); },
         toggleManual,
+        setSyncInterval,
+        getSyncIntervalMs,
         exportManual,
         importManualFile,
         scheduleAutoPush,
