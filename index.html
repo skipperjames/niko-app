@@ -4119,6 +4119,27 @@
         body.dark-mode .comp-manual-count { background:#2a2a38; color:#aaa; }
         .comp-manual-arrow { font-size:10px; transition:transform .18s; }
         .comp-manual-arrow.open { transform:rotate(180deg); }
+
+        /* ===== 国内各平台热搜专区 ===== */
+        .hot-cn-platforms { display:flex; flex-direction:column; gap:12px; }
+        .hot-cn-plat {
+            border:1px solid #eee; border-radius:10px; padding:10px 12px;
+            background:rgba(255,255,255,.55);
+        }
+        body.dark-mode .hot-cn-plat { background:rgba(255,255,255,.03); border-color:#2c2c3a; }
+        .hot-cn-plat-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+        .hot-cn-plat-icon {
+            width:22px; height:22px; border-radius:6px; color:#fff;
+            display:flex; align-items:center; justify-content:center;
+            font-size:12px; font-weight:700; flex-shrink:0;
+        }
+        .hot-cn-plat-name { font-size:13.5px; font-weight:600; color:#1f2937; }
+        body.dark-mode .hot-cn-plat-name { color:#e5e7eb; }
+        .hot-cn-plat-note { font-size:10.5px; color:#999; }
+        .hot-cn-plat .hot-item { border-radius:8px; padding:8px 10px; }
+        @media (max-width: 768px) {
+            .hot-cn-plat { padding:8px 10px; }
+        }
 /* ===== 梗文化速查专属CSS ===== */
         .meme-region-tabs {
             display: flex;
@@ -5421,6 +5442,39 @@
             border: 1px solid #e5e7eb; background: #f9fafb; color: #666; resize: vertical; box-sizing: border-box;
         }
         body.dark-mode .book-ocr-raw { background: #111827; border-color: #444; color: #bbb; }
+
+        /* ===== 书籍详情弹窗 ===== */
+        .book-detail-title { font-size: 19px; font-weight: 600; color: #1f2937; }
+        body.dark-mode .book-detail-title { color: #f3f4f6; }
+        .book-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin: 8px 0 6px; }
+        .book-detail-row { display: flex; gap: 6px; font-size: 13px; min-width: 0; }
+        .book-detail-label { color: #999; flex-shrink: 0; }
+        .book-detail-val { color: #374151; word-break: break-all; }
+        body.dark-mode .book-detail-val { color: #d1d5db; }
+        .book-detail-sec { margin-top: 12px; }
+        .book-detail-sec-title { font-size: 12.5px; font-weight: 600; color: #6b7280; margin-bottom: 6px; }
+        body.dark-mode .book-detail-sec-title { color: #9ca3af; }
+        .book-detail-reason {
+            background: #f8f5ee; border: 1px solid #eee5d5; border-radius: 8px;
+            padding: 8px 12px; font-size: 13px; color: #4b5563; line-height: 1.6; white-space: pre-wrap;
+        }
+        body.dark-mode .book-detail-reason { background: #1f2937; border-color: #374151; color: #d1d5db; }
+        .book-detail-note {
+            background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+            padding: 8px 10px; margin-bottom: 6px;
+        }
+        body.dark-mode .book-detail-note { background: #1f2937; border-color: #374151; }
+        .book-detail-quote {
+            font-size: 12.5px; color: #b45309; font-style: italic; margin: 4px 0;
+            border-left: 3px solid #f59e0b; padding-left: 8px;
+        }
+        body.dark-mode .book-detail-quote { color: #fbbf24; }
+        .book-detail-thought { font-size: 13px; color: #374151; line-height: 1.6; white-space: pre-wrap; }
+        body.dark-mode .book-detail-thought { color: #d1d5db; }
+
+        @media (max-width: 768px) {
+            .book-detail-grid { grid-template-columns: 1fr; }
+        }
 /* ===== 日记专属CSS ===== */
         .diary-stats {
             display: grid;
@@ -6882,8 +6936,37 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <div class="hot-list" id="hotFullUS"></div>
                         </div>
                         <div class="panel-card" style="border-left:4px solid #10b981;">
-                            <h3>🇨🇳 国内</h3><div class="subtitle">微博 · 抖音 · B站 · 知乎 · 小红书 · 快手 当周热点</div>
-                            <div class="hot-list" id="hotFullCN"></div>
+                            <h3>🇨🇳 国内 · 各平台当周热搜</h3><div class="subtitle">微博 · 抖音 · B站 · 知乎 · 小红书 · 快手 · 百度</div>
+                            <div class="hot-cn-platforms">
+                                <div class="hot-cn-plat">
+                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff8200;">微</span><span class="hot-cn-plat-name">微博热搜</span><span class="hot-cn-plat-note">社会·娱乐·民生</span></div>
+                                    <div class="hot-list" id="hotCNWeibo"></div>
+                                </div>
+                                <div class="hot-cn-plat">
+                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#fe2c55;">抖</span><span class="hot-cn-plat-name">抖音热榜</span><span class="hot-cn-plat-note">短视频·挑战·种草</span></div>
+                                    <div class="hot-list" id="hotCNDouyin"></div>
+                                </div>
+                                <div class="hot-cn-plat">
+                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#00aeec;">B</span><span class="hot-cn-plat-name">B站热搜</span><span class="hot-cn-plat-note">科技·二次元·UP主</span></div>
+                                    <div class="hot-list" id="hotCNBilibili"></div>
+                                </div>
+                                <div class="hot-cn-plat">
+                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#0084ff;">知</span><span class="hot-cn-plat-name">知乎热榜</span><span class="hot-cn-plat-note">深度问答·职场·社会</span></div>
+                                    <div class="hot-list" id="hotCNZhihu"></div>
+                                </div>
+                                <div class="hot-cn-plat">
+                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff2442;">红</span><span class="hot-cn-plat-name">小红书热门</span><span class="hot-cn-plat-note">生活方式·美妆·家居</span></div>
+                                    <div class="hot-list" id="hotCNXhs"></div>
+                                </div>
+                                <div class="hot-cn-plat">
+                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff5d1f;">快</span><span class="hot-cn-plat-name">快手热榜</span><span class="hot-cn-plat-note">生活记录·县域·老铁</span></div>
+                                    <div class="hot-list" id="hotCNKuaishou"></div>
+                                </div>
+                                <div class="hot-cn-plat">
+                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#3c9df7;">百</span><span class="hot-cn-plat-name">百度热搜</span><span class="hot-cn-plat-note">综合·健康·民生</span></div>
+                                    <div class="hot-list" id="hotCNBaidu"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -7383,6 +7466,17 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 </div>
             </div>
 
+            <!-- 书籍详情弹窗 -->
+            <div class="modal-mask" id="bookDetailModal" onclick="if(event.target===this)closeBookDetail()">
+                <div class="modal" style="width:520px;">
+                    <h3>📖 书籍详情</h3>
+                    <div id="bookDetailBody"></div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="closeBookDetail()">关闭</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- 识图添加书籍弹窗 -->
             <div class="modal-mask" id="bookOcrModal" onclick="if(event.target===this)closeBookOcrModal()">
                 <div class="modal" style="width:520px;">
@@ -7627,6 +7721,17 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         <div style="display:flex;justify-content:flex-end;"><button class="book-btn primary" onclick="addParentingCheckItem()">＋ 添加清单</button></div>
                     </div>
                     <div id="parentingChecklist"></div>
+                </div>
+            </div>
+
+            <!-- 资讯详情弹窗 -->
+            <div class="modal-mask" id="parentingNewsDetailModal" onclick="if(event.target===this)closeParentingNewsDetail()">
+                <div class="modal" style="width:520px;">
+                    <h3>📰 安全资讯详情</h3>
+                    <div id="parentingNewsDetailBody"></div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="closeParentingNewsDetail()">关闭</button>
+                    </div>
                 </div>
             </div>
 
@@ -10115,13 +10220,45 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
 
             Object.keys(hotTemplates).forEach(cat => {
                 const templates = hotTemplates[cat];
-                // 每天每个地区生成热点：国内 8-10 条（覆盖更多主流平台），其他地区 4-6 条
-                let count;
                 if (cat === '国内') {
-                    count = Math.min(8 + Math.floor(seededRandom(baseSeed + cat.length) * 3), templates.length);
-                } else {
-                    count = Math.min(4 + Math.floor(seededRandom(baseSeed + cat.length) * 3), templates.length);
+                    // ===== 国内：按主流平台分组，每个平台至少 1-2 条 =====
+                    // 无平台标签的旧模板随机归入某平台
+                    const byPlatform = {};
+                    hotSourcesCN.forEach(p => byPlatform[p] = []);
+                    templates.forEach(tpl => {
+                        const p = tpl.platform || hotSourcesCN[Math.floor(seededRandom(baseSeed + tpl.title.length) * hotSourcesCN.length)];
+                        byPlatform[p].push(tpl);
+                    });
+                    hotSourcesCN.forEach((p, pi) => {
+                        const pool = byPlatform[p] || [];
+                        if (!pool.length) return;
+                        // 每个平台取 1-2 条
+                        const n = Math.min(1 + Math.floor(seededRandom(baseSeed + pi * 7 + p.length) * 2), pool.length);
+                        const shuffled = pool.slice();
+                        for (let i = shuffled.length - 1; i > 0; i--) {
+                            const j = Math.floor(seededRandom(baseSeed + p.charCodeAt(0) + i * 29) * (i + 1));
+                            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                        }
+                        for (let i = 0; i < n; i++) {
+                            const tpl = shuffled[i];
+                            const tag = tpl.tags ? tpl.tags[Math.floor(seededRandom(baseSeed + i * 17 + p.length) * tpl.tags.length)] : hotTags[0];
+                            const isHot = seededRandom(baseSeed + i * 19 + p.length) > 0.5;
+                            result['国内'].push({
+                                title: tpl.title,
+                                desc: tpl.desc,
+                                detail: tpl.detail,
+                                source: p,
+                                tag: tag,
+                                isHot: isHot,
+                                region: '国内',
+                                time: `${Math.floor(seededRandom(baseSeed + i * 23 + p.length) * 12) + 1}小时前`
+                            });
+                        }
+                    });
+                    return;
                 }
+                // ===== 其他地区：原逻辑 =====
+                const count = Math.min(4 + Math.floor(seededRandom(baseSeed + cat.length) * 3), templates.length);
 
                 // Fisher-Yates 洗牌
                 const shuffled = templates.slice();
@@ -10132,13 +10269,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
 
                 for (let i = 0; i < count; i++) {
                     const tpl = shuffled[i];
-                    // 国内热点：优先用模板自带 platform（主流媒体平台），否则从国内平台库随机
-                    let source;
-                    if (cat === '国内') {
-                        source = tpl.platform || hotSourcesCN[Math.floor(seededRandom(baseSeed + i * 13 + cat.length) * hotSourcesCN.length)];
-                    } else {
-                        source = hotSources[Math.floor(seededRandom(baseSeed + i * 13 + cat.length) * hotSources.length)];
-                    }
+                    const source = hotSources[Math.floor(seededRandom(baseSeed + i * 13 + cat.length) * hotSources.length)];
                     const tag = tpl.tags ? tpl.tags[Math.floor(seededRandom(baseSeed + i * 17 + cat.length) * tpl.tags.length)] : hotTags[0];
                     const isHot = seededRandom(baseSeed + i * 19 + cat.length) > 0.5;
                     result[cat].push({
@@ -10264,6 +10395,23 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             if (fullKR) fullKR.innerHTML = hotData['韩国'].map((item, idx) => createHotItemHtml({...item, region: '韩国', index: idx}, true)).join('') || '<div class="hot-empty">暂无数据</div>';
             if (fullJP) fullJP.innerHTML = hotData['日本'].map((item, idx) => createHotItemHtml({...item, region: '日本', index: idx}, true)).join('') || '<div class="hot-empty">暂无数据</div>';
             if (fullCN) fullCN.innerHTML = hotData['国内'].map((item, idx) => createHotItemHtml({...item, region: '国内', index: idx}, true)).join('') || '<div class="hot-empty">暂无数据</div>';
+
+            // ===== 国内各平台独立专区 =====
+            const cnMap = {
+                'hotCNWeibo': '微博热搜', 'hotCNDouyin': '抖音热榜', 'hotCNBilibili': 'B站热搜',
+                'hotCNZhihu': '知乎热榜', 'hotCNXhs': '小红书热门', 'hotCNKuaishou': '快手热榜', 'hotCNBaidu': '百度热搜'
+            };
+            Object.keys(cnMap).forEach(containerId => {
+                const el = document.getElementById(containerId);
+                if (!el) return;
+                const plat = cnMap[containerId];
+                const items = hotData['国内'].filter(it => it.source === plat);
+                if (items.length) {
+                    el.innerHTML = items.map((item, idx) => createHotItemHtml({...item, region: '国内', index: idx}, true)).join('');
+                } else {
+                    el.innerHTML = '<div class="hot-empty" style="padding:10px;">暂无数据</div>';
+                }
+            });
 
             // 渲染热点排行
             renderHotRank();
@@ -11719,6 +11867,10 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             { id: 'r_us8', region: 'US', term: 'Delulu is the solulu', meaning: '自嘲式自信："只要敢想（妄想），就是解决问题的唯一办法"，2026 年轻人心态梗', usage: '抽卡/开箱类：\n"Delulu is the solulu — one more pull and I\'m a legend."（敢想就是出路——再抽一发我就是传说）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_us9', region: 'US', term: 'You met me at a very Chinese time in my life', meaning: '源自电影《搏击俱乐部》的抽象梗："你在我人生中非常中国化的时期遇到我了"，中式生活打卡用', usage: '国风/生活模拟类：\n"Start your very Chinese era — hot water, slippers, and this cozy sim."（开启你的中国化时期——热水、拖鞋、还有这个温馨模拟游戏）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_us10', region: 'US', term: 'Rage bait', meaning: '2025 牛津年度热词：故意引战骗取互动的内容', usage: '买量素材慎用：引战可涨互动但伤品牌形象，且平台打击，不建议正面使用', suitable: 'no', recDate: '2026-08' },
+            { id: 'r_us11', region: 'US', term: 'Aura points', meaning: '"氛围值/气场分"：给人或行为打分，做了酷事 +1000 aura，做了丢脸事 -1000', usage: '展示爽感：\n"+1000 aura points for this legendary pull!"（这发传说级抽卡 +1000 气场分！）', suitable: 'ok', recDate: '2026-08' },
+            { id: 'r_us12', region: 'US', term: 'Cinema', meaning: '2026 初爆火梗：对普通到极致/壮观到离谱的画面喊"这就是电影"', usage: '开箱/演出类：\n"This drop? Pure cinema."（这波爆率，纯粹的电影级）', suitable: 'ok', recDate: '2026-08' },
+            { id: 'r_us13', region: 'US', term: 'Lore', meaning: '"背景故事/设定集"：指某个角色、玩法背后的深层设定，2025-2026 玩家社区高频词', usage: '剧情/角色类：\n"Every skin has its own lore — discover it in-game."（每个皮肤都有自己的背景故事——游戏里发现它）', suitable: 'ok', recDate: '2026-07' },
+            { id: 'r_us14', region: 'US', term: 'Bop', meaning: '"神曲/上头歌"：形容好听入耳的歌曲，也用来形容停不下来的东西', usage: '音游/节奏类：\n"Every level is a bop."（每个关卡都是神曲）', suitable: 'ok', recDate: '2026-07' },
             // 🇰🇷 韩国（2026.08 调研：MZ世代新造词 / 直播·Webtoon / 社交梗）
             { id: 'r_kr1', region: 'KR', term: '킹받네', meaning: '"超烦死我了"：king（超强前缀）+ 生气，Gen Z 喜剧化烦躁表达', usage: '吐槽/反套路类：\n"광고 보고 킹받네… 근데 재밌네?"（看广告超烦…但怎么还挺好玩？）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_kr2', region: 'KR', term: '갑분싸', meaning: '"突然冷场"：갑자기 분위기 싸해짐 缩写，烂梗/尬聊让全场沉默的瞬间', usage: '综艺感/反差类：\n"갑분싸 주의! 이번 보스는 전혀 안 어렵습니다"（冷场预警！这个 BOSS 一点都不难）', suitable: 'ok', recDate: '2026-08' },
@@ -11731,6 +11883,9 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             { id: 'r_kr9', region: 'KR', term: '존맛탱/JMT', meaning: '"绝了/超好吃"：존나+맛+卖萌后缀，美食向万能赞美，横扫菜单与测评', usage: '美食/休闲类：\n"보상이 JMT!"（奖励绝了！）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_kr10', region: 'KR', term: '치맥', meaning: '炸鸡（치킨）+啤酒（맥주）：国民夜间仪式，游戏营销高频场景词', usage: '夜间/放松场景：\n"치맥과 함께하는 최고의 밤"（炸鸡啤酒相伴的最棒夜晚）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_kr11', region: 'KR', term: '비상계엄（戒严令）', meaning: '政治敏感词：戒严/政治动荡话题是绝对雷区', usage: '任何素材都不要碰韩国政治、戒严、政党议题', suitable: 'no', recDate: '2026-08' },
+            { id: 'r_kr12', region: 'KR', term: '럭키비키잖아（Lucky Vicky）', meaning: '2024-2026 韩国超长寿命梗："这可是幸运的Vicky啊！"，凡事往好运想', usage: '抽卡/开箱类：\n"럭키비키잖아! 이번엔 전설 무조건!"（我可是幸运Vicky！这次必定传说！）', suitable: 'ok', recDate: '2026-07' },
+            { id: 'r_kr13', region: 'KR', term: '갓생（God生）', meaning: '"神级人生"：极度自律、健康、高效的生活方式，与躺平/摆烂对立', usage: '养成/健身类：\n"갓생 시작! 오늘부터 매일 출석체크"（开始神级人生！今天起每天打卡）', suitable: 'ok', recDate: '2026-07' },
+            { id: 'r_kr14', region: 'KR', term: '금손/흑손（金手/黑手）', meaning: '"欧皇手/非酋手"：抽卡运气好（金手）vs 运气差（黑手）', usage: '抽卡/开箱类：\n"금손 인증! 첫 10연차에 전설"（金手认证！第一个十连就出传说）', suitable: 'ok', recDate: '2026-06' },
             // 🇯🇵 日本（2026.08 调研：JC/JK 流行语 / 网络用语 / 亚文化）
             { id: 'r_jp1', region: 'JP', term: 'エモい', meaning: '形容"很有感触/文艺伤感"，网络文艺语', usage: '剧情/治愈类：\n"泣けるストーリーでエモい気分に。"（催泪剧情，让你心头一颤）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_jp2', region: 'JP', term: '推し', meaning: '表示"本命/最爱的那个人"，偶像文化核心词', usage: '角色/卡牌类：\n"推しがガチャで出た！"（本命抽到了！）', suitable: 'ok', recDate: '2026-08' },
@@ -11743,6 +11898,9 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             { id: 'r_jp9', region: 'JP', term: 'YBSG', meaning: 'やばすぎ（Yabasugi）罗马字缩写："太扯了/太猛了/太疯狂了"，2026 跨圈爆火网络语', usage: '效果展示：\n"この演出YBSGすぎる"（这个演出太炸了）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_jp10', region: 'JP', term: 'エグい（Egui）', meaning: '形容强度爆表、过于夸张："这boss太变态了/这波太狠了"', usage: '难度展示：\n"このボス、エグすぎる…でも倒した時の快感もエグい"（这个BOSS太离谱了…但打倒它的快感也超顶）', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_jp11', region: 'JP', term: 'フレネミー（Frenemy）', meaning: '亦敌亦友：表面朋友实际对手，从英语直接进入日语的年轻人词汇', usage: '竞技/PVP 类：\n"フレネミーと最終決戦！"（和亦敌亦友的对手终极对决！）', suitable: 'ok', recDate: '2026-08' },
+            { id: 'r_jp12', region: 'JP', term: 'それな', meaning: '"就是说啊！"：附议别人观点的万能附和词，SNS 聊天标配', usage: '社区/弹幕类：\n"それな！この演出マジ最高"（就是说啊！这个演出真的绝了）', suitable: 'ok', recDate: '2026-08' },
+            { id: 'r_jp13', region: 'JP', term: '激アツ（激热）', meaning: '"超燃/超炸"：形容场面、演出、对决燃到极点', usage: '战斗/赛事类：\n"最終バトル激アツすぎる！"（最终决战太燃了！）', suitable: 'ok', recDate: '2026-07' },
+            { id: 'r_jp14', region: 'JP', term: 'り（了解）', meaning: '"了解"的极致缩写：一个「り」字就表示收到、知道了，2026 高频网络语', usage: '公告/通知类：\n"メンテ完了！り"（维护完成！了解）', suitable: 'ok', recDate: '2026-07' },
             // 🇨🇳 国内（网络热词 / 直播梗 / 社交媒体）
             { id: 'r_cn1', region: 'CN', term: '尊嘟假嘟', meaning: '卖萌版"真的假的"，可爱疑问语气', usage: '轻松休闲类：\n"尊嘟假嘟？这游戏免费玩？"', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_cn2', region: 'CN', term: '家人们', meaning: '主播口吻的拉近距离称呼', usage: '福利/直播类：\n"家人们，今天首充双倍，错过等一年！"', suitable: 'ok', recDate: '2026-08' },
@@ -11752,14 +11910,29 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             { id: 'r_cn6', region: 'CN', term: '时事敏感词', meaning: '涉及政策、灾害、社会事件的网络热词有合规风险', usage: '买量素材一律避开时政敏感话题，避免审核风险', suitable: 'no', recDate: '2026-08' },
             { id: 'r_cn7', region: 'CN', term: '硬控', meaning: '形容"被完全吸引住、挪不开眼"，如"被硬控三分钟"', usage: '玩法展示：\n"开局三分钟，直接被硬控——根本停不下来"', suitable: 'ok', recDate: '2026-08' },
             { id: 'r_cn8', region: 'CN', term: '偷感', meaning: '形容"偷偷摸摸、低调进行"的感觉，如"偷感很重"', usage: '模拟/经营类：\n"偷偷发展，偷感很重但真的很爽"', suitable: 'ok', recDate: '2026-08' },
-            { id: 'r_cn9', region: 'CN', term: '已老实 求放过', meaning: '自嘲式认怂："我错了，别搞我了"，2024 起持续活跃的万能求饶梗', usage: '翻车/喜剧向：\n"开服炸服？已老实，求放过——补偿已就位"', suitable: 'ok', recDate: '2026-08' }
+            { id: 'r_cn9', region: 'CN', term: '已老实 求放过', meaning: '自嘲式认怂："我错了，别搞我了"，2024 起持续活跃的万能求饶梗', usage: '翻车/喜剧向：\n"开服炸服？已老实，求放过——补偿已就位"', suitable: 'ok', recDate: '2026-08' },
+            { id: 'r_cn10', region: 'CN', term: '电子牛马', meaning: '打工人自嘲：像牛马一样被数字工作裹挟，2026 职场高频词', usage: '职场/放置类：\n"老板的电子牛马，今天也要努力搬砖"', suitable: 'ok', recDate: '2026-08' },
+            { id: 'r_cn11', region: 'CN', term: '搞抽象', meaning: '"整活/抽象行为"：故意做出离谱、难懂、好笑的操作，抽象文化核心词', usage: '整活/喜剧向：\n"开局就搞抽象？这 NPC 比玩家还抽象"', suitable: 'ok', recDate: '2026-07' },
+            { id: 'r_cn12', region: 'CN', term: '包赢的', meaning: '"稳了/肯定成"：直播带货式自信承诺，2025-2026 高频梗', usage: '福利/承诺类：\n"首充双倍？包赢的！错过别找我"', suitable: 'ok', recDate: '2026-07' },
+            { id: 'r_cn13', region: 'CN', term: 'city不city', meaning: '2024-2026 洋气梗："够不够洋气/时髦"，中英混搭的幽默反问', usage: '画风/时尚类：\n"这新皮肤 city 不 city？"', suitable: 'ok', recDate: '2026-06' },
+            { id: 'r_cn14', region: 'CN', term: '浓人/淡人', meaning: '性格标签：浓人=情绪外放爱折腾，淡人=随缘佛系不内耗', usage: '人设/养成类：\n"你是浓人还是淡人？这游戏两种玩法都有"', suitable: 'ok', recDate: '2026-06' }
         ];
 
         // 推荐数据初始化（首次写入；被清空后重新预置）
+        const MEME_SEED_VERSION = 'v2026-08-17';
         let memeRecommend = safeStorage.get('niko_meme_recommend', null);
         if (!memeRecommend || !Array.isArray(memeRecommend) || memeRecommend.length === 0) {
             memeRecommend = NIKO_MEME_RECOMMEND.slice();
             safeStorage.set('niko_meme_recommend', memeRecommend);
+        }
+        // 版本升级：按 term+region 去重合并新增种子，老用户自动补新梗
+        if (safeStorage.get('niko_meme_seed_version', null) !== MEME_SEED_VERSION) {
+            const before = memeRecommend.length;
+            NIKO_MEME_RECOMMEND.forEach(r => {
+                if (!memeRecommend.some(e => e.term === r.term && e.region === r.region)) memeRecommend.push(r);
+            });
+            if (memeRecommend.length !== before) safeStorage.set('niko_meme_recommend', memeRecommend);
+            safeStorage.set('niko_meme_seed_version', MEME_SEED_VERSION);
         }
         if (!safeStorage.get('niko_meme_rec_updated_at', null)) {
             safeStorage.set('niko_meme_rec_updated_at', new Date().toISOString());
@@ -12079,6 +12252,18 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             { id: 'r_hook5', text: 'This is what happens when your merge goes wrong…', note: '悬念+翻车式开头，2026 素材高频钩子', category: 'hook', region: 'US', recDate: '2026-08' },
             { id: 'r_hook6', text: 'Tired of boring match-3? Try this instead.', note: '痛点替代式钩子，直击同类游戏审美疲劳', category: 'hook', region: 'US', recDate: '2026-08' },
             { id: 'r_hook7', text: 'You met me at a very Chinese time in my life.', note: '蹭 2026 外网第一爆梗 Chinamaxxing，中式/国风题材出海首选', category: 'hook', region: 'US', recDate: '2026-08' },
+            { id: 'r_hook8', text: 'Caught your pet playing your game when you were away…', note: '萌宠+剧情化钩子，宠物短剧风口，2026 高频套路', category: 'hook', region: 'US', recDate: '2026-08' },
+            { id: 'r_hook9', text: 'The devs said "no P2W". They lied.', note: '反套路钩子：用"开发商说谎"制造争议与好奇，转化测试黑马', category: 'hook', region: 'US', recDate: '2026-08' },
+            { id: 'r_cta8', text: 'Your free crate is waiting →', note: '第一人称+免费诱饵 CTA，开箱类高转化', category: 'cta', region: 'US', recDate: '2026-08' },
+            { id: 'r_cta9', text: '지금 바로 시작하세요, 완전 무료!', note: '韩语 CTA：现在马上开始，完全免费！', category: 'cta', region: 'KR', recDate: '2026-07' },
+            { id: 'r_urg7', text: '이번 주말까지만! 놓치면 끝', note: '韩语紧迫感：仅限本周末！错过就没了', category: 'urgency', region: 'KR', recDate: '2026-07' },
+            { id: 'r_wel7', text: '매일 출석체크만 해도 보상 가득!', note: '韩语福利：每天签到奖励满满', category: 'welfare', region: 'KR', recDate: '2026-07' },
+            { id: 'r_reg6', text: '럭키비키잖아! 오늘 로그인하면 전설 보상', note: '韩语：我可是幸运Vicky！今天登录就送传说奖励（2026 长寿热梗）', category: 'region', region: 'KR', recDate: '2026-07' },
+            { id: 'r_cn1', text: '开局就是电子牛马？不，你是老板！', note: '中文：反转变体，电子牛马热梗+身份反差钩子', category: 'hook', region: 'CN', recDate: '2026-08' },
+            { id: 'r_cn2', text: '包赢的！新服首充双倍，错过别找我', note: '中文：包赢的直播式承诺 + 首充福利，2026 高频', category: 'welfare', region: 'CN', recDate: '2026-08' },
+            { id: 'r_cn3', text: '这新皮肤 city 不 city？评论区说说', note: '中文：city不city 洋气梗 + 互动引导', category: 'hook', region: 'CN', recDate: '2026-06' },
+            { id: 'r_cn4', text: '搞抽象？这游戏 NPC 比你还抽象', note: '中文：搞抽象整活梗，喜剧向钩子', category: 'hook', region: 'CN', recDate: '2026-07' },
+            { id: 'r_reg7', text: '귀여운 펫이랑 함께하는 모험!', note: '韩语：和可爱的宠物一起冒险！（萌宠题材）', category: 'region', region: 'KR', recDate: '2026-07' },
             // 地区本地化
             { id: 'c18', text: '치맥 먹고 한 판 어때요? 지금 바로 시작!', note: '韩语：吃着炸鸡啤酒来一局？现在就开始！（치맥 国民梗）', category: 'region', region: 'KR', recDate: '2026-08' },
             { id: 'c19', text: 'エモいストーリーで泣ける新作RPG登場！', note: '日语：文艺催泪新作 RPG', category: 'region', region: 'JP', recDate: '2026-08' },
@@ -12092,10 +12277,20 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
         ];
 
         // 推荐数据初始化（首次写入；被清空后重新预置）
+        const COPY_SEED_VERSION = 'v2026-08-17';
         let copyRecommend = safeStorage.get('niko_copy_recommend', null);
         if (!copyRecommend || !Array.isArray(copyRecommend) || copyRecommend.length === 0) {
             copyRecommend = NIKO_COPY_RECOMMEND.slice();
             safeStorage.set('niko_copy_recommend', copyRecommend);
+        }
+        // 版本升级：按 text 去重合并新增种子，老用户自动补新文案
+        if (safeStorage.get('niko_copy_seed_version', null) !== COPY_SEED_VERSION) {
+            const before = copyRecommend.length;
+            NIKO_COPY_RECOMMEND.forEach(r => {
+                if (!copyRecommend.some(e => e.text === r.text)) copyRecommend.push(r);
+            });
+            if (copyRecommend.length !== before) safeStorage.set('niko_copy_recommend', copyRecommend);
+            safeStorage.set('niko_copy_seed_version', COPY_SEED_VERSION);
         }
         if (!safeStorage.get('niko_copy_rec_updated_at', null)) {
             safeStorage.set('niko_copy_rec_updated_at', new Date().toISOString());
@@ -13152,7 +13347,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 let act = '';
                 if (b.status === 'wish') act = `<button class="book-btn" onclick="moveBookStatus('${b.id}','reading')" title="开始读">▶ 开始读</button>`;
                 else if (b.status === 'reading') act = `<button class="book-btn" onclick="moveBookStatus('${b.id}','done')" title="标记读完">✅ 读完</button>`;
-                return `<div class="book-card">
+                return `<div class="book-card" onclick="openBookDetail('${b.id}')" style="cursor:pointer;" title="点击查看详情">
                     <div class="book-card-head">
                         <div class="book-card-title">《${escapeHtml(b.title)}》</div>
                         <span class="book-status-chip" style="background:${stColor};">${stName}</span>
@@ -13162,8 +13357,8 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     ${why}
                     <div class="book-card-foot">
                         ${act}
-                        <button class="book-btn" onclick="openBookModal('${b.id}')">📝 编辑</button>
-                        <button class="book-btn danger" onclick="deleteBook('${b.id}')">🗑</button>
+                        <button class="book-btn" onclick="event.stopPropagation();openBookModal('${b.id}')">📝 编辑</button>
+                        <button class="book-btn danger" onclick="event.stopPropagation();deleteBook('${b.id}')">🗑</button>
                     </div>
                 </div>`;
             }).join('');
@@ -13188,6 +13383,61 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             renderBookPage();
             showToast('已删除');
         }
+
+        // 书籍详情弹窗
+        function openBookDetail(id) {
+            const b = bookFindItem(id);
+            if (!b) return;
+            const stName = BOOK_STATUS_NAMES[b.status] || b.status;
+            const stColor = BOOK_STATUS_COLORS[b.status] || '#999';
+            const p = Math.min(100, Math.max(0, Number(b.progress) || 0));
+            const notes = bookNotes.filter(n => n.bookId === id);
+            const esc = escapeHtml;
+            const rows = (label, val) => val ? `<div class="book-detail-row"><span class="book-detail-label">${label}</span><span class="book-detail-val">${val}</span></div>` : '';
+            let html = `
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+                    <span class="book-detail-title">《${esc(b.title)}》</span>
+                    <span class="book-status-chip" style="background:${stColor};">${stName}</span>
+                </div>
+                <div class="book-detail-grid">
+                    ${rows('作者', esc(b.author || '佚名'))}
+                    ${rows('分类', b.category ? esc(b.category) : '')}
+                    ${rows('开始日期', b.startedDate || '')}
+                    ${rows('读完日期', b.finishedDate || '')}
+                    ${rows('加入日期', b.addedDate || '')}
+                    ${rows('评分', b.rating > 0 ? '★'.repeat(Math.min(5, b.rating)) + '☆'.repeat(5 - Math.min(5, b.rating)) : '')}
+                </div>
+                ${b.status === 'reading' ? `
+                    <div style="margin:10px 0;">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:4px;"><span>阅读进度</span><span>${p}%</span></div>
+                        <div class="book-progress-bar"><div class="book-progress-fill" style="width:${p}%"></div></div>
+                    </div>` : ''}
+                ${b.reason ? `<div class="book-detail-sec"><div class="book-detail-sec-title">💭 为什么读 / 备注</div><div class="book-detail-reason">${esc(b.reason)}</div></div>` : ''}
+                ${b.src === 'ocr' ? `<div class="book-detail-sec"><div class="book-detail-sec-title">📷 来源</div><div class="book-detail-reason" style="color:#888;">通过识图（微信读书截图 OCR）添加</div></div>` : ''}
+                <div class="book-detail-sec">
+                    <div class="book-detail-sec-title">📝 本书笔记（${notes.length}）</div>
+                    ${notes.length ? notes.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(n => `
+                        <div class="book-detail-note">
+                            <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#888;">
+                                <span>📅 ${esc(n.date || '')}${n.page ? ' · p.' + esc(n.page) : ''}</span>
+                                ${n.converted ? '<span style="color:#10b981;">✓ 已转灵感</span>' : ''}
+                            </div>
+                            ${n.quote ? `<div class="book-detail-quote">「${esc(n.quote)}」</div>` : ''}
+                            ${n.thought ? `<div class="book-detail-thought">${esc(n.thought)}</div>` : ''}
+                        </div>`).join('') : '<div style="color:#999;font-size:12px;padding:6px 0;">这本书还没有笔记，去「📒 笔记」视图记录吧</div>'}
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+                    <button class="btn primary" onclick="event.stopPropagation();openBookModal('${b.id}')">📝 编辑</button>
+                    ${b.status === 'wish' ? `<button class="btn" onclick="moveBookStatus('${b.id}','reading');closeBookDetail()">▶ 开始读</button>` : ''}
+                    ${b.status === 'reading' ? `<button class="btn" onclick="moveBookStatus('${b.id}','done');closeBookDetail()">✅ 标记读完</button>` : ''}
+                    ${b.status === 'done' || b.status === 'abandoned' ? `<button class="btn" onclick="moveBookStatus('${b.id}','reading');closeBookDetail()">↩ 重新在读</button>` : ''}
+                    <button class="btn danger" onclick="deleteBook('${b.id}');closeBookDetail()">🗑 删除</button>
+                </div>
+            `;
+            document.getElementById('bookDetailBody').innerHTML = html;
+            document.getElementById('bookDetailModal').classList.add('show');
+        }
+        function closeBookDetail() { document.getElementById('bookDetailModal').classList.remove('show'); }
 
         // 书籍编辑弹窗
         function openBookModal(id) {
@@ -15803,7 +16053,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             const sorted = parentingNews.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
             if (!sorted.length) { el.innerHTML = '<div class="parenting-empty">暂无安全资讯，点击右上角添加</div>'; return; }
             el.innerHTML = sorted.map(n => `
-                <div class="parenting-card">
+                <div class="parenting-card" onclick="openParentingNewsDetail('${n.id}')" style="cursor:pointer;" title="点击查看详情">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                         <div class="parenting-card-title">${escapeHtml(n.title)}</div>
                         <span class="parenting-tag">${escapeHtml(n.category || '其他')}</span>
@@ -15811,11 +16061,38 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     <div class="parenting-card-meta">${escapeHtml(n.source || '未知来源')} · ${escapeHtml(n.date || '')}</div>
                     <div class="parenting-card-body">${escapeHtml(n.content)}</div>
                     <div style="display:flex;justify-content:flex-end;gap:6px;">
-                        <button class="book-btn danger" onclick="deleteParentingNews('${n.id}')">🗑 删除</button>
+                        <button class="book-btn danger" onclick="event.stopPropagation();deleteParentingNews('${n.id}')">🗑 删除</button>
                     </div>
                 </div>
             `).join('');
         }
+
+        // 资讯详情弹窗
+        function openParentingNewsDetail(id) {
+            const n = parentingNews.find(x => x.id === id);
+            if (!n) return;
+            const catNames = { '食品安全': '🍚', '用品召回': '🧸', '疾病预警': '💉', '养育误区': '🏠', '出行安全': '🚗', '其他': '📝' };
+            const esc = escapeHtml;
+            document.getElementById('parentingNewsDetailBody').innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                    <span style="font-size:18px;font-weight:600;color:#1f2937;">${esc(n.title)}</span>
+                    <span class="parenting-tag">${catNames[n.category] || ''} ${esc(n.category || '其他')}</span>
+                </div>
+                <div class="book-detail-grid">
+                    <div class="book-detail-row"><span class="book-detail-label">📰 来源</span><span class="book-detail-val">${esc(n.source || '未知来源')}</span></div>
+                    <div class="book-detail-row"><span class="book-detail-label">📅 日期</span><span class="book-detail-val">${esc(n.date || '')}</span></div>
+                </div>
+                <div class="book-detail-sec">
+                    <div class="book-detail-sec-title">📋 内容</div>
+                    <div class="book-detail-reason" style="white-space:pre-wrap;">${esc(n.content)}</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:14px;">
+                    <button class="book-btn danger" onclick="deleteParentingNews('${n.id}');closeParentingNewsDetail()">🗑 删除</button>
+                </div>
+            `;
+            document.getElementById('parentingNewsDetailModal').classList.add('show');
+        }
+        function closeParentingNewsDetail() { document.getElementById('parentingNewsDetailModal').classList.remove('show'); }
         function openParentingNewsModal() {
             document.getElementById('parentingNewsModal').classList.add('show');
             document.getElementById('parentingNewsTitle').value = '';
