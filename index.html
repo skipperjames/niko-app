@@ -10372,7 +10372,6 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             const fullUS = document.getElementById('hotFullUS');
             const fullKR = document.getElementById('hotFullKR');
             const fullJP = document.getElementById('hotFullJP');
-            const fullCN = document.getElementById('hotFullCN');
 
             const today = new Date();
             if (fullDate) fullDate.textContent = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
@@ -10394,7 +10393,6 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             if (fullUS) fullUS.innerHTML = hotData['美国'].map((item, idx) => createHotItemHtml({...item, region: '美国', index: idx}, true)).join('') || '<div class="hot-empty">暂无数据</div>';
             if (fullKR) fullKR.innerHTML = hotData['韩国'].map((item, idx) => createHotItemHtml({...item, region: '韩国', index: idx}, true)).join('') || '<div class="hot-empty">暂无数据</div>';
             if (fullJP) fullJP.innerHTML = hotData['日本'].map((item, idx) => createHotItemHtml({...item, region: '日本', index: idx}, true)).join('') || '<div class="hot-empty">暂无数据</div>';
-            if (fullCN) fullCN.innerHTML = hotData['国内'].map((item, idx) => createHotItemHtml({...item, region: '国内', index: idx}, true)).join('') || '<div class="hot-empty">暂无数据</div>';
 
             // ===== 国内各平台独立专区 =====
             const cnMap = {
@@ -13384,50 +13382,46 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             showToast('已删除');
         }
 
-        // 书籍详情弹窗
+        // 书籍详情弹窗（聚焦推荐语）
         function openBookDetail(id) {
             const b = bookFindItem(id);
             if (!b) return;
             const stName = BOOK_STATUS_NAMES[b.status] || b.status;
             const stColor = BOOK_STATUS_COLORS[b.status] || '#999';
             const p = Math.min(100, Math.max(0, Number(b.progress) || 0));
-            const notes = bookNotes.filter(n => n.bookId === id);
             const esc = escapeHtml;
-            const rows = (label, val) => val ? `<div class="book-detail-row"><span class="book-detail-label">${label}</span><span class="book-detail-val">${val}</span></div>` : '';
+
+            // 推荐语：优先 b.reason；若无则尝试从 AI 推荐 seed 查找
+            let recText = b.reason || '';
+            if (!recText && b.recId) {
+                const rec = bookRec.find(r => r.id === b.recId);
+                if (rec) recText = rec.why || '';
+            }
+
             let html = `
-                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
                     <span class="book-detail-title">《${esc(b.title)}》</span>
                     <span class="book-status-chip" style="background:${stColor};">${stName}</span>
                 </div>
-                <div class="book-detail-grid">
-                    ${rows('作者', esc(b.author || '佚名'))}
-                    ${rows('分类', b.category ? esc(b.category) : '')}
-                    ${rows('开始日期', b.startedDate || '')}
-                    ${rows('读完日期', b.finishedDate || '')}
-                    ${rows('加入日期', b.addedDate || '')}
-                    ${rows('评分', b.rating > 0 ? '★'.repeat(Math.min(5, b.rating)) + '☆'.repeat(5 - Math.min(5, b.rating)) : '')}
+                <div style="font-size:13px;color:#888;margin-bottom:14px;">
+                    ${esc(b.author || '佚名')}${b.category ? ' · ' + esc(b.category) : ''}
                 </div>
                 ${b.status === 'reading' ? `
-                    <div style="margin:10px 0;">
+                    <div style="margin:8px 0 14px;">
                         <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:4px;"><span>阅读进度</span><span>${p}%</span></div>
                         <div class="book-progress-bar"><div class="book-progress-fill" style="width:${p}%"></div></div>
                     </div>` : ''}
-                ${b.reason ? `<div class="book-detail-sec"><div class="book-detail-sec-title">💭 为什么读 / 备注</div><div class="book-detail-reason">${esc(b.reason)}</div></div>` : ''}
-                ${b.src === 'ocr' ? `<div class="book-detail-sec"><div class="book-detail-sec-title">📷 来源</div><div class="book-detail-reason" style="color:#888;">通过识图（微信读书截图 OCR）添加</div></div>` : ''}
+                ${b.rating > 0 ? `<div style="margin-bottom:12px;font-size:16px;color:#f59e0b;letter-spacing:2px;">${'★'.repeat(Math.min(5, b.rating))}${'☆'.repeat(5 - Math.min(5, b.rating))}</div>` : ''}
+
                 <div class="book-detail-sec">
-                    <div class="book-detail-sec-title">📝 本书笔记（${notes.length}）</div>
-                    ${notes.length ? notes.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(n => `
-                        <div class="book-detail-note">
-                            <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#888;">
-                                <span>📅 ${esc(n.date || '')}${n.page ? ' · p.' + esc(n.page) : ''}</span>
-                                ${n.converted ? '<span style="color:#10b981;">✓ 已转灵感</span>' : ''}
-                            </div>
-                            ${n.quote ? `<div class="book-detail-quote">「${esc(n.quote)}」</div>` : ''}
-                            ${n.thought ? `<div class="book-detail-thought">${esc(n.thought)}</div>` : ''}
-                        </div>`).join('') : '<div style="color:#999;font-size:12px;padding:6px 0;">这本书还没有笔记，去「📒 笔记」视图记录吧</div>'}
+                    <div class="book-detail-sec-title">💡 推荐语</div>
+                    <div class="book-detail-reason" style="font-size:14px;line-height:1.85;min-height:56px;">
+                        ${recText ? esc(recText) : '<span style="color:#bbb;font-size:13px;">这本书还没有推荐语，点击下方「编辑」添加吧</span>'}
+                    </div>
                 </div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-                    <button class="btn primary" onclick="event.stopPropagation();openBookModal('${b.id}')">📝 编辑</button>
+
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
+                    <button class="btn primary" onclick="event.stopPropagation();closeBookDetail();openBookModal('${b.id}')">📝 编辑</button>
                     ${b.status === 'wish' ? `<button class="btn" onclick="moveBookStatus('${b.id}','reading');closeBookDetail()">▶ 开始读</button>` : ''}
                     ${b.status === 'reading' ? `<button class="btn" onclick="moveBookStatus('${b.id}','done');closeBookDetail()">✅ 标记读完</button>` : ''}
                     ${b.status === 'done' || b.status === 'abandoned' ? `<button class="btn" onclick="moveBookStatus('${b.id}','reading');closeBookDetail()">↩ 重新在读</button>` : ''}
