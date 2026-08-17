@@ -782,6 +782,49 @@
 
         /* 主题风格选择 */
         .theme-picker-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        /* 全局字号档位设置 */
+        :root {
+            --niko-fs-h1: 22px;
+            --niko-fs-h2: 17px;
+            --niko-fs-p: 13px;
+            --niko-fs-btn: 13px;
+            --niko-fs-stat: 22px;
+            --niko-fs-tag: 12px;
+        }
+        html[data-font-scale="xs"] { --niko-fs-h1: 18px; --niko-fs-h2: 14px; --niko-fs-p: 11.5px; --niko-fs-btn: 11.5px; --niko-fs-stat: 18px; --niko-fs-tag: 10.5px; }
+        html[data-font-scale="sm"] { --niko-fs-h1: 20px; --niko-fs-h2: 15.5px; --niko-fs-p: 12px;  --niko-fs-btn: 12px;  --niko-fs-stat: 20px; --niko-fs-tag: 11px; }
+        html[data-font-scale="lg"] { --niko-fs-h1: 25px; --niko-fs-h2: 19px;  --niko-fs-p: 14.5px; --niko-fs-btn: 14.5px; --niko-fs-stat: 26px; --niko-fs-tag: 13px; }
+        html[data-font-scale="xl"] { --niko-fs-h1: 29px; --niko-fs-h2: 22px;  --niko-fs-p: 16px;   --niko-fs-btn: 16px;   --niko-fs-stat: 30px; --niko-fs-tag: 14.5px; }
+        .font-picker-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+        .font-chip {
+            flex: 1 1 0; min-width: 70px;
+            padding: 8px 4px; border-radius: 10px;
+            background: #faf9f7; border: 2px solid #e8e6e1;
+            cursor: pointer; user-select: none;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            transition: all 0.15s;
+        }
+        body.dark-mode .font-chip { background: #232536; border-color: #333345; }
+        .font-chip .font-sample {
+            font-weight: 600; color: #333; line-height: 1.1;
+        }
+        body.dark-mode .font-chip .font-sample { color: #e5e5e5; }
+        .font-chip .font-name { font-size: 11px; color: #777; }
+        body.dark-mode .font-chip .font-name { color: #999; }
+        .font-chip.active { border-color: #667eea; box-shadow: 0 0 0 2px rgba(102,126,234,.25); }
+        .font-chip.active .font-sample { color: #667eea; }
+        body.dark-mode .font-chip.active .font-sample { color: #a5b4fc; }
+        /* 各档样本字号 */
+        .font-chip[data-scale="xs"] .font-sample { font-size: 11px; }
+        .font-chip[data-scale="sm"] .font-sample { font-size: 13px; }
+        .font-chip[data-scale="md"] .font-sample { font-size: 15px; }
+        .font-chip[data-scale="lg"] .font-sample { font-size: 17px; }
+        .font-chip[data-scale="xl"] .font-sample { font-size: 19px; }
+        .font-chip[data-scale="xs"] .font-name { font-size: 9.5px; }
+        .font-chip[data-scale="sm"] .font-name { font-size: 10.5px; }
+        .font-chip[data-scale="md"] .font-name { font-size: 11px; }
+        .font-chip[data-scale="lg"] .font-name { font-size: 11.5px; }
+        .font-chip[data-scale="xl"] .font-name { font-size: 12px; }
         .theme-chip {
             flex: 1 1 auto;
             min-width: 86px;
@@ -3239,6 +3282,58 @@
         }
         .node-btn:hover { opacity: 1; background: #e5e7eb; }
         body.dark-mode .node-btn:hover { background: #374151; }
+
+        /* ===== 计划看板手机端紧凑化 ===== */
+        @media (max-width: 768px) {
+            /* 顶栏：页头描述完全隐藏、图例只显示色块、H1 缩小、整顶栏收缩 */
+            #planPage .top-bar { padding: 8px 10px !important; gap: 6px !important; flex-wrap: wrap !important; }
+            #planPage .top-title h1 { font-size: 18px !important; margin-bottom: 0 !important; line-height: 1.2; }
+            #planPage .top-title p { display: none !important; }
+            #planPage .legend {
+                display: flex !important; flex-wrap: wrap !important; gap: 6px !important;
+                margin-top: 4px !important; padding: 4px 8px !important;
+                background: rgba(0,0,0,.03) !important; border-radius: 6px !important;
+            }
+            body.dark-mode #planPage .legend { background: rgba(255,255,255,.04) !important; }
+            #planPage .legend-item { font-size: 10px !important; }
+            #planPage .legend-item .legend-dot { width: 8px !important; height: 8px !important; }
+            /* 视图切换：标签只保留图标 */
+            #planPage .view-toggle button { padding: 4px 8px !important; font-size: 11px !important; }
+            #planPage .view-toggle button > span { font-size: 12px; }
+            #planPage .node-toggle { padding: 4px 8px !important; }
+            #planPage .node-toggle > span:last-child { font-size: 11px !important; }
+            /* 买量节点按钮缩小 */
+            #planPage .top-bar .btn-small { padding: 4px 8px !important; font-size: 11px !important; }
+            /* 统计卡：横排、变小 */
+            #planPage .top-stats {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 4px !important;
+                width: 100% !important;
+            }
+            #planPage .top-stats .stat-card {
+                padding: 4px 6px !important; border-radius: 6px !important;
+                min-height: 38px !important;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+            }
+            #planPage .top-stats .stat-num { font-size: 14px !important; line-height: 1.1 !important; }
+            #planPage .top-stats .stat-label { font-size: 9.5px !important; }
+            /* 日期导航栏：紧凑、单行 */
+            #planPage .date-nav-bar {
+                padding: 6px 10px !important; flex-wrap: wrap !important; gap: 6px !important;
+            }
+            #planPage .date-nav-bar .nav-btn { padding: 4px 8px !important; font-size: 12px !important; min-width: 28px; }
+            #planPage .date-nav-bar .date-range { font-size: 12px !important; }
+            #planPage .date-nav-bar .today-btn { padding: 3px 8px !important; font-size: 11px !important; }
+            #planPage .display-setting { font-size: 11px !important; gap: 3px !important; }
+            #planPage .display-setting input { width: 36px !important; padding: 2px 4px !important; }
+            /* 搜索框：收窄 */
+            #planPage .search-box { width: 110px !important; padding: 4px 10px !important; font-size: 12px !important; }
+            /* 顶部右侧按钮组：水平滚动 */
+            #planPage .top-bar > div:nth-child(2) {
+                width: 100%; gap: 6px; flex-wrap: wrap; justify-content: flex-start;
+            }
+        }
 /* ===== 媒体热点专属CSS ===== */
         .hot-card .hot-header {
             display: flex;
@@ -5482,6 +5577,52 @@
             padding: 36px 0; border: 1px dashed #ddd; border-radius: 12px;
         }
         body.dark-mode .diary-item-empty { border-color: #333; color: #777; }
+
+        /* ===== 日记手机端紧凑化 ===== */
+        @media (max-width: 768px) {
+            /* 整页 padding 缩紧 */
+            #diaryPage > div { padding: 8px 10px !important; gap: 8px !important; }
+            /* 顶部标题栏：H1 与描述紧凑 */
+            #diaryPage > div > div:first-child { gap: 6px !important; }
+            #diaryPage h1 { font-size: 18px !important; gap: 6px !important; }
+            #diaryPage h1 + p { font-size: 11px !important; margin-top: 1px !important; line-height: 1.4; }
+            #diaryPage .diary-btn { padding: 4px 10px !important; font-size: 11px !important; }
+            /* 3 个统计卡：横排紧凑、变小 */
+            #diaryPage .diary-stats {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 4px !important;
+            }
+            #diaryPage .diary-stat { padding: 6px 4px !important; gap: 1px !important; }
+            #diaryPage .diary-stat-label { font-size: 10px !important; }
+            #diaryPage .diary-stat-value { font-size: 16px !important; margin-top: 0 !important; }
+            /* 日历：卡片缩小、格子更紧凑 */
+            #diaryPage .diary-calendar-card { padding: 8px !important; }
+            #diaryPage .diary-cal-head { gap: 4px !important; margin-bottom: 4px !important; }
+            #diaryPage .diary-cal-title { font-size: 13px !important; }
+            #diaryPage .diary-cal-nav { padding: 2px 6px !important; font-size: 11px !important; min-width: 24px; }
+            #diaryPage .diary-cal-today-btn { padding: 2px 8px !important; font-size: 10.5px !important; }
+            #diaryPage .diary-cal-grid { gap: 2px !important; }
+            #diaryPage .diary-cal-dow { font-size: 10px !important; padding: 1px 0 !important; }
+            #diaryPage .diary-cal-cell {
+                padding: 4px 1px !important; min-height: 30px !important; font-size: 11px !important;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+            }
+            #diaryPage .diary-cal-cell .diary-cal-dot { width: 4px !important; height: 4px !important; margin-top: 1px; }
+            /* 编辑卡：高度紧凑 */
+            #diaryPage .diary-editor-card { padding: 8px !important; }
+            #diaryPage .diary-editor-head { margin-bottom: 6px !important; }
+            #diaryPage .diary-editor-date { font-size: 13px !important; }
+            #diaryPage .diary-editor-state { font-size: 10.5px !important; }
+            #diaryPage .diary-mood-row { gap: 3px !important; margin-bottom: 6px !important; }
+            #diaryPage .diary-mood { padding: 2px 5px !important; font-size: 10.5px !important; }
+            #diaryPage .diary-mood-textarea { min-height: 70px !important; padding: 6px 8px !important; font-size: 12.5px !important; }
+            #diaryPage .diary-editor-foot { margin-top: 6px !important; gap: 4px !important; }
+            /* 最近日记列表 */
+            #diaryPage .diary-list-item { padding: 6px 8px !important; }
+            #diaryPage .diary-item-head { margin-bottom: 3px !important; }
+            #diaryPage .diary-item-content { font-size: 12px !important; line-height: 1.5; -webkit-line-clamp: 3 !important; }
+        }
 /* ===== 坚果云同步卡片（注入数据管理弹窗） ===== */
 .cloudsync-card {
     display: flex;
@@ -5958,6 +6099,19 @@ body.dark-mode .sync-indicator-sub { color: #555; }
     .nb-tag-chip small { font-size: 9px; margin-left: 1px; }
     .tag-chip { padding: 4px 10px; font-size: 11px; }
     .tag-chip .tc-count { font-size: 10px; }
+
+    /* ===== 全局字号生效：关键元素读 CSS 变量（!important 覆盖各 parts 样式） ===== */
+    .top-title h1,
+    .page > div > h1,
+    .page h1,
+    h1.page-title { font-size: var(--niko-fs-h1) !important; line-height: 1.25; }
+    .top-title p,
+    .page > div > p,
+    h2 { font-size: var(--niko-fs-h2) !important; }
+    p, .page p, .top-title p { font-size: var(--niko-fs-p) !important; }
+    .btn, .btn-small, button.btn, .btn-primary { font-size: var(--niko-fs-btn) !important; }
+    .stat-num, .diary-stat-value, .stat-value { font-size: var(--niko-fs-stat) !important; }
+    .tag, .pill, .chip { font-size: var(--niko-fs-tag) !important; }
 
     /* 日记：布局单列、编辑区随整页滚动 */
     .diary-layout { grid-template-columns: 1fr; }
@@ -7590,6 +7744,13 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="theme-picker-row" id="themePickerRow">
                 <!-- 主题 chip 由 JS 渲染 -->
             </div>
+            <div style="font-size:12.5px;font-weight:600;color:#555;margin:14px 0 6px;display:flex;align-items:center;justify-content:space-between;">
+                <span>全局字号</span>
+                <span style="font-size:11px;color:#888;font-weight:400;">影响所有页面标题/正文/按钮</span>
+            </div>
+            <div class="font-picker-row" id="fontPickerRow">
+                <!-- 字号 chip 由 JS 渲染 -->
+            </div>
             <div style="font-size:12.5px;font-weight:600;color:#555;margin:14px 0 6px;">状态颜色</div>
             <div id="colorPickerList">
                 <div class="color-picker-row">
@@ -8143,6 +8304,36 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     if (!storageAvailable || safeStorage.get('niko_theme', null) === null) applyTheme(e.matches ? 'midnight' : 'default');
                 });
             }
+        })();
+
+        // ========== 全局字号档位 ==========
+        const NIKO_FONT_SCALES = {
+            xs:  { key: 'xs',  name: '极小', desc: '省空间' },
+            sm:  { key: 'sm',  name: '紧凑', desc: '中等密度' },
+            md:  { key: 'md',  name: '标准', desc: '默认' },
+            lg:  { key: 'lg',  name: '偏大', desc: '易读' },
+            xl:  { key: 'xl',  name: '特大', desc: '舒适' }
+        };
+        function applyFontScale(key) {
+            if (!NIKO_FONT_SCALES[key]) key = 'md';
+            document.documentElement.setAttribute('data-font-scale', key);
+            safeStorage.set('niko_font_scale', key);
+        }
+        function renderFontScalePicker() {
+            const row = document.getElementById('fontPickerRow');
+            if (!row) return;
+            const cur = document.documentElement.getAttribute('data-font-scale') || 'md';
+            row.innerHTML = Object.values(NIKO_FONT_SCALES).map(s => {
+                const isActive = cur === s.key;
+                return `<div class="font-chip ${isActive ? 'active' : ''}" data-scale="${s.key}" onclick="applyFontScale('${s.key}')" title="${s.desc}">
+                    <span class="font-sample">Aa</span>
+                    <span class="font-name">${s.name}</span>
+                </div>`;
+            }).join('');
+        }
+        (function initFontScale() {
+            const saved = safeStorage.get('niko_font_scale', 'md');
+            applyFontScale(saved);
         })();
 
         // 数据 —— 完全来自 localStorage，无任何模拟数据注入
@@ -10015,7 +10206,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 return;
             }
 
-            container.innerHTML = items.map(item => createHotItemHtml(item)).join('');
+            container.innerHTML = items.map(item => createHotItemHtml(item, false, true)).join('');
             updateHotUnreadCount();
         }
 
@@ -10110,14 +10301,25 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             }).join('');
         }
 
-        function createHotItemHtml(item, isFull = false) {
+        function createHotItemHtml(item, isFull = false, isPreview = false) {
             const tagClass = item.isHot ? 'hot' : '';
             const regionKey = item.region || item.category || '';
             const index = item.index !== undefined ? item.index : 0;
             const faved = isHotFavorited(regionKey, item.title);
             const read = isHotRead(regionKey, item.title);
+            // 今日看板预览模式：点击直接跳到热点板块，不再原地弹详情
+            const clickAttr = isPreview
+                ? `onclick="switchPage('hot')" style="cursor:pointer;"`
+                : `onclick="openHotDetail('${regionKey}', ${index})" style="cursor:pointer;"`;
+            const footerHint = isPreview
+                ? `<span style="font-size:11px;color:#667eea;">👉 打开热点板块 →</span>`
+                : `<span style="font-size:11px;color:#667eea;">👆 点击查看详情</span>`;
+            // 预览模式隐藏 转灵感 / 收藏 操作，避免误触
+            const actionBtns = isPreview ? '' : `
+                        <span class="inspire-btn" onclick="event.stopPropagation();saveHotAsInspiration('${regionKey}', ${index})" title="转为灵感便签，可后续加工成脚本">💡 转灵感</span>
+                        <span class="fav-btn ${faved ? 'done' : ''}" onclick="event.stopPropagation();toggleHotFavorite('${regionKey}', ${index})" title="${faved ? '取消收藏' : '收藏热点，留档随时回看'}">${faved ? '★ 已收藏' : '☆ 收藏'}</span>`;
             return `
-                <div class="hot-item ${read ? 'read' : ''}" onclick="openHotDetail('${regionKey}', ${index})" style="cursor:pointer;">
+                <div class="hot-item ${read ? 'read' : ''}" ${clickAttr}>
                     <div class="hot-title">
                         ${item.title}
                         ${read ? '<span class="read-badge">👁 已读</span>' : ''}
@@ -10132,9 +10334,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                         ${regionKey ? `<span>·</span><span>${regionKey}</span>` : ''}
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
-                        <span style="font-size:11px;color:#667eea;">👆 点击查看详情</span>
-                        <span class="inspire-btn" onclick="event.stopPropagation();saveHotAsInspiration('${regionKey}', ${index})" title="转为灵感便签，可后续加工成脚本">💡 转灵感</span>
-                        <span class="fav-btn ${faved ? 'done' : ''}" onclick="event.stopPropagation();toggleHotFavorite('${regionKey}', ${index})" title="${faved ? '取消收藏' : '收藏热点，留档随时回看'}">${faved ? '★ 已收藏' : '☆ 收藏'}</span>
+                        ${footerHint}${actionBtns}
                     </div>
                 </div>
             `;
@@ -15767,6 +15967,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
 
         function openColorSettings() {
             renderThemePicker();
+            renderFontScalePicker();
             document.getElementById('colorSettingsModal').classList.add('show');
             // 加载当前颜色
             ['todo', 'in-progress', 'done'].forEach(status => {
