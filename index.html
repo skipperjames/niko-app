@@ -3244,6 +3244,41 @@
         .market-node-chip:hover { background: #ede9fe; }
         .market-node-chip.done { opacity: .5; text-decoration: line-through; }
         body.dark-mode .market-node-chip { background: #3b0764; color: #d8b4fe; border-color: #6b21a8; }
+
+        /* ===== 日历中国传统节日 & 纪念日标签 ===== */
+        .cal-fest-chip {
+            display: inline-flex; align-items: center; gap: 4px; font-size: 10px;
+            background: #fef3c7; color: #b45309; border: 1px solid #fde68a;
+            border-radius: 10px; padding: 1px 8px; margin: 1px 2px;
+            white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+            cursor: default;
+        }
+        body.dark-mode .cal-fest-chip { background: #451a03; color: #fbbf24; border-color: #78350f; }
+        .cal-fest-chip.holiday { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        body.dark-mode .cal-fest-chip.holiday { background: #450a0a; color: #f87171; border-color: #7f1d1d; }
+        .cal-mem-chip {
+            display: inline-flex; align-items: center; gap: 4px; font-size: 10px;
+            background: #fce7f3; color: #db2777; border: 1px solid #fbcfe8;
+            border-radius: 10px; padding: 1px 8px; margin: 1px 2px;
+            white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+            cursor: pointer;
+        }
+        .cal-mem-chip:hover { background: #fbcfe8; }
+        body.dark-mode .cal-mem-chip { background: #500724; color: #f9a8d4; border-color: #831843; }
+        .cal-extra-chip {
+            display: inline-flex; align-items: center; font-size: 10px;
+            background: #f3f4f6; color: #6b7280; border-radius: 10px; padding: 1px 8px; margin: 1px 2px;
+            cursor: pointer; border: 1px dashed #d1d5db;
+        }
+        body.dark-mode .cal-extra-chip { background: #1f2937; color: #9ca3af; border-color: #374151; }
+        .mem-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: #faf9f7; margin-bottom: 6px; }
+        body.dark-mode .mem-item { background: #232335; }
+        .mem-item-info { flex: 1; min-width: 0; }
+        .mem-item-name { font-size: 13px; font-weight: 500; }
+        .mem-item-date { font-size: 11px; color: #999; margin-top: 1px; }
+        .mem-item-rm { cursor: pointer; font-size: 12px; color: #dc2626; padding: 4px 8px; border-radius: 6px; }
+        .mem-item-rm:hover { background: #fee2e2; }
+        .mem-empty { text-align: center; color: #aaa; font-size: 12px; padding: 16px 0; }
         .node-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; margin-bottom: 12px; }
         .node-item {
             display: flex;
@@ -5989,6 +6024,64 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         .gt-card-title { font-size: 13.5px; font-weight: 600; color: #444; }
         body.dark-mode .gt-card-title { color: #ddd; }
         .gt-card-title span { font-size: 11px; font-weight: 400; color: #999; }
+        /* ===== 游玩日历 ===== */
+        .gt-play-input { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .gt-play-input input {
+            width: 90px; padding: 8px 12px; border: 1px solid #e0ded9; border-radius: 10px;
+            font-size: 13px; outline: none; background: #faf9f7; color: #333;
+        }
+        body.dark-mode .gt-play-input input { background: #252535; border-color: #444; color: #eee; }
+        .gt-play-input input:focus { border-color: #7c3aed; }
+        .gt-play-input button {
+            border: none; border-radius: 10px; padding: 8px 16px; cursor: pointer;
+            background: #10b981; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap;
+        }
+        .gt-play-input button.gt-play-minus { background: #6b7280; }
+        .gt-play-input button:disabled { opacity: .45; cursor: not-allowed; }
+        .gt-play-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px; }
+        .gt-play-stat { background: #faf9f7; border-radius: 10px; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
+        body.dark-mode .gt-play-stat { background: #232335; }
+        .gt-play-stat-label { font-size: 11px; color: #999; }
+        .gt-play-stat-val { font-size: 16px; font-weight: 700; color: #10b981; }
+        .gt-calendar {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px;
+            background: #faf9f7; border-radius: 12px; padding: 10px;
+        }
+        body.dark-mode .gt-calendar { background: #1b1b28; }
+        .gt-cal-week { font-size: 10px; color: #aaa; text-align: center; padding: 2px 0; }
+        .gt-cal-day {
+            min-height: 46px; border-radius: 8px; background: #fff; border: 1px solid #f0efeb;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding: 3px 2px; gap: 2px; position: relative;
+        }
+        body.dark-mode .gt-cal-day { background: #232335; border-color: #2e2e42; }
+        .gt-cal-day.other-month { opacity: .35; }
+        .gt-cal-day.today { outline: 2px solid #10b981; outline-offset: -1px; }
+        .gt-cal-day-num { font-size: 11px; color: #666; font-weight: 500; line-height: 1.2; }
+        body.dark-mode .gt-cal-day-num { color: #bbb; }
+        .gt-cal-day.other-month .gt-cal-day-num { color: #aaa; }
+        .gt-cal-day-min {
+            font-size: 10px; font-weight: 700; line-height: 1.2; border-radius: 6px; padding: 1px 5px;
+            color: #fff; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .gt-cal-day-note { font-size: 8.5px; color: #bbb; line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gt-cal-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+        .gt-cal-nav-title { font-size: 13px; font-weight: 600; color: #444; }
+        body.dark-mode .gt-cal-nav-title { color: #ddd; }
+        .gt-cal-nav-btn {
+            border: 1px solid #e0ded9; background: #fff; color: #555; border-radius: 8px;
+            padding: 4px 12px; font-size: 12px; cursor: pointer;
+        }
+        body.dark-mode .gt-cal-nav-btn { background: #252535; border-color: #444; color: #ccc; }
+        .gt-week-summary { margin-top: 10px; }
+        .gt-week-sum-title { font-size: 12.5px; font-weight: 600; color: #555; margin-bottom: 6px; }
+        body.dark-mode .gt-week-sum-title { color: #ccc; }
+        .gt-week-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
+        .gt-week-bar-label { width: 42px; color: #999; flex-shrink: 0; text-align: right; }
+        .gt-week-bar-track { flex: 1; background: #f0efeb; border-radius: 6px; height: 14px; overflow: hidden; }
+        body.dark-mode .gt-week-bar-track { background: #2e2e42; }
+        .gt-week-bar-fill { height: 100%; background: linear-gradient(90deg, #34d399, #10b981); border-radius: 6px; min-width: 2px; }
+        .gt-week-bar-val { width: 74px; color: #888; flex-shrink: 0; font-size: 10.5px; }
         .gt-rule-row {
             display: flex; align-items: center; gap: 10px; padding: 7px 0;
             border-bottom: 1px dashed #eee; flex-wrap: wrap;
@@ -6717,6 +6810,17 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         <span class="node-toggle-track"></span>
                         <span style="font-size:12px;color:#888;">⏰ 时间</span>
                     </label>
+                    <label class="node-toggle" title="一键显示/隐藏日历上的中国传统节日（农历节日 + 节气）">
+                        <input type="checkbox" id="cnFestivalToggle" onchange="toggleCnFestivalShow()" checked>
+                        <span class="node-toggle-track"></span>
+                        <span style="font-size:12px;color:#888;">🏮 节日</span>
+                    </label>
+                    <label class="node-toggle" title="一键显示/隐藏日历上的纪念日（生日、周年等，点击「💝 纪念日」按钮可添加）">
+                        <input type="checkbox" id="memorialToggle" onchange="toggleMemorialShow()" checked>
+                        <span class="node-toggle-track"></span>
+                        <span style="font-size:12px;color:#888;">💝 纪念日</span>
+                    </label>
+                    <button class="btn-small primary" style="background:#ec4899;border-color:#ec4899;" onclick="openMemorialModal()">💝 纪念日</button>
                     <button class="btn-small primary" style="background:#8b5cf6;border-color:#8b5cf6;" onclick="openMarketNodeModal()">🎯 买量节点</button>
                     <div class="top-stats">
                         <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">总任务</div></div>
@@ -6878,6 +6982,27 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             </div>
         </div>
     </div>
+
+        <!-- 纪念日管理弹窗 -->
+    <div class="modal-mask" id="memorialModal" onclick="if(event.target===this)closeMemorialModal()">
+        <div class="modal" style="width:460px;">
+            <h3>💝 纪念日管理</h3>
+            <p style="font-size:12px;color:#888;margin-bottom:12px;">记录生日、恋爱/结婚纪念日、家庭重要日子等，开启后自动显示在日历上</p>
+            <div class="form-row">
+                <div class="form-item" style="flex:1.2;"><label>名称</label><input type="text" id="memorialName" placeholder="例如：老爸生日 / 恋爱纪念日"></div>
+                <div class="form-item"><label>日期</label><input type="date" id="memorialDate"></div>
+            </div>
+            <div class="form-item"><label>备注（可选）</label><input type="text" id="memorialNote" placeholder="例如：提前准备礼物 / 预约餐厅"></div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button class="btn primary" style="flex:1;" onclick="addMemorialDay()">+ 添加纪念日</button>
+            </div>
+            <h4 style="font-size:13px;margin-bottom:8px;">📅 已有纪念日</h4>
+            <div class="node-list" id="memorialList" style="max-height:260px;"></div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeMemorialModal()">关闭</button>
+            </div>
+        </div>
+    </div>
         </div>
         <div class="page" id="hotPage">
 <div style="padding:20px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px;">
@@ -6936,7 +7061,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <div class="hot-list" id="hotFullUS"></div>
                         </div>
                         <div class="panel-card" style="border-left:4px solid #10b981;">
-                            <h3>🇨🇳 国内 · 各平台当周热搜</h3><div class="subtitle">微博 · 抖音 · B站 · 知乎 · 小红书 · 快手 · 百度</div>
+                            <h3>🇨🇳 国内 · 各平台当周热搜</h3><div class="subtitle">微博 · 抖音 · B站 · 小红书 · 快手 · 百度</div>
                             <div class="hot-cn-platforms">
                                 <div class="hot-cn-plat">
                                     <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff8200;">微</span><span class="hot-cn-plat-name">微博热搜</span><span class="hot-cn-plat-note">社会·娱乐·民生</span></div>
@@ -6949,10 +7074,6 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                                 <div class="hot-cn-plat">
                                     <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#00aeec;">B</span><span class="hot-cn-plat-name">B站热搜</span><span class="hot-cn-plat-note">科技·二次元·UP主</span></div>
                                     <div class="hot-list" id="hotCNBilibili"></div>
-                                </div>
-                                <div class="hot-cn-plat">
-                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#0084ff;">知</span><span class="hot-cn-plat-name">知乎热榜</span><span class="hot-cn-plat-note">深度问答·职场·社会</span></div>
-                                    <div class="hot-list" id="hotCNZhihu"></div>
                                 </div>
                                 <div class="hot-cn-plat">
                                     <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff2442;">红</span><span class="hot-cn-plat-name">小红书热门</span><span class="hot-cn-plat-note">生活方式·美妆·家居</span></div>
@@ -7666,6 +7787,29 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         <div class="gt-card-title">📜 最近流水</div>
                         <div class="gt-history" id="gtHistory"></div>
                     </div>
+                </div>
+
+                <!-- ===== 游玩记录：日历表跟踪 + 每周时长总结 ===== -->
+                <div class="gt-card" style="margin-top:2px;">
+                    <div class="gt-card-title" style="display:flex;align-items:center;gap:8px;">
+                        🎮 游玩日历
+                        <span>记录每天实际游玩时长，自动汇总每周进度</span>
+                        <span style="margin-left:auto;font-size:11px;color:#999;">消耗游戏时间会自动计入当天，也可手动补记</span>
+                    </div>
+                    <div class="gt-play-input">
+                        <input type="number" id="gtPlayMin" placeholder="分钟" min="1" step="1">
+                        <input type="text" id="gtPlayNote" placeholder="备注（游戏名，可选）" style="flex:1;min-width:120px;">
+                        <button id="gtPlayBtn" onclick="gtLogPlay()">+ 记录游玩</button>
+                        <button class="gt-play-minus" onclick="gtUndoPlay()" title="撤销今天最后一次记录" style="display:none;" id="gtUndoPlayBtn">↩ 撤销</button>
+                    </div>
+                    <div class="gt-play-stats">
+                        <div class="gt-play-stat"><span class="gt-play-stat-label">📅 今日</span><span class="gt-play-stat-val" id="gtPlayToday">0 分钟</span></div>
+                        <div class="gt-play-stat"><span class="gt-play-stat-label">🗓 本周</span><span class="gt-play-stat-val" id="gtPlayWeek">0 分钟</span></div>
+                        <div class="gt-play-stat"><span class="gt-play-stat-label">📆 本月</span><span class="gt-play-stat-val" id="gtPlayMonth">0 分钟</span></div>
+                        <div class="gt-play-stat"><span class="gt-play-stat-label">⚡ 日均(本周)</span><span class="gt-play-stat-val" id="gtPlayDaily">0 分钟</span></div>
+                    </div>
+                    <div class="gt-calendar" id="gtPlayCalendar"></div>
+                    <div class="gt-week-summary" id="gtWeekSummary"></div>
                 </div>
             </div>
         </div>
@@ -9391,6 +9535,127 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             if (el) el.checked = planTimeShow;
         })();
 
+        // ===== 中国传统节日（农历节日 + 节气，公历日期按年份预置） =====
+        // 数据源：农历换算引擎（usemooncal 同源数据）。如需未来年份，可在此表补充。
+        const CN_FESTIVALS = [
+            // —— 2026 年 ——
+            { date: '2026-01-26', name: '腊八节', holiday: false },
+            { date: '2026-02-10', name: '小年', holiday: false },
+            { date: '2026-02-17', name: '春节', holiday: true },
+            { date: '2026-03-03', name: '元宵节', holiday: true },
+            { date: '2026-03-20', name: '龙抬头', holiday: false },
+            { date: '2026-04-05', name: '清明节', holiday: true },
+            { date: '2026-04-19', name: '上巳节', holiday: false },
+            { date: '2026-06-19', name: '端午节', holiday: true },
+            { date: '2026-08-19', name: '七夕节', holiday: false },
+            { date: '2026-08-27', name: '中元节', holiday: false },
+            { date: '2026-09-25', name: '中秋节', holiday: true },
+            { date: '2026-10-18', name: '重阳节', holiday: false },
+            { date: '2026-11-09', name: '寒衣节', holiday: false },
+            { date: '2026-11-23', name: '下元节', holiday: false },
+            { date: '2026-12-22', name: '冬至', holiday: false },
+            // —— 2027 年 ——
+            { date: '2027-01-15', name: '腊八节', holiday: false },
+            { date: '2027-01-30', name: '小年', holiday: false },
+            { date: '2027-02-05', name: '除夕', holiday: true },
+            { date: '2027-02-06', name: '春节', holiday: true },
+            { date: '2027-02-20', name: '元宵节', holiday: true },
+            { date: '2027-03-09', name: '龙抬头', holiday: false },
+            { date: '2027-04-05', name: '清明节', holiday: true },
+            { date: '2027-06-09', name: '端午节', holiday: true },
+            { date: '2027-08-08', name: '七夕节', holiday: false },
+            { date: '2027-08-16', name: '中元节', holiday: false },
+            { date: '2027-09-15', name: '中秋节', holiday: true },
+            { date: '2027-10-08', name: '重阳节', holiday: false },
+            { date: '2027-10-29', name: '寒衣节', holiday: false },
+            { date: '2027-11-12', name: '下元节', holiday: false },
+            { date: '2027-12-22', name: '冬至', holiday: false },
+            // —— 2028 年（年初部分，年中后续可补充） ——
+            { date: '2028-01-05', name: '小寒', holiday: false },
+            { date: '2028-01-21', name: '大寒', holiday: false }
+        ];
+        function getFestivalsForDate(dateStr) {
+            return CN_FESTIVALS.filter(f => f.date === dateStr);
+        }
+        let cnFestivalShow = safeStorage.get('niko_cn_festival_show', true);
+        function toggleCnFestivalShow() {
+            const el = document.getElementById('cnFestivalToggle');
+            cnFestivalShow = el ? el.checked : cnFestivalShow;
+            safeStorage.set('niko_cn_festival_show', cnFestivalShow);
+            render();
+        }
+        (function initCnFestivalToggle() {
+            const el = document.getElementById('cnFestivalToggle');
+            if (el) el.checked = cnFestivalShow;
+        })();
+
+        // ===== 纪念日（用户自定义，显示开关 + 管理弹窗） =====
+        let memorialDays = safeStorage.get('niko_memorial_days', []);
+        function saveMemorialDays() { safeStorage.set('niko_memorial_days', memorialDays); }
+        function getMemorialsForDate(dateStr) {
+            return memorialDays.filter(m => m.date === dateStr);
+        }
+        let memorialShow = safeStorage.get('niko_memorial_show', true);
+        function toggleMemorialShow() {
+            const el = document.getElementById('memorialToggle');
+            memorialShow = el ? el.checked : memorialShow;
+            safeStorage.set('niko_memorial_show', memorialShow);
+            render();
+        }
+        (function initMemorialToggle() {
+            const el = document.getElementById('memorialToggle');
+            if (el) el.checked = memorialShow;
+        })();
+        function openMemorialModal() {
+            document.getElementById('memorialModal').classList.add('show');
+            renderMemorialList();
+            setTimeout(() => document.getElementById('memorialName').focus(), 50);
+        }
+        function closeMemorialModal() { document.getElementById('memorialModal').classList.remove('show'); }
+        function addMemorialDay() {
+            const name = document.getElementById('memorialName').value.trim();
+            const date = document.getElementById('memorialDate').value;
+            if (!name) { if (typeof showToast === 'function') showToast('请输入纪念日名称'); else alert('请输入纪念日名称'); return; }
+            if (!date) { if (typeof showToast === 'function') showToast('请选择日期'); else alert('请选择日期'); return; }
+            const dup = memorialDays.find(m => m.name === name && m.date === date);
+            if (dup) { if (typeof showToast === 'function') showToast('这个纪念日已经存在啦'); return; }
+            memorialDays.push({
+                id: 'mem_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                name: name, date: date,
+                note: document.getElementById('memorialNote').value.trim() || ''
+            });
+            memorialDays.sort((a, b) => a.date.localeCompare(b.date));
+            saveMemorialDays();
+            document.getElementById('memorialName').value = '';
+            document.getElementById('memorialNote').value = '';
+            renderMemorialList();
+            render();
+            if (typeof showToast === 'function') showToast('💝 纪念日已添加，日历上会显示标签');
+        }
+        function removeMemorialDay(id) {
+            memorialDays = memorialDays.filter(m => m.id !== id);
+            saveMemorialDays();
+            renderMemorialList();
+            render();
+        }
+        function renderMemorialList() {
+            const box = document.getElementById('memorialList');
+            if (!box) return;
+            if (!memorialDays.length) {
+                box.innerHTML = '<div class="mem-empty">还没有纪念日，添加一个生日或纪念日吧</div>';
+                return;
+            }
+            box.innerHTML = memorialDays.map(m => `
+                <div class="mem-item">
+                    <span style="font-size:16px;">💝</span>
+                    <div class="mem-item-info">
+                        <div class="mem-item-name">${escapeHtml(m.name)}</div>
+                        <div class="mem-item-date">📅 ${m.date}${m.note ? ' · ' + escapeHtml(m.note) : ''}</div>
+                    </div>
+                    <span class="mem-item-rm" onclick="removeMemorialDay('${m.id}')" title="删除">🗑</span>
+                </div>`).join('');
+        }
+
         // 注入 AI 预置节点（幂等：自动只注入一次，删掉后不会复活；可点「重新载入AI预置」手动去重合并）
         function seedMarketNodes(force) {
             if (typeof safeStorage === 'undefined') return 0;
@@ -9605,6 +9870,28 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 const wdName = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
                 dateHeader.innerHTML = `<span><span class="day-weekday">${wdName}</span>${date.getDate()}</span>${dayEvents.length ? `<span class="day-count">${dayEvents.length}</span>` : ''}`;
                 cell.appendChild(dateHeader);
+                // 中国传统节日 & 纪念日标签（受「🏮 节日」「💝 纪念日」开关控制；每格最多 2 个，多的折叠为 +N）
+                const festChips = cnFestivalShow ? getFestivalsForDate(dateStr) : [];
+                const memChips = memorialShow ? getMemorialsForDate(dateStr) : [];
+                if (festChips.length || memChips.length) {
+                    const chipWrap = document.createElement('div');
+                    chipWrap.style.cssText = 'display:flex;flex-direction:row;flex-wrap:wrap;gap:2px;margin-top:2px;';
+                    const allChips = [
+                        ...festChips.map(f => `<span class="cal-fest-chip${f.holiday ? ' holiday' : ''}">${f.holiday ? '🎉' : '🏮'} ${escapeHtml(f.name)}</span>`),
+                        ...memChips.map(m => `<span class="cal-mem-chip" title="${escapeHtml((m.note || m.name) + ' · ' + m.date)}" onclick="event.stopPropagation();openMemorialModal()">💝 ${escapeHtml(m.name)}</span>`)
+                    ];
+                    const MAX_CHIPS = 2;
+                    allChips.slice(0, MAX_CHIPS).forEach(c => chipWrap.insertAdjacentHTML('beforeend', c));
+                    if (allChips.length > MAX_CHIPS) {
+                        const more = document.createElement('span');
+                        more.className = 'cal-extra-chip';
+                        more.textContent = `+${allChips.length - MAX_CHIPS} 更多`;
+                        more.title = '打开纪念日管理 / 查看节日';
+                        more.addEventListener('click', (e) => { e.stopPropagation(); openMemorialModal(); });
+                        chipWrap.appendChild(more);
+                    }
+                    cell.appendChild(chipWrap);
+                }
                 const eventsContainer = document.createElement('div');
                 eventsContainer.className = 'events-container';
                 dayEvents.forEach(ev => {
@@ -10191,20 +10478,20 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 { title: '「打工人周末报复性熬夜」', desc: '微博热搜：周末明明能早睡却疯狂熬夜，被解读为"夺回属于自己的时间"', platform: '微博热搜', detail: '一条"周末舍不得睡"的微博话题登上热搜，引发大规模共鸣。心理学者指出这本质是"补偿性自由"——白天时间被工作侵占，深夜成了唯一能自主支配的时段。评论区大量晒出凌晨刷剧、打游戏、发呆的"报复性熬夜"记录。健康账号顺势科普长期熬夜对心血管与皮肤的影响，衍生出"熬夜修复"商品推荐热潮。', tags: ['社会', '职场', '健康'] },
                 { title: 'AI 修图「一键变装」挑战', desc: '抖音热榜：用 AI 修图 App 一键生成古风/异域/职场造型，全民玩梗', platform: '抖音热榜', detail: 'AI 修图"一键变装"功能在抖音爆火：上传一张自拍，即可生成汉服、赛博朋克、空乘、法官等多种职业造型。话题播放量破 20 亿，明星素人纷纷晒"AI 版自己"。背后是国产 AIGC 图像模型的成熟，多家修图 App 借势冲上应用榜前列。也有声音提醒肖像权与"过度美颜"焦虑问题。', tags: ['AI', '娱乐', '短视频'] },
                 { title: 'B站科技区「AI 眼镜横评」', desc: 'B站热搜：多款 AI 眼镜实测对比，从拍摄到实时翻译到底实不实用', platform: 'B站热搜', detail: 'B站多位科技 UP 主发布 AI 眼镜深度横评，从续航、拍摄画质、实时翻译、导航提示等维度实测。评论区争论焦点从"是不是智商税"转向"续航与重量何时突破"。视频带动 AI 眼镜搜索量翻倍，电商平台相关品类销量明显上涨，成为近期最热的硬件话题。', tags: ['科技', 'AI', '评测'] },
-                { title: '「35 岁真的没有职场竞争力了吗」', desc: '知乎热榜：关于中年职场焦虑的讨论，高赞回答提出"能力组合"论', platform: '知乎热榜', detail: '知乎热榜出现"35 岁是否真的失去职场竞争力"的长篇讨论，多位从业者分享转型经历。高赞回答提出"T 型能力组合"——深耕一个专业领域的同时，叠加沟通、管理、AI 工具等通用能力，用组合优势对冲年龄焦虑。话题也带动"AI 时代哪些岗位更抗衰"的衍生讨论。', tags: ['职场', '社会', '成长'] },
+                { title: '「35 岁真的没有职场竞争力了吗」', desc: '百度热搜：关于中年职场焦虑的讨论，高赞回答提出"能力组合"论', platform: '百度热搜', detail: '百度热搜出现"35 岁是否真的失去职场竞争力"的长篇讨论，多位从业者分享转型经历。高赞回答提出"T 型能力组合"——深耕一个专业领域的同时，叠加沟通、管理、AI 工具等通用能力，用组合优势对冲年龄焦虑。话题也带动"AI 时代哪些岗位更抗衰"的衍生讨论。', tags: ['职场', '社会', '成长'] },
                 { title: '「多巴胺家居」改造风潮', desc: '小红书热门：用高饱和撞色改造出租屋，低成本换掉"班味"', platform: '小红书热门', detail: '小红书兴起"多巴胺家居"改造风潮：用高饱和撞色软装（抱枕、挂布、地毯、收纳盒）低成本改造出租屋，强调"房子是租的，生活不是"。大量笔记晒出改造前后对比，点赞破万。带火了平价家居店铺与"租房软装清单"内容，成为继"多巴胺穿搭"后的又一情绪消费热点。', tags: ['家居', '生活方式', '消费'] },
                 { title: '「县城夜市」烟火气回归', desc: '快手热榜：县城夜市摆摊与赶集视频走红，被赞"最治愈的人间烟火"', platform: '快手热榜', detail: '快手上一批县城夜市、乡村大集 vlog 走红：热气腾腾的小吃摊、讨价还价的赶集现场、熟客寒暄，被网友称为"最治愈的人间烟火"。视频带动"县城夜市攻略"搜索上涨，也引发对县域经济与青年返乡创业的讨论。部分摊主从线下摆摊转型为直播带货，探索新变现路径。', tags: ['生活', '县城', '治愈'] },
                 { title: '「三伏天养生」与高温作业安全', desc: '百度热搜：持续高温下的防暑降温与科学养生指南', platform: '百度热搜', detail: '持续高温天气让"三伏天养生""热射病预防"等词条登上百度热搜。医生提醒：高温时段避免户外作业、及时补水补盐、警惕"先兆中暑"。养生账号借势科普"冬病夏治"与"三伏贴"的正确用法，同时纠正"出汗越多越排毒"等误区。外卖、环卫等户外岗位的高温津贴话题也再次被关注。', tags: ['健康', '天气', '民生'] },
                 { title: '「演唱会抢票难」黄牛治理再引关注', desc: '微博热搜：热门演唱会开票秒空，实名制与退票机制成讨论焦点', platform: '微博热搜', detail: '多场热门演唱会开票秒空，"抢票难"再度登上微博热搜。网友吐槽黄牛囤票、平台卡顿，呼吁更严格的实名制购票与合理退票机制。票务平台回应称将升级风控、增加候补购票功能。话题也延伸出"文化消费性价比""为情绪价值买单"等讨论。', tags: ['娱乐', '消费', '社会'] },
                 { title: '「宠物短剧」成新流量密码', desc: '抖音热榜：以猫狗为主角的微短剧走红，萌宠+剧情双重加成', platform: '抖音热榜', detail: '以宠物为主角的微短剧在抖音走红：用猫狗"出演"家庭、职场、恋爱等剧情，配上拟人化配音。萌宠自带治愈感叠加剧情冲突，单集播放动辄破千万。催生了专业"宠物演员"经纪与宠物短剧制作团队，成为继"重生""赘婿"之后的新赛道，也引发对动物福利与拍摄规范的讨论。', tags: ['短视频', '萌宠', '文娱'] },
-                { title: '「AI 会取代哪些职业」再次升温', desc: '知乎热榜：生成式 AI 能力升级后，关于职业替代的理性讨论', platform: '知乎热榜', detail: '随着生成式 AI 在多模态、长任务规划上的能力提升，"AI 会取代哪些职业"再次成为知乎热榜话题。高赞回答区分了"任务替代"与"职业替代"：AI 先替代的是可标准化的任务环节，而非整个职业；并提出"人机协作"是新常态，关键是把 AI 当杠杆而非对手。', tags: ['AI', '职场', '社会'] },
+                { title: '「AI 会取代哪些职业」再次升温', desc: '百度热搜：生成式 AI 能力升级后，关于职业替代的理性讨论', platform: '百度热搜', detail: '随着生成式 AI 在多模态、长任务规划上的能力提升，"AI 会取代哪些职业"再次成为搜索热议话题。高赞回答区分了"任务替代"与"职业替代"：AI 先替代的是可标准化的任务环节，而非整个职业；并提出"人机协作"是新常态，关键是把 AI 当杠杆而非对手。', tags: ['AI', '职场', '社会'] },
                 { title: '「极简主义」断舍离 3.0', desc: '小红书热门：从扔东西进阶到"不买清单"，消费降级下的清醒', platform: '小红书热门', detail: '小红书"断舍离 3.0"话题兴起：不再只是整理房间，而是主动建立"不买清单"（不买快时尚、不买一次性用品、不买冲动种草）。用户晒出"一年不买衣服挑战""空瓶计划"，强调"少而精"。这背后是消费降级大环境下的理性回归，也带火了一波"极简收纳""胶囊衣橱"内容。', tags: ['生活方式', '消费', '极简'] }
             ]
         };
 
         const hotSources = ['X/Twitter', 'TikTok', '小红书', '微博', 'B站', '抖音', 'Instagram', 'YouTube'];
         // 国内热点专属来源：各大主流媒体平台
-        const hotSourcesCN = ['微博热搜', '抖音热榜', 'B站热搜', '知乎热榜', '小红书热门', '快手热榜', '百度热搜'];
+        const hotSourcesCN = ['微博热搜', '抖音热榜', 'B站热搜', '小红书热门', '快手热榜', '百度热搜'];
         const hotTags = [' viral', '文化', '生活方式', '社交', '娱乐'];
 
         // 基于日期生成确定性伪随机数
@@ -10227,7 +10514,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     hotSourcesCN.forEach(p => byPlatform[p] = []);
                     templates.forEach(tpl => {
                         const p = tpl.platform || hotSourcesCN[Math.floor(seededRandom(baseSeed + tpl.title.length) * hotSourcesCN.length)];
-                        byPlatform[p].push(tpl);
+                        (byPlatform[p] = byPlatform[p] || []).push(tpl);
                     });
                     hotSourcesCN.forEach((p, pi) => {
                         const pool = byPlatform[p] || [];
@@ -10397,15 +10684,21 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             // ===== 国内各平台独立专区 =====
             const cnMap = {
                 'hotCNWeibo': '微博热搜', 'hotCNDouyin': '抖音热榜', 'hotCNBilibili': 'B站热搜',
-                'hotCNZhihu': '知乎热榜', 'hotCNXhs': '小红书热门', 'hotCNKuaishou': '快手热榜', 'hotCNBaidu': '百度热搜'
+                'hotCNXhs': '小红书热门', 'hotCNKuaishou': '快手热榜', 'hotCNBaidu': '百度热搜'
             };
+            const cnAll = hotData['国内'] || [];
             Object.keys(cnMap).forEach(containerId => {
                 const el = document.getElementById(containerId);
                 if (!el) return;
                 const plat = cnMap[containerId];
-                const items = hotData['国内'].filter(it => it.source === plat);
+                // 注意：必须用原始索引（openHotDetail 按 hotData[region][index] 定位），
+                // 过滤后重新编号会导致点击"看过/收藏/转灵感"打开错误的条目
+                const items = [];
+                cnAll.forEach((it, i) => {
+                    if (it.source === plat) items.push({ ...it, region: '国内', index: i });
+                });
                 if (items.length) {
-                    el.innerHTML = items.map((item, idx) => createHotItemHtml({...item, region: '国内', index: idx}, true)).join('');
+                    el.innerHTML = items.map(item => createHotItemHtml(item, true)).join('');
                 } else {
                     el.innerHTML = '<div class="hot-empty" style="padding:10px;">暂无数据</div>';
                 }
@@ -15839,6 +16132,8 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             d.history.unshift({ id: 'gu_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), type: 'use', min: min, reason: '手动消耗', date: new Date().toISOString().slice(0, 10), at: new Date().toISOString() });
             if (d.history.length > GT_MAX_HISTORY) d.history.length = GT_MAX_HISTORY;
             gtSave(d);
+            // 消耗 = 去玩游戏，自动计入当天游玩日历
+            gtAddPlay(min, null, new Date().toISOString().slice(0, 10));
             if (input) input.value = '';
             if (typeof showToast === 'function') showToast(`🎮 消耗 ${fmtMin(min)} 玩游戏，剩余 ${fmtMin(d.balance)}`);
             renderGameTimePage();
@@ -15904,6 +16199,8 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             if (spendBtn) spendBtn.disabled = balance <= 0;
             renderGameTimeRules();
             renderGtHistory();
+            renderPlayCalendar();
+            renderWeekSummary();
         }
 
         function renderGtHistory() {
@@ -15928,6 +16225,188 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     <span class="gt-h-min ${cls}">${sign}${e.min} 分</span>
                 </div>`;
             }).join('');
+        }
+
+        // ===== 游玩日历：按天聚合的游玩时长记录（niko_game_play_logs: [{date, minutes, notes:[{note, at}]}]） =====
+        function gtPlayLogs() {
+            return safeStorage.get('niko_game_play_logs', []);
+        }
+        function gtSavePlayLogs(logs) { safeStorage.set('niko_game_play_logs', logs); }
+        function gtPlayDay(dateStr) {
+            return gtPlayLogs().find(l => l.date === dateStr);
+        }
+        // 累加到某天（消耗自动 + 手动补记共用）
+        function gtAddPlay(min, note, dateStr) {
+            if (!min || min <= 0) return;
+            const logs = gtPlayLogs();
+            const date = dateStr || new Date().toISOString().slice(0, 10);
+            let day = logs.find(l => l.date === date);
+            if (day) {
+                day.minutes = (day.minutes || 0) + min;
+            } else {
+                day = { date: date, minutes: min, notes: [] };
+                logs.push(day);
+            }
+            if (note) { day.notes = day.notes || []; day.notes.push(Object.assign({ at: new Date().toISOString() }, note)); }
+            logs.sort((a, b) => a.date.localeCompare(b.date));
+            gtSavePlayLogs(logs);
+        }
+        // 撤销当天最后一次：优先扣减手动备注，没有备注则整体扣减
+        function gtUndoPlay() {
+            const today = new Date().toISOString().slice(0, 10);
+            const logs = gtPlayLogs();
+            const day = logs.find(l => l.date === today);
+            if (!day || !day.minutes) { if (typeof showToast === 'function') showToast('今天还没有游玩记录'); return; }
+            if (day.notes && day.notes.length) {
+                const last = day.notes.pop();
+                day.minutes = Math.max(0, (day.minutes || 0) - (Number(last.min) || 0));
+            }
+            if (!day.minutes && (!day.notes || !day.notes.length)) {
+                const idx = logs.findIndex(l => l.date === today);
+                if (idx >= 0) logs.splice(idx, 1);
+            }
+            gtSavePlayLogs(logs);
+            renderGameTimePage();
+            if (typeof showToast === 'function') showToast('↩ 已撤销今天的最后一次记录');
+        }
+        function gtLogPlay() {
+            const minInput = document.getElementById('gtPlayMin');
+            const noteInput = document.getElementById('gtPlayNote');
+            const min = Math.round(Number(minInput && minInput.value) || 0);
+            if (min <= 0) { if (typeof showToast === 'function') showToast('请输入游玩分钟数'); return; }
+            if (min > 1440) { if (typeof showToast === 'function') showToast('单次记录不要超过 24 小时哦'); return; }
+            const note = (noteInput && noteInput.value.trim()) || '';
+            // 纯记录实际游玩时长（不扣余额）；"消耗"按钮会自动计入当天
+            gtAddPlay(min, note ? { note: note, min: min } : null, new Date().toISOString().slice(0, 10));
+            if (minInput) minInput.value = '';
+            if (noteInput) noteInput.value = '';
+            renderGameTimePage();
+            if (typeof showToast === 'function') showToast(`🎮 已记录游玩 ${fmtMin(min)}${note ? '（' + note + '）' : ''}`);
+        }
+        let gtCalOffset = 0; // 0=本月, -1=上月, 1=下月…
+        function gtCalTitle() {
+            const d = new Date();
+            d.setDate(1);
+            d.setMonth(d.getMonth() + gtCalOffset);
+            return `${d.getFullYear()} 年 ${d.getMonth() + 1} 月`;
+        }
+        function gtCalNav(delta) { gtCalOffset += delta; renderGameTimePage(); }
+        function gtCalMinColor(min) {
+            if (!min) return '';
+            if (min < 30) return '#10b981';
+            if (min < 60) return '#0ea5e9';
+            if (min < 120) return '#f59e0b';
+            return '#ef4444';
+        }
+        function renderPlayCalendar() {
+            const box = document.getElementById('gtPlayCalendar');
+            if (!box) return;
+            const logs = gtPlayLogs();
+            const minByDate = {};
+            logs.forEach(l => minByDate[l.date] = l.minutes || 0);
+            const now = new Date();
+            const base = new Date(now.getFullYear(), now.getMonth() + gtCalOffset, 1);
+            const year = base.getFullYear(), month = base.getMonth();
+            const todayStr = now.toISOString().slice(0, 10);
+            const firstWeekday = base.getDay(); // 0=周日
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevDays = new Date(year, month, 0).getDate();
+            const cells = [];
+            const wkNames = ['日', '一', '二', '三', '四', '五', '六'];
+            wkNames.forEach(w => cells.push(`<div class="gt-cal-week">${w}</div>`));
+            // 上月补位
+            for (let i = firstWeekday - 1; i >= 0; i--) {
+                const d = prevDays - i;
+                const ds = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`; // 实际属于上月，仅占位
+                cells.push(`<div class="gt-cal-day other-month"><span class="gt-cal-day-num">${d}</span></div>`);
+            }
+            // 本月
+            for (let d = 1; d <= daysInMonth; d++) {
+                const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const min = minByDate[ds] || 0;
+                const dayLog = logs.find(l => l.date === ds);
+                const note = dayLog && dayLog.notes && dayLog.notes.length ? dayLog.notes[dayLog.notes.length - 1].note : '';
+                const isToday = ds === todayStr;
+                const color = gtCalMinColor(min);
+                cells.push(`<div class="gt-cal-day${isToday ? ' today' : ''}" title="${ds}${min ? ' · 游玩 ' + min + ' 分钟' : ''}">
+                    <span class="gt-cal-day-num">${d}</span>
+                    ${min ? `<span class="gt-cal-day-min" style="background:${color};">${min}分</span>` : ''}
+                    ${note ? `<span class="gt-cal-day-note">${escapeHtml(note)}</span>` : ''}
+                </div>`);
+            }
+            // 下月补位（补满 7 的倍数）
+            const total = cells.length;
+            const remain = (7 - (total % 7)) % 7;
+            for (let d = 1; d <= remain; d++) {
+                cells.push(`<div class="gt-cal-day other-month"><span class="gt-cal-day-num">${d}</span></div>`);
+            }
+            box.innerHTML = `
+                <div class="gt-cal-nav" style="grid-column:1/-1;">
+                    <button class="gt-cal-nav-btn" onclick="gtCalNav(-1)">‹ 上月</button>
+                    <span class="gt-cal-nav-title">${gtCalTitle()}</span>
+                    <button class="gt-cal-nav-btn" onclick="gtCalNav(1)">下月 ›</button>
+                </div>` + cells.join('');
+            // 统计
+            const statToday = document.getElementById('gtPlayToday');
+            if (statToday) statToday.textContent = fmtMin(minByDate[todayStr] || 0);
+            const monthTotal = Object.keys(minByDate).filter(ds => ds.startsWith(`${year}-${String(month + 1).padStart(2, '0')}`)).reduce((s, ds) => s + minByDate[ds], 0);
+            const statMonth = document.getElementById('gtPlayMonth');
+            if (statMonth) statMonth.textContent = fmtMin(monthTotal);
+        }
+        // 本周（周一~周日）总结 + 最近4周趋势
+        function renderWeekSummary() {
+            const box = document.getElementById('gtWeekSummary');
+            if (!box) return;
+            const logs = gtPlayLogs();
+            const minByDate = {};
+            logs.forEach(l => minByDate[l.date] = l.minutes || 0);
+            const getMonday = (d) => { const date = new Date(d); const day = date.getDay(); const diff = date.getDate() - day + (day === 0 ? -6 : 1); return new Date(date.setDate(diff)); };
+            const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            const monday = getMonday(new Date());
+            const weeks = [];
+            for (let w = 0; w < 4; w++) {
+                const start = new Date(monday); start.setDate(start.getDate() - w * 7);
+                let total = 0;
+                const dayMins = [];
+                for (let i = 0; i < 7; i++) {
+                    const ds = fmt(start);
+                    const m = minByDate[ds] || 0;
+                    total += m;
+                    dayMins.push({ label: ['一', '二', '三', '四', '五', '六', '日'][i], min: m });
+                    start.setDate(start.getDate() + 1);
+                }
+                weeks.unshift({ total: total, dayMins: dayMins, label: `第${4 - w}周` });
+            }
+            // weeks[3] 是本周
+            const thisWeek = weeks[3];
+            const statWeek = document.getElementById('gtPlayWeek');
+            if (statWeek) statWeek.textContent = fmtMin(thisWeek.total);
+            const avg = Math.round(thisWeek.total / 7);
+            const statDaily = document.getElementById('gtPlayDaily');
+            if (statDaily) statDaily.textContent = fmtMin(avg);
+            const undoBtn = document.getElementById('gtUndoPlayBtn');
+            if (undoBtn) {
+                const today = new Date().toISOString().slice(0, 10);
+                const dayLog = gtPlayDay(today);
+                undoBtn.style.display = (dayLog && dayLog.minutes) ? 'inline-block' : 'none';
+            }
+            const maxMin = Math.max(60, ...weeks.map(w => w.total));
+            const wLabels = ['上周', '本周'];
+            box.innerHTML = `
+                <div class="gt-week-sum-title">🗓 本周游玩（周一起）</div>
+                ${thisWeek.dayMins.map(d => {
+                    const pct = Math.max(2, Math.round(d.min / maxMin * 100));
+                    return `<div class="gt-week-bar-row">
+                        <span class="gt-week-bar-label">周${d.label}</span>
+                        <div class="gt-week-bar-track"><div class="gt-week-bar-fill" style="width:${pct}%"></div></div>
+                        <span class="gt-week-bar-val">${d.min ? fmtMin(d.min) : '—'}</span>
+                    </div>`;
+                }).join('')}
+                <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:#888;">
+                    <span>📅 本周合计：<strong style="color:#10b981;">${fmtMin(thisWeek.total)}</strong></span>
+                    <span>📊 上周：${fmtMin(weeks[2].total)}</span>
+                    <span>⬆️/⬇️ ${thisWeek.total > weeks[2].total ? '比上周多 ' + fmtMin(thisWeek.total - weeks[2].total) : thisWeek.total < weeks[2].total ? '比上周少 ' + fmtMin(weeks[2].total - thisWeek.total) : '与上周持平'}</span>
+                </div>`;
         }
 
         // 暴露给今日看板习惯打卡调用的全局 API
