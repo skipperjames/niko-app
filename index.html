@@ -5290,6 +5290,15 @@
             font-size: 12px; color: #777; line-height: 1.5;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
+        .book-card-summary {
+            font-size: 12px; color: #8b5cf6; line-height: 1.5;
+            background: rgba(139,92,246,.06); border-left: 2px solid #8b5cf6;
+            padding: 5px 8px; border-radius: 0 6px 6px 0;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        body.dark-mode .book-card-summary { color: #c4b5fd; background: rgba(139,92,246,.12); }
+        .book-card-summary.empty { color: #aaa; background: rgba(150,150,150,.06); border-left-color: #bbb; }
+        body.dark-mode .book-card-summary.empty { color: #777; }
         .book-card-foot { margin-top: auto; display: flex; gap: 6px; flex-wrap: wrap; }
         .book-btn {
             font-size: 12px; padding: 5px 11px; border-radius: 8px; cursor: pointer;
@@ -7484,6 +7493,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <div class="book-status-tabs" id="bookStatusTabs"></div>
                             <div style="display:flex;gap:6px;flex-wrap:wrap;">
                                 <button class="book-btn" onclick="openBookOcrModal()" title="截图识别微信读书等 App 的书名、作者、进度">📷 识图添加</button>
+                                <button class="book-btn" onclick="openBookSummaryBatch()" title="把缺少内容概要的书批量搜索并填入（复制搜索词 → 问 AI → 粘贴结果自动填入）">🔍 搜简介</button>
                                 <button class="book-btn primary" onclick="openBookModal(null)" title="手动添加想读的书">＋ 添加书籍</button>
                             </div>
                         </div>
@@ -7498,6 +7508,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <span style="font-size:13px;color:#888;">结合你正在读的书 + 成长路径预置书单，帮你拓展视野</span>
                             <div style="display:flex;gap:6px;flex-wrap:wrap;">
                                 <button class="book-btn" onclick="copyBookRecPrompt()" title="复制一段提示词，去问问 AI 更精准的推荐">📋 复制 AI 提问词</button>
+                                <button class="book-btn" onclick="openBookSummaryBatch()" title="把缺少内容概要的书批量搜索并填入（复制搜索词 → 问 AI → 粘贴结果自动填入）">🔍 批量搜简介</button>
                                 <button class="book-btn" onclick="updateBookRecommend()" title="重新合并AI最新调研的推荐，不会覆盖已加入书架的">🔄 更新AI推荐</button>
                             </div>
                         </div>
@@ -7592,6 +7603,34 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <div id="bookDetailBody"></div>
                     <div class="modal-footer">
                         <button class="btn" onclick="closeBookDetail()">关闭</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 批量搜简介弹窗 -->
+            <div class="modal-mask" id="bookSummaryBatchModal" onclick="if(event.target===this)closeBookSummaryBatch()">
+                <div class="modal" style="width:560px;">
+                    <h3>🔍 批量搜索书籍简介</h3>
+                    <div class="modal-body" style="font-size:13px;color:#555;line-height:1.7;">
+                        <div style="background:#f6f8fb;border:1px solid #e3e8f0;border-radius:8px;padding:10px 12px;margin-bottom:10px;">
+                            <b>三步走：</b><br>
+                            ① 点下方「📋 复制搜索词」<br>
+                            ② 粘贴给任意 AI（豆包 / DeepSeek / 文心等），它会返回每本书的简介<br>
+                            ③ 把 AI 的回答整段粘贴回下方输入框，点「⚡ 自动填入」
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <div style="font-size:12px;color:#888;margin-bottom:6px;">待补齐概要的书（<span id="bookSummaryBatchCount">0</span> 本）：</div>
+                            <div id="bookSummaryBatchList" style="max-height:120px;overflow-y:auto;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:8px 10px;font-size:12px;color:#666;"></div>
+                        </div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                            <button class="book-btn primary" onclick="copyBookSummaryPrompt()">📋 复制搜索词</button>
+                            <button class="book-btn" onclick="openBookSummaryBatch()" title="重新统计待补书籍">🔄 刷新列表</button>
+                        </div>
+                        <textarea id="bookSummaryPasteBox" style="width:100%;height:120px;box-sizing:border-box;border:1px solid #ddd;border-radius:8px;padding:8px 10px;font-size:12px;" placeholder="把 AI 的回答粘贴到这里，格式示例：&#10;《原子习惯》：詹姆斯·克利尔…每天进步1%…&#10;《影响力》：西奥迪尼…六大原则…"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="closeBookSummaryBatch()">取消</button>
+                        <button class="btn primary" onclick="applyBookSummaryPaste()">⚡ 自动填入</button>
                     </div>
                 </div>
             </div>
@@ -13711,6 +13750,11 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     mid = `<div class="book-rating">${'★'.repeat(Math.min(5, b.rating))}${'☆'.repeat(5 - Math.min(5, b.rating))}</div>`;
                 }
                 const why = b.reason ? `<div class="book-card-why">${escapeHtml(b.reason)}</div>` : '';
+                // 内容概要：优先书自身 summary，其次内置概要库自动匹配
+                const sumTxt = b.summary || bookSummaryOf(b) || '';
+                const sumHtml = sumTxt
+                    ? `<div class="book-card-summary" title="${escapeHtml(sumTxt)}">📖 ${escapeHtml(sumTxt.length > 62 ? sumTxt.slice(0, 62) + '…' : sumTxt)}</div>`
+                    : `<div class="book-card-summary empty">🔍 还没有内容概要，点「编辑」或搜简介补充</div>`;
                 let act = '';
                 if (b.status === 'wish') act = `<button class="book-btn" onclick="moveBookStatus('${b.id}','reading')" title="开始读">▶ 开始读</button>`;
                 else if (b.status === 'reading') act = `<button class="book-btn" onclick="moveBookStatus('${b.id}','done')" title="标记读完">✅ 读完</button>`;
@@ -13722,6 +13766,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     <div class="book-card-meta">${escapeHtml(b.author || '佚名')}${b.category ? ' · ' + escapeHtml(b.category) : ''}</div>
                     ${mid}
                     ${why}
+                    ${sumHtml}
                     <div class="book-card-foot">
                         ${act}
                         <button class="book-btn" onclick="event.stopPropagation();openBookModal('${b.id}')">📝 编辑</button>
@@ -14063,6 +14108,93 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 const ta = document.createElement('textarea'); ta.value = prompt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('📋 已复制 AI 提问词');
             }
         }
+        // ===== 批量搜简介 =====
+        function booksMissingSummary() {
+            const map = {}; // title -> {book, src}
+            // 书架上的书
+            books.forEach(b => {
+                if (b.summary) return;
+                if (bookSummaryOf(b)) return; // 内置库已覆盖
+                if (!map[b.title]) map[b.title] = { book: b, src: 'books' };
+            });
+            // AI 推荐里还没入书架的
+            bookRec.forEach(r => {
+                if (r.summary) return;
+                if (bookSummaryOf(r)) return;
+                if (!map[r.title]) map[r.title] = { book: r, src: 'rec' };
+            });
+            return Object.values(map);
+        }
+        function openBookSummaryBatch() {
+            const list = booksMissingSummary();
+            const countEl = document.getElementById('bookSummaryBatchCount');
+            const listEl = document.getElementById('bookSummaryBatchList');
+            if (countEl) countEl.textContent = list.length;
+            if (listEl) {
+                if (!list.length) {
+                    listEl.innerHTML = '<div style="color:#10b981;">🎉 所有书籍都有内容概要了（内置库 + 自定义）</div>';
+                } else {
+                    listEl.innerHTML = list.map(x =>
+                        `<div style="padding:2px 0;">📕 《${escapeHtml(x.book.title)}》${x.book.author ? ' · ' + escapeHtml(x.book.author) : ''}</div>`
+                    ).join('');
+                }
+            }
+            document.getElementById('bookSummaryBatchModal').classList.add('show');
+        }
+        function closeBookSummaryBatch() { document.getElementById('bookSummaryBatchModal').classList.remove('show'); }
+        function copyBookSummaryPrompt() {
+            const list = booksMissingSummary();
+            if (!list.length) { showToast('🎉 所有书籍都已有内容概要'); return; }
+            const prompt = '请用一段 100 字左右的中文，分别概括以下每本书"这本书大概讲什么"（核心主题 + 主要观点 + 适合谁），风格像豆瓣简介或前言寄语摘要。请严格按「《书名》：内容」的格式逐条输出：\n\n' +
+                list.map(x => `《${x.book.title}》${x.book.author ? '（' + x.book.author + '）' : ''}`).join('\n');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(prompt).then(() => showToast(`📋 已复制 ${list.length} 本书的搜索词，去问 AI 吧`)).catch(() => { promptManualCopy(prompt); });
+            } else { promptManualCopy(prompt); }
+        }
+        function promptManualCopy(text) {
+            const ta = document.getElementById('bookSummaryPasteBox');
+            if (ta) { ta.value = text; showToast('已填入输入框，请手动全选复制'); }
+        }
+        function applyBookSummaryPaste() {
+            const box = document.getElementById('bookSummaryPasteBox');
+            const raw = (box && box.value.trim()) || '';
+            if (!raw) { showToast('请先把 AI 的回答粘贴到输入框'); return; }
+            const missing = booksMissingSummary();
+            if (!missing.length) { showToast('没有需要补齐概要的书'); return; }
+
+            let filled = 0;
+            const note = [];
+            missing.forEach(x => {
+                const t = x.book.title;
+                // 匹配「《书名》：内容」或「书名：内容」块
+                const re = new RegExp('《?' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '》?[：:]([\\s\\S]*?)(?=\\n?《?[^\\n]*[：:]|$)', 'i');
+                const m = raw.match(re);
+                if (!m) return;
+                let txt = m[1].trim().replace(/^[\s\-—–]+|[\s\-—–]+$/g, '');
+                if (!txt) return;
+                // 去掉可能的结尾标点和多余换行
+                txt = txt.split('\n').filter(s => s.trim()).join(' ');
+                if (x.src === 'books') {
+                    x.book.summary = txt;
+                    note.push(`《${t}》`);
+                    filled++;
+                } else {
+                    // AI 推荐书也存 summary，供加入书架时携带
+                    const r = bookRec.find(rr => rr.title === t);
+                    if (r) r.summary = txt;
+                }
+            });
+            bookSaveBooks();
+            safeStorage.set('niko_book_recommend', bookRec);
+            if (filled) {
+                renderBookPage();
+                closeBookSummaryBatch();
+                showToast(`✅ 已为 ${filled} 本书填入简介：${note.join('、')}`);
+            } else {
+                showToast('⚠️ 没有匹配到任何书。请确认格式为《书名》：内容，且书名与你书架一致');
+            }
+        }
+
         function showRecDetail(id) {
             const r = bookRec.find(x => x.id === id);
             if (!r) return;
@@ -14110,12 +14242,25 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
         function updateBookRecommend() {
             let merged = bookRec.slice();
             NIKO_BOOK_RECOMMEND.forEach(r => { if (!merged.find(m => m.id === r.id)) merged.push(r); });
+            // 新合并的推荐也补概要
+            merged = merged.map(r => {
+                if (r.summary) return r;
+                const s = bookSummaryOf(r);
+                return s ? { ...r, summary: s } : r;
+            });
             const before = bookRec.length;
             bookRec = merged;
             safeStorage.set('niko_book_recommend', bookRec);
             safeStorage.set('niko_book_updated_at', new Date().toISOString());
             renderBookPage();
-            showToast(bookRec.length > before ? `✨ 更新了 ${bookRec.length - before} 条新推荐` : '📚 推荐已是最新');
+            // 更新后提示：还有多少本缺概要，引导一键补齐
+            const missing = booksMissingSummary();
+            const added = bookRec.length > before ? `✨ 更新了 ${bookRec.length - before} 条新推荐；` : '';
+            if (missing.length) {
+                showToast(`${added}还有 ${missing.length} 本书缺内容概要，可点「🔍 搜简介」一键补齐`);
+            } else {
+                showToast(added.slice(0, -1) || '📚 推荐已是最新，概要全部齐全');
+            }
         }
 
         // ===== 打卡 =====
