@@ -5329,6 +5329,8 @@
         .book-rec-title { font-size: 14px; font-weight: 600; line-height: 1.35; }
         .book-rec-author { font-size: 12px; color: #888; }
         .book-rec-why { font-size: 12px; color: #666; line-height: 1.5; flex: 1; }
+        .book-rec-summary { font-size: 12px; color: #8b5cf6; line-height: 1.55; background: rgba(139,92,246,.07); border-left: 2px solid #8b5cf6; padding: 6px 8px; border-radius: 0 6px 6px 0; max-height: 68px; overflow: hidden; }
+        body.dark-mode .book-rec-summary { color: #c4b5fd; background: rgba(139,92,246,.12); }
         .book-rec-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
         .book-rec-personal-hd {
             font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
@@ -7015,7 +7017,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         <p style="color:#888;font-size:13px;margin-top:2px;">日本 · 韩国 · 美国 · 国内 — 热点话题与梗文化科普</p>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;">
-                        <span style="font-size:11px;color:#888;" id="hotFullLastUpdated"></span>
+                        <span id="hotFullLastUpdated" style="font-size:11px;padding:4px 12px;border-radius:14px;background:#eef2ff;color:#667eea;border:1px solid #c7d2fe;"></span>
                         <span id="hotUnreadBadge" style="font-size:11px;padding:4px 12px;border-radius:14px;background:#eef2ff;color:#667eea;border:1px solid #c7d2fe;"></span>
                         <button class="btn" onclick="markAllHotRead()" id="hotMarkAllReadBtn" style="padding:8px 14px;" title="把当前所有热点标记为已读">👁 全部已读</button>
                         <button class="btn primary" onclick="refreshHot()" id="hotFullRefreshBtn" style="padding:8px 20px;">🔄 刷新热点</button>
@@ -7569,7 +7571,8 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <div><label>开始日期</label><input type="date" id="bookFStarted"></div>
                             <div><label>读完日期</label><input type="date" id="bookFFinished"></div>
                         </div>
-                        <div><label>为什么读 / 备注</label><textarea id="bookFReason" placeholder="想从这本书里获得什么？"></textarea></div>
+                        <div><label>为什么读 / 备注</label><textarea id="bookFReason" placeholder="想从这本书里获得什么？（可留空，详情页会自动匹配内容概要）"></textarea></div>
+                        <div><label>这本书讲什么（内容概要）</label><textarea id="bookFSummary" placeholder="一段话概括：这本书大致讲什么、核心观点、适合谁。留空时详情页会自动从内置书库匹配（如《原子习惯》《影响力》等）。"></textarea></div>
                         <div id="bookSubNotesWrap" style="display:none;">
                             <label>本书笔记</label>
                             <div class="book-sub-notes" id="bookSubNotes"></div>
@@ -10583,6 +10586,30 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             return result;
         }
 
+        // 热点数据同步时间提示：返回"更新于 X月X日 HH:MM（N 分钟前）"格式，跨天自动带日期
+        function hotUpdateTimeText() {
+            if (!hotLastFetchTime) return '🕐 刚刚更新';
+            const d = new Date(hotLastFetchTime);
+            const now = new Date();
+            const diffMs = now - d;
+            const diffMin = Math.floor(diffMs / 60000);
+            const hh = d.getHours().toString().padStart(2, '0');
+            const mm = d.getMinutes().toString().padStart(2, '0');
+            // 相对时间后缀
+            let rel = '';
+            if (diffMin < 1) rel = '刚刚';
+            else if (diffMin < 60) rel = `${diffMin} 分钟前`;
+            else if (diffMin < 1440) rel = `${Math.floor(diffMin / 60)} 小时前`;
+            else rel = `${Math.floor(diffMin / 1440)} 天前`;
+            // 日期前缀：今天省略日期，昨天显示"昨天"，更早显示日期
+            const sameDay = d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+            const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+            const isYest = d.getFullYear() === yesterday.getFullYear() && d.getMonth() === yesterday.getMonth() && d.getDate() === yesterday.getDate();
+            let dayTxt = '';
+            if (!sameDay) dayTxt = isYest ? '昨天 ' : `${d.getMonth() + 1}月${d.getDate()}日 `;
+            return `🕐 数据同步于 ${dayTxt}${hh}:${mm}（${rel}）`;
+        }
+
         function refreshHot() {
             if (hotLoading) return;
             hotLoading = true;
@@ -10591,9 +10618,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             const todayList = document.getElementById('hotList');
             const fullBuy = document.getElementById('hotFullBuy');
             const fullGame = document.getElementById('hotFullGame');
-            const fullMedia = document.getElementById('hotFullMedia');
-
-            const loadingHtml = '<div class="hot-empty">⏳ 正在刷新热点数据...</div>';
+            const fullMedia = document.getElementById('hotFullMedia');            const loadingHtml = '<div class="hot-empty">⏳ 正在刷新热点数据...</div>';
             if (todayList) todayList.innerHTML = loadingHtml;
             if (fullBuy) fullBuy.innerHTML = loadingHtml;
             if (fullGame) fullGame.innerHTML = loadingHtml;
@@ -10628,14 +10653,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             }
 
             if (statusBadge) statusBadge.textContent = '已获取';
-            if (lastUpdated) {
-                if (hotLastFetchTime) {
-                    const d = new Date(hotLastFetchTime);
-                    lastUpdated.textContent = `更新于 ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-                } else {
-                    lastUpdated.textContent = '刚刚更新';
-                }
-            }
+            if (lastUpdated) lastUpdated.textContent = hotUpdateTimeText();
 
             // 根据当前选中的分类过滤
             const cat = currentHotCategory || 'all';
@@ -10671,14 +10689,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
 
             const today = new Date();
             if (fullDate) fullDate.textContent = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
-            if (lastUpdated) {
-                if (hotLastFetchTime) {
-                    const d = new Date(hotLastFetchTime);
-                    lastUpdated.textContent = `更新于 ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-                } else {
-                    lastUpdated.textContent = '刚刚更新';
-                }
-            }
+            if (lastUpdated) lastUpdated.textContent = hotUpdateTimeText();
 
             // 如果没有数据，自动刷新
             if (hotData['美国'].length === 0 && !hotLoading) {
@@ -13503,10 +13514,60 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             showToast('⬇ 已导出 Markdown');
         }
 // ===== 读书看板 =====
-        const BOOK_SEED_VERSION = 'v2026-08-14';
+        const BOOK_SEED_VERSION = 'v2026-08-18';
         const BOOK_CATEGORIES = ['营销根基', '创意方法', '思维升级', '习惯养成', '行业前沿'];
         const BOOK_STATUS_NAMES = { wish: '想读', reading: '在读', done: '读完', abandoned: '弃读' };
         const BOOK_STATUS_COLORS = { wish: '#f59e0b', reading: '#3b82f6', done: '#10b981', abandoned: '#9ca3af' };
+
+        // 书籍内容概要库：一段话讲清"这本书大概讲什么"（前言/书评/内容简介风格汇总）
+        // 详情页推荐语优先展示概要，让用户无需翻书就能理解内容主旨
+        const BOOK_SUMMARY_MAP = {
+            '文案训练手册': '广告文案大师休格曼的实战教材：从标题、第一句话、节奏控制到"滑梯效应"，系统拆解直邮式文案的完整写作流程。核心观点是文案不是灵感而是可训练的技术——先抓住注意力，再逐步引导读者读完并行动。每章配有练习，是文案从业者的入门与进阶必读。',
+            '影响力': '社会心理学家西奥迪尼的经典之作，揭示人类自动顺从背后的六大心理武器：互惠、承诺一致、社会认同、喜好、权威、稀缺。书中用大量商场、销售、募捐的真实案例解释为什么人们会不自觉说"是"，以及如何识别与抵御这些影响。理解人性弱点，是做营销和广告的底层必修课。',
+            '疯传': '沃顿商学院教授乔纳·伯杰研究"为什么某些产品、思想和行为能流行"的传播学著作。提出 STEPPS 六原则：社交货币、诱因、情绪、公共性、实用价值、故事。书中用 Blendtec 搅拌机、双层奶昔等案例说明如何让内容自带传播力——这直接对应买量素材"为什么有人愿意转发"。',
+            '定位': '营销史上最具影响力的理论著作。艾·里斯与特劳特提出：营销的战场不在产品而在用户心智，品牌要做的就是占据一个清晰、差异化的位置（如"怕上火喝王老吉"）。书中给出定位四步法：分析环境、寻找心智空位、证明定位、整合传播。做产品卖点提炼与投放素材信息架构必读。',
+            '超级符号就是超级创意': '华与华方法论代表作，主张"品牌就是符号"：用文化母体中的既有符号（成语、民俗、汉字）嫁接品牌，让传播成本趋近于零。书中以厨邦酱油、西贝、葵花药业等案例讲解如何把品牌做成"超级符号"，让用户看到就想买、记住就说出来。国内语境下的符号营销实操参考。',
+            '增长黑客': '硅谷增长黑客方法论奠基之作。核心是"增长是实验出来的"：提出 AARRR 海盗模型（获客-激活-留存-变现-推荐），用数据驱动的方式快速验证想法、迭代产品。书中详细拆解 Dropbox、Airbnb、Hotmail 等公司的增长案例。买量优化同样适用——把投放当成持续 A/B 实验。',
+            '赖声川的创意学': '戏剧大师赖声川将创意从"玄学"变为"方法论"的著作。他认为创意 = 智慧（对生活的深刻观察）+ 方法（表达的技术），并给出"创意金字塔"模型：生活体验是地基，美学训练是塔尖。书中大量以《如梦之梦》等作品为例，教你如何从日常积累中提取创意素材——素材创意有章可循。',
+            '设计中的设计': '日本设计大师原研哉的设计哲学随笔。书中探讨"设计不是美化，而是重新认识生活"：从无印良品的极简美学到"Exformation"（信息原质化）概念，教你如何训练审美判断力——不是追求新奇，而是找到最本质的表达。做素材视觉时，这本书帮你建立"高级感"的品味标准。',
+            '创意的生成': '广告大师詹姆斯·韦伯·扬的经典小册子，提出了著名的"创意五步法"：收集原始素材、咀嚼素材、孵化（放下问题）、创意诞生、检验修正。核心观点是创意不是天降灵感，而是"旧元素的新组合"，且过程可以流程化。全书不到两小时读完，是量产创意点子的方法论源头。',
+            '文案的基本修养': '中文语境下的文案实战手册。东东枪从文案的职责边界讲起，拆解"好文案的标准不是文采而是有效"，涉及沟通策略、用户视角、调性与语气、标题与正文的关系等基本功。大量中国品牌案例与改稿实例，教你写脚本时下笔更准、表达更清楚，少走弯路。',
+            '像艺术家一样思考': '加州大学艺术教授贝蒂·艾德华的右脑绘画训练经典。核心观点：画不好不是手的问题而是"左脑符号化"在干扰，通过倒画、轮廓画等五步练习切换到右脑感知模式。虽然讲的是绘画，但本质是"突破思维定式"的训练——对视觉创意的想象力解放同样适用。',
+            '故事思维': '沟通专家安妮特·西蒙斯教你"用故事替代说教"的著作。书中区分了六种基本故事类型（我是谁、我为何在此、愿景故事等），并给出塑造故事张力、营造画面感的具体方法。买量素材的本质也是"在 15 秒里讲一个让人想看下去的故事"，这本书提供叙事结构工具箱。',
+            '金字塔原理': '麦肯锡经典表达方法论。核心是"结论先行、以上统下、归类分组、逻辑递进"：任何表达都能结构化成一棵金字塔——先说结论，再层层展开支撑论据。书中给出 MECE 分类、SCQA 开场等实用工具。写脚本框架、做投放汇报、梳理复盘逻辑时通用。',
+            '思考，快与慢': '诺奖得主卡尼曼的集大成之作，提出"系统 1（直觉快思考）与系统 2（理性慢思考）"双系统模型，揭示锚定效应、损失厌恶、过度自信等几十种认知偏差。读这本书能认清自己与用户决策中的非理性，做数据判断、素材效果评估时避免被直觉带偏。',
+            '穷查理宝典': '查理·芒格的智慧合集，核心是"多元思维模型"：从数学、心理学、生物学、经济学等多个学科提取 100 多个模型，交叉使用来理解问题。芒格主张"反过来想，总是反过来想"，强调能力圈与逆向思维。跨领域看投放、素材、用户关系的底层逻辑。',
+            '系统之美': '系统思考入门经典。梅多斯教你识别反馈回路、存量流量、延迟效应等系统要素，理解为什么"头痛医头"常常事与愿违。对投放业务的意义：广告、素材、用户、预算是一个相互影响的系统，这本书帮你跳出单点思维，看到全局的动态关系。',
+            '批判性思维工具': '保罗与埃尔德合著，把批判性思维拆成可练习的 8 要素（目的、问题、信息、概念、假设等）和 9 大思维标准。核心是"把思考本身拿出来审视"：检查论证的前提与逻辑。分析竞品素材时，用它拆解对方假设了什么、逻辑是否成立。',
+            '直觉泵和其他思考工具': '哲学家丹尼特开出的"思考工具包"，全书 77 个思考工具（直觉泵），如"在自由意志问题上如何思考""为何坏东西扩散得更快"。核心是教你在复杂问题上用具体的思想实验替代空泛争论。开脑洞找创意切入点、做长线判断时很好用。',
+            '原子习惯': '行为科学经典，核心是"微小习惯的复利效应"：每天进步 1%，一年后进步 37 倍。给出行为改变的四大定律（让提示显而易见、让行动有吸引力、让执行轻而易举、让奖励令人满足）与"身份认同"法（不是要变瘦，而是成为健康的人）。与 NIKO 打卡机制天然呼应。',
+            '深度工作': '纽波特提出"深度工作"概念：在无干扰状态下全神贯注的高价值工作，才能产出真正有影响力的成果。书中给出培养深度工作习惯的实操方案：安排专注时段、拥抱无聊、远离社交媒体娱乐化。对抗碎片化创作环境、提升单日产出必备。',
+            '高效能人士的七个习惯': '史蒂芬·柯维的自我管理圣经：积极主动、以终为始、要事第一、双赢思维、知彼解己、统合综效、不断更新。前三个习惯讲个人成功（从依赖到独立），后四个讲公众成功（从独立到互赖）。以终为始与要事第一直接适用于每日任务规划。',
+            '微习惯': '斯蒂芬·盖斯提出的"小到不可能失败"的养成法：把目标缩小到每天只做一个俯卧撑、读一页书，靠"完成即赢"的心理机制骗过大脑的抵触。作者用亲身经历证明微习惯如何带来巨大改变。对总想"一口气做大事"然后放弃的人尤其对症。',
+            '拖延心理学': '两位心理学博士系统研究拖延的根源：不是懒，而是对失败的恐惧、完美主义、任务厌恶与自我价值保护的组合。书中区分了不同拖延类型并给出针对性对策。做创意任务时"打开文档就卡住"的背后，往往是这些心理机制在作祟。',
+            '心流': '心理学家米哈里提出"心流"概念：当挑战与技能相匹配时，人会进入完全沉浸、忘记时间的最佳体验状态。书中揭示心流的 8 大要素与产生条件（清晰目标、即时反馈、技能挑战平衡）。对创作者而言，这是"如何进入并保持创作状态"的科学指南。',
+            '人工智能简史': '计算机学者尼克的通识读物，梳理 AI 从图灵测试、符号主义、神经网络到深度学习的完整脉络，穿插图灵、明斯基、辛顿等关键人物故事。用平实语言讲清"AI 为什么现在爆发、之前为什么几次寒冬"，帮你建立技术变迁的历史坐标。',
+            '生命 3.0': 'MIT 物理学家泰格马克把生命分为三个阶段：生物进化（1.0）、文化进化（2.0）、自我设计（3.0——AI 时代）。全书探讨 AGI 可能带来的未来图景、风险与治理方案，既有乐观派也有谨慎派观点。思考技术对内容、广告行业的冲击时值得一读。',
+            '人类简史': '赫拉利用大尺度视角重述人类 7 万年历史：认知革命让我们能"讲虚构故事"从而大规模协作，农业革命是"史上最大骗局"，科学革命开启现代性。核心洞察是"人类统治世界靠的是相信共同虚构"。理解用户群体行为与传播规律时，这是最底层的洞察。',
+            'AI 3.0': 'AI 科学家米歇尔破除对人工智能的误解：AI 不是无所不能的魔法，而是擅长模式匹配的工具，在常识推理、抽象理解上仍远不如人类。书中解释深度学习的工作原理与局限。理性看待生成式 AI 的能力边界，使用 AIGC 工具时不盲目崇拜也不无脑否定。',
+            '浪潮之巅': '吴军讲述 AT&T、IBM、微软、苹果、Google 等科技巨头兴衰的著作，提炼出"站在浪潮之巅"的规律：技术革命、商业模式、企业家精神如何互相作用。看平台与流量变迁、理解广告行业格局演变时，这本书提供了历史纵深感。',
+            '智人之上': '赫拉利新作，聚焦"信息网络与权力"：人类社会的核心是信息的流动方式，从羊皮纸、印刷术到算法推荐，每一次信息革命都重塑权力结构。书中警示 AI 时代的"智能网络"可能脱离人类控制。对做内容、做投放的人来说，理解算法即理解权力。'
+        };
+
+        // 从概要库取内容概要：支持书名精确匹配 + 关键词模糊匹配
+        function bookSummaryOf(book) {
+            if (!book) return '';
+            if (book.summary) return book.summary;                       // 用户自定义概要优先
+            const title = (book.title || '').trim();
+            if (!title) return '';
+            if (BOOK_SUMMARY_MAP[title]) return BOOK_SUMMARY_MAP[title]; // 精确匹配
+            // 模糊匹配：书名包含库内书名的核心词，或库内书名包含输入书名
+            for (const key of Object.keys(BOOK_SUMMARY_MAP)) {
+                const k = key.replace(/《|》|\(.*?\)|（.*?）/g, '');
+                if (title.includes(k) || k.includes(title)) return BOOK_SUMMARY_MAP[key];
+            }
+            return '';
+        }
 
         // AI 预置推荐（按买量设计师成长路径，5 维度 × 6 本）
         const NIKO_BOOK_RECOMMEND = [
@@ -13564,6 +13625,12 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             let merged = bookRec.slice();
             NIKO_BOOK_RECOMMEND.forEach(r => {
                 if (!merged.find(m => m.id === r.id)) merged.push(r);
+            });
+            // 补充概要：为缺少 summary 的推荐项补上内容概要（来自 BOOK_SUMMARY_MAP）
+            merged = merged.map(r => {
+                if (r.summary) return r;
+                const s = bookSummaryOf(r);
+                return s ? { ...r, summary: s } : r;
             });
             bookRec = merged;
             safeStorage.set('niko_book_recommend', bookRec);
@@ -13684,7 +13751,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             showToast('已删除');
         }
 
-        // 书籍详情弹窗（聚焦推荐语）
+        // 书籍详情弹窗（聚焦推荐语 = 内容概要，一段话讲清这本书讲什么）
         function openBookDetail(id) {
             const b = bookFindItem(id);
             if (!b) return;
@@ -13693,11 +13760,20 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             const p = Math.min(100, Math.max(0, Number(b.progress) || 0));
             const esc = escapeHtml;
 
-            // 推荐语：优先 b.reason；若无则尝试从 AI 推荐 seed 查找
+            // 推荐语 = 内容概要：优先用户自定义 reason（可能是自己写的读书心得）；
+            // 否则从概要库按书名匹配（前言/书评/内容简介汇总）
             let recText = b.reason || '';
-            if (!recText && b.recId) {
-                const rec = bookRec.find(r => r.id === b.recId);
-                if (rec) recText = rec.why || '';
+            let recSource = 'my';
+            if (!recText) {
+                // 先从 AI 推荐 seed 的 summary 字段找
+                if (b.recId) {
+                    const rec = bookRec.find(r => r.id === b.recId);
+                    if (rec && rec.summary) { recText = rec.summary; recSource = 'ai'; }
+                }
+                if (!recText) {
+                    const s = bookSummaryOf(b);
+                    if (s) { recText = s; recSource = 'ai'; }
+                }
             }
 
             let html = `
@@ -13716,11 +13792,21 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 ${b.rating > 0 ? `<div style="margin-bottom:12px;font-size:16px;color:#f59e0b;letter-spacing:2px;">${'★'.repeat(Math.min(5, b.rating))}${'☆'.repeat(5 - Math.min(5, b.rating))}</div>` : ''}
 
                 <div class="book-detail-sec">
-                    <div class="book-detail-sec-title">💡 推荐语</div>
+                    <div class="book-detail-sec-title">📖 这本书讲什么</div>
                     <div class="book-detail-reason" style="font-size:14px;line-height:1.85;min-height:56px;">
-                        ${recText ? esc(recText) : '<span style="color:#bbb;font-size:13px;">这本书还没有推荐语，点击下方「编辑」添加吧</span>'}
+                        ${recText
+                            ? esc(recText)
+                            : '<span style="color:#bbb;font-size:13px;">还没有这本书的内容概要。点击下方「编辑」补充一段话（可写前言/书评/内容简介），或去「AI 推荐」查看预置书籍。</span>'}
                     </div>
+                    ${recSource === 'ai' && b.reason ? `<div style="font-size:11px;color:#999;margin-top:6px;">↑ 自动匹配的内容概要 · 你的备注在下方</div>` : ''}
                 </div>
+                ${b.reason ? `
+                <div class="book-detail-sec">
+                    <div class="book-detail-sec-title">💬 我的推荐语 / 备注</div>
+                    <div class="book-detail-reason" style="font-size:13px;line-height:1.8;color:#666;">
+                        ${esc(b.reason)}
+                    </div>
+                </div>` : ''}
 
                 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
                     <button class="btn primary" onclick="event.stopPropagation();closeBookDetail();openBookModal('${b.id}')">📝 编辑</button>
@@ -13750,6 +13836,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             document.getElementById('bookFStarted').value = b ? (b.startedDate || '') : '';
             document.getElementById('bookFFinished').value = b ? (b.finishedDate || '') : '';
             document.getElementById('bookFReason').value = b ? (b.reason || '') : '';
+            document.getElementById('bookFSummary').value = b ? (b.summary || '') : '';
             // 本书已有笔记
             const subNotes = bookNotes.filter(n => n.bookId === id).slice(0, 5);
             document.getElementById('bookSubNotesWrap').style.display = (id && subNotes.length) ? '' : 'none';
@@ -13775,6 +13862,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     b.startedDate = document.getElementById('bookFStarted').value;
                     b.finishedDate = document.getElementById('bookFFinished').value;
                     b.reason = document.getElementById('bookFReason').value.trim();
+                    b.summary = document.getElementById('bookFSummary').value.trim();
                 }
             } else {
                 books.unshift({
@@ -13788,6 +13876,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     startedDate: document.getElementById('bookFStarted').value,
                     finishedDate: document.getElementById('bookFFinished').value,
                     reason: document.getElementById('bookFReason').value.trim(),
+                    summary: document.getElementById('bookFSummary').value.trim(),
                     src: 'custom', recId: null, addedDate: bookTodayStr()
                 });
             }
@@ -13932,12 +14021,13 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 } else {
                     personalEl.innerHTML = `<div class="book-rec-personal-hd">🎯 基于你正在读的 ${reading.map(b => `《${escapeHtml(b.title)}》`).join('、')} 推荐</div>
                     <div id="bookRecPersonalGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(225px, 1fr));gap:10px;">
-                        ${personal.map(r => `<div class="book-rec-card">
+                        ${personal.map(r => `<div class="book-rec-card" style="cursor:pointer;" onclick="showRecDetail('${r.id}')">
                             <span class="book-rec-cat">${escapeHtml(r.category)}</span>
                             <div class="book-rec-title">《${escapeHtml(r.title)}》</div>
                             <div class="book-rec-author">${escapeHtml(r.author)}</div>
                             <div class="book-rec-why">${escapeHtml(r.why)}</div>
-                            <div class="book-rec-foot"><button class="book-btn primary" onclick="joinBookFromRec('${r.id}')">＋ 加入书架</button></div>
+                            ${r.summary ? `<div class="book-rec-summary" title="${escapeHtml(r.summary)}">${escapeHtml(r.summary.length > 70 ? r.summary.slice(0, 70) + '…' : r.summary)}</div>` : ''}
+                            <div class="book-rec-foot"><button class="book-btn primary" onclick="event.stopPropagation();joinBookFromRec('${r.id}')">＋ 加入书架</button></div>
                         </div>`).join('')}
                     </div>`;
                 }
@@ -13945,15 +14035,16 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             if (!bookRec.length) { el.innerHTML = '<div class="book-empty">暂无推荐</div>'; return; }
             el.innerHTML = bookRec.map(r => {
                 const joined = books.find(b => b.recId === r.id);
-                return `<div class="book-rec-card">
+                return `<div class="book-rec-card" style="cursor:pointer;" onclick="showRecDetail('${r.id}')">
                     <span class="book-rec-cat">${escapeHtml(r.category)}</span>
                     <div class="book-rec-title">《${escapeHtml(r.title)}》</div>
                     <div class="book-rec-author">${escapeHtml(r.author)}</div>
                     <div class="book-rec-why">${escapeHtml(r.why)}</div>
+                    ${r.summary ? `<div class="book-rec-summary" title="${escapeHtml(r.summary)}">${escapeHtml(r.summary.length > 70 ? r.summary.slice(0, 70) + '…' : r.summary)}</div>` : ''}
                     <div class="book-rec-foot">
                         ${joined
-                            ? `<span style="font-size:12px;color:#10b981;">✓ 已在书架</span><button class="book-btn" onclick="openBookModal('${joined.id}')">📝 编辑</button>`
-                            : `<button class="book-btn primary" onclick="joinBookFromRec('${r.id}')">＋ 加入书架</button>`}
+                            ? `<span style="font-size:12px;color:#10b981;">✓ 已在书架</span><button class="book-btn" onclick="event.stopPropagation();openBookModal('${joined.id}')">📝 编辑</button>`
+                            : `<button class="book-btn primary" onclick="event.stopPropagation();joinBookFromRec('${r.id}')">＋ 加入书架</button>`}
                     </div>
                 </div>`;
             }).join('');
@@ -13972,6 +14063,37 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 const ta = document.createElement('textarea'); ta.value = prompt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('📋 已复制 AI 提问词');
             }
         }
+        function showRecDetail(id) {
+            const r = bookRec.find(x => x.id === id);
+            if (!r) return;
+            const esc = escapeHtml;
+            const summary = r.summary || bookSummaryOf(r) || '';
+            const body = `
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">
+                    <span class="book-detail-title">《${esc(r.title)}》</span>
+                    <span class="book-status-chip" style="background:#f59e0b;">想读</span>
+                </div>
+                <div style="font-size:13px;color:#888;margin-bottom:14px;">
+                    ${esc(r.author || '佚名')}${r.category ? ' · ' + esc(r.category) : ''}
+                </div>
+                <div class="book-detail-sec">
+                    <div class="book-detail-sec-title">📖 这本书讲什么</div>
+                    <div class="book-detail-reason" style="font-size:14px;line-height:1.85;">
+                        ${summary ? esc(summary) : '<span style="color:#bbb;">暂无内容概要</span>'}
+                    </div>
+                </div>
+                <div class="book-detail-sec">
+                    <div class="book-detail-sec-title">💡 为什么推荐</div>
+                    <div class="book-detail-reason" style="font-size:13px;line-height:1.8;color:#666;">${esc(r.why)}</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:16px;">
+                    <button class="btn primary" onclick="joinBookFromRec('${r.id}');closeBookDetail()">＋ 加入书架</button>
+                    <button class="btn" onclick="closeBookDetail()">关闭</button>
+                </div>`;
+            document.getElementById('bookDetailBody').innerHTML = body;
+            document.getElementById('bookDetailModal').classList.add('show');
+        }
+
         function joinBookFromRec(id) {
             const r = bookRec.find(x => x.id === id);
             if (!r) return;
@@ -13979,7 +14101,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             books.unshift({
                 id: 'bk_' + Date.now(), title: r.title, author: r.author, category: r.category,
                 status: 'wish', rating: 0, progress: 0, startedDate: '', finishedDate: '',
-                reason: r.why, src: 'rec', recId: r.id, addedDate: bookTodayStr()
+                reason: r.why, summary: (r.summary || bookSummaryOf(r)), src: 'rec', recId: r.id, addedDate: bookTodayStr()
             });
             bookSaveBooks();
             renderBookPage();
