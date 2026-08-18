@@ -7047,7 +7047,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <div class="hot-fav-grid" id="hotFavList"></div>
                 </div>
 
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;flex:1;align-content:start;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;flex:1;align-content:start;">
                         <div class="panel-card" style="border-left:4px solid #8b5cf6;">
                             <h3>🇯🇵 日本</h3><div class="subtitle">亚文化 · 消费现象 · 社会趋势</div>
                             <div class="hot-list" id="hotFullJP"></div>
@@ -7060,34 +7060,29 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             <h3>🇺🇸 美国</h3><div class="subtitle">TikTok 趋势 ·  viral 文化 · 社交媒体现象</div>
                             <div class="hot-list" id="hotFullUS"></div>
                         </div>
-                        <div class="panel-card" style="border-left:4px solid #10b981;">
-                            <h3>🇨🇳 国内 · 各平台当周热搜</h3><div class="subtitle">微博 · 抖音 · B站 · 小红书 · 快手 · 百度</div>
-                            <div class="hot-cn-platforms">
-                                <div class="hot-cn-plat">
-                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff8200;">微</span><span class="hot-cn-plat-name">微博热搜</span><span class="hot-cn-plat-note">社会·娱乐·民生</span></div>
-                                    <div class="hot-list" id="hotCNWeibo"></div>
-                                </div>
-                                <div class="hot-cn-plat">
-                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#fe2c55;">抖</span><span class="hot-cn-plat-name">抖音热榜</span><span class="hot-cn-plat-note">短视频·挑战·种草</span></div>
-                                    <div class="hot-list" id="hotCNDouyin"></div>
-                                </div>
-                                <div class="hot-cn-plat">
-                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#00aeec;">B</span><span class="hot-cn-plat-name">B站热搜</span><span class="hot-cn-plat-note">科技·二次元·UP主</span></div>
-                                    <div class="hot-list" id="hotCNBilibili"></div>
-                                </div>
-                                <div class="hot-cn-plat">
-                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff2442;">红</span><span class="hot-cn-plat-name">小红书热门</span><span class="hot-cn-plat-note">生活方式·美妆·家居</span></div>
-                                    <div class="hot-list" id="hotCNXhs"></div>
-                                </div>
-                                <div class="hot-cn-plat">
-                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#ff5d1f;">快</span><span class="hot-cn-plat-name">快手热榜</span><span class="hot-cn-plat-note">生活记录·县域·老铁</span></div>
-                                    <div class="hot-list" id="hotCNKuaishou"></div>
-                                </div>
-                                <div class="hot-cn-plat">
-                                    <div class="hot-cn-plat-head"><span class="hot-cn-plat-icon" style="background:#3c9df7;">百</span><span class="hot-cn-plat-name">百度热搜</span><span class="hot-cn-plat-note">综合·健康·民生</span></div>
-                                    <div class="hot-list" id="hotCNBaidu"></div>
-                                </div>
-                            </div>
+                        <div class="panel-card" style="border-left:4px solid #ff8200;">
+                            <h3>🟧 微博热搜</h3><div class="subtitle">社会 · 娱乐 · 民生 · 舆论场</div>
+                            <div class="hot-list" id="hotCNWeibo"></div>
+                        </div>
+                        <div class="panel-card" style="border-left:4px solid #fe2c55;">
+                            <h3>🟥 抖音热榜</h3><div class="subtitle">短视频 · 挑战 · 种草 · 神曲</div>
+                            <div class="hot-list" id="hotCNDouyin"></div>
+                        </div>
+                        <div class="panel-card" style="border-left:4px solid #00aeec;">
+                            <h3>🟦 B站热搜</h3><div class="subtitle">科技 · 二次元 · UP主 · 鬼畜</div>
+                            <div class="hot-list" id="hotCNBilibili"></div>
+                        </div>
+                        <div class="panel-card" style="border-left:4px solid #ff2442;">
+                            <h3>🟪 小红书热门</h3><div class="subtitle">生活方式 · 美妆 · 家居 · 探店</div>
+                            <div class="hot-list" id="hotCNXhs"></div>
+                        </div>
+                        <div class="panel-card" style="border-left:4px solid #ff5d1f;">
+                            <h3>🟧 快手热榜</h3><div class="subtitle">生活记录 · 县域 · 老铁 · 烟火气</div>
+                            <div class="hot-list" id="hotCNKuaishou"></div>
+                        </div>
+                        <div class="panel-card" style="border-left:4px solid #3c9df7;">
+                            <h3>🟦 百度热搜</h3><div class="subtitle">综合 · 健康 · 民生 · 时事</div>
+                            <div class="hot-list" id="hotCNBaidu"></div>
                         </div>
                     </div>
                 </div>
@@ -10485,7 +10480,21 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 { title: '「演唱会抢票难」黄牛治理再引关注', desc: '微博热搜：热门演唱会开票秒空，实名制与退票机制成讨论焦点', platform: '微博热搜', detail: '多场热门演唱会开票秒空，"抢票难"再度登上微博热搜。网友吐槽黄牛囤票、平台卡顿，呼吁更严格的实名制购票与合理退票机制。票务平台回应称将升级风控、增加候补购票功能。话题也延伸出"文化消费性价比""为情绪价值买单"等讨论。', tags: ['娱乐', '消费', '社会'] },
                 { title: '「宠物短剧」成新流量密码', desc: '抖音热榜：以猫狗为主角的微短剧走红，萌宠+剧情双重加成', platform: '抖音热榜', detail: '以宠物为主角的微短剧在抖音走红：用猫狗"出演"家庭、职场、恋爱等剧情，配上拟人化配音。萌宠自带治愈感叠加剧情冲突，单集播放动辄破千万。催生了专业"宠物演员"经纪与宠物短剧制作团队，成为继"重生""赘婿"之后的新赛道，也引发对动物福利与拍摄规范的讨论。', tags: ['短视频', '萌宠', '文娱'] },
                 { title: '「AI 会取代哪些职业」再次升温', desc: '百度热搜：生成式 AI 能力升级后，关于职业替代的理性讨论', platform: '百度热搜', detail: '随着生成式 AI 在多模态、长任务规划上的能力提升，"AI 会取代哪些职业"再次成为搜索热议话题。高赞回答区分了"任务替代"与"职业替代"：AI 先替代的是可标准化的任务环节，而非整个职业；并提出"人机协作"是新常态，关键是把 AI 当杠杆而非对手。', tags: ['AI', '职场', '社会'] },
-                { title: '「极简主义」断舍离 3.0', desc: '小红书热门：从扔东西进阶到"不买清单"，消费降级下的清醒', platform: '小红书热门', detail: '小红书"断舍离 3.0"话题兴起：不再只是整理房间，而是主动建立"不买清单"（不买快时尚、不买一次性用品、不买冲动种草）。用户晒出"一年不买衣服挑战""空瓶计划"，强调"少而精"。这背后是消费降级大环境下的理性回归，也带火了一波"极简收纳""胶囊衣橱"内容。', tags: ['生活方式', '消费', '极简'] }
+                { title: '「极简主义」断舍离 3.0', desc: '小红书热门：从扔东西进阶到"不买清单"，消费降级下的清醒', platform: '小红书热门', detail: '小红书"断舍离 3.0"话题兴起：不再只是整理房间，而是主动建立"不买清单"（不买快时尚、不买一次性用品、不买冲动种草）。用户晒出"一年不买衣服挑战""空瓶计划"，强调"少而精"。这背后是消费降级大环境下的理性回归，也带火了一波"极简收纳""胶囊衣橱"内容。', tags: ['生活方式', '消费', '极简'] },
+                { title: '「月薪三万撑不起一个暑假」', desc: '微博热议：暑期亲子研学、夏令营价格飞涨引发家庭消费讨论', platform: '微博热搜', detail: '一条"月薪三万撑不起孩子一个暑假"的话题冲上微博热搜：高端研学营单日费用破千、海外游学动辄数万、夏令营报价阶梯式上涨。家长吐槽"卷不动又躺不平"，呼吁理性看待暑期消费。教育博主则建议根据家庭实际收入分级选择，不必被制造焦虑的营销裹挟。话题也带动"穷游式亲子陪伴""图书馆式夏令营"等平价方案走红。', tags: ['育儿', '消费', '社会'] },
+                { title: '「关灯刷手机」成睡眠第一杀手', desc: '微博热议：深夜关灯玩手机对视力和睡眠的双重危害', platform: '微博热搜', detail: '"关灯刷手机对眼睛到底有多大伤害"再度成为微博热议话题。眼科医生提醒：黑暗与强光对比会诱发视疲劳、干眼症、急性青光眼；睡前蓝光还会抑制褪黑素分泌导致入睡困难。网友晒出"越刷越精神"的崩溃体验，催生"屏幕灰度模式""强制睡眠 App""纸质书替代"等补救方案。', tags: ['健康', '生活', '视力'] },
+                { title: '「City不City」中国游走红', desc: '抖音热门：海外博主用"City不City"形容中国城市反差，全网玩梗', platform: '抖音热榜', detail: '一位来华旅游的外国博主在抖音发布"City不City"系列视频：用魔性中英混搭形容北上广深的现代感与烟火气反差（地铁、外卖、移动支付、24 小时便利店），播放量破 50 亿。海外网友二创连连，带动"反向种草"中国旅游。"City"成为 2026 年度热词之一，相关话题登上多国热搜。', tags: ['文化输出', ' viral', '旅游'] },
+                { title: '「小学生盘手串」解压视频爆红', desc: '抖音热门：小学生课间盘手串视频意外走红，成年网友称"被治愈"', platform: '抖音热榜', detail: '一批小学生课间盘手串、盘核桃、玩指尖陀螺的短视频在抖音走红：孩子一边写作业一边单手转核桃，或边听课边搓手串，表情专注解压。成年用户评论"看孩子盘手串比自己盘还解压"，引发"为什么年轻人也需要指尖玩具"的讨论。带火了儿童解压玩具品类（指尖陀螺、核桃、史莱姆），相关搜索量翻数倍。', tags: ['解压', '生活', '萌娃'] },
+                { title: 'B站「TikTok难民涌入」系列观察', desc: 'B站热议：海外用户涌入小红书后，B站 UP 主做对比观察视频', platform: 'B站热搜', detail: '"TikTok 难民涌入小红书"事件持续发酵，B站科技与文化区 UP 主纷纷制作"小红书突然涌入百万外国网友"的现象观察：从"互教英语""中美物价对比""审美差异"到"为什么他们觉得中国 App 更好用"。多条视频登顶热门总榜，播放破千万。B站借此话题讨论自身国际化策略与社区文化差异。', tags: ['社交媒体', '文化', '国际'] },
+                { title: 'B站「00 后整顿职场」纪录片', desc: 'B站热搜：UP 主跟拍 00 后新员工，如何与 80 后领导相处', platform: 'B站热搜', detail: 'B站职场区 UP 主发布"00 后整顿职场"系列纪录片，跟拍多位刚毕业的 00 后新员工：准时下班、拒绝无意义加班、邮件用敬语但边界感强。视频引发两个阵营热议——支持者认为"打破了无效加班文化"，反对者觉得"是个人自由不是集体规则"。多条视频进入热搜总榜，并衍生"职场礼仪新规范""Z 世代沟通指南"等内容。', tags: ['职场', '社会', 'Z世代'] },
+                { title: 'B站二次元「国创动画」霸权榜', desc: 'B站热搜：暑期国创动画集体爆发，多部作品豆瓣 9 分以上', platform: 'B站热搜', detail: 'B站国创区今夏迎来"霸权榜"级别表现：《凡人修仙传》《镖人》等多部国创动画豆瓣评分稳定在 9 分以上，弹幕量日均破百万。UP 主解说视频密集出圈，从作画、配乐到剧情改编细节全方位解读。海外粉丝同步追番带动"中配英配哪个好""国创 vs 日漫"的话题讨论。业内认为这是国创动画从"崛起"走向"成熟"的标志性节点。', tags: ['二次元', '国创', '动画'] },
+                { title: '「City walk」升级版「公交 walk」', desc: '小红书热门：用公交/地铁漫游城市，单趟花费不到 10 元', platform: '小红书热门', detail: '小红书兴起"公交 walk"风潮：不打车、不骑行，专挑公交或地铁线路漫游城市——从首发站坐到末站，沿途下车探店、拍照、喝咖啡。单趟花费不过几块钱，却能逛遍半个城。博主晒出"用公交把上海逛完""北京二环漫游路线"等攻略，单篇笔记点赞破万。带火了沿线小众咖啡馆、文创店与城市边缘游内容。', tags: ['生活方式', '旅游', '省钱'] },
+                { title: '「上班穿搭 vs 周末穿搭」反差', desc: '小红书热门：周一到周五的"体制内"穿搭，与周末的"自己"对比', platform: '小红书热门', detail: '小红书"上班 vs 周末穿搭反差"内容持续火热：周一到周五是衬衫、西装、制服感穿搭；周末切换成 Y2K、辣妹、森系、机能风。博主用同一件配饰（帽子、眼镜、包）串起"打工人 vs 真实自我"的反差对比，评论区共鸣强烈："上班是演戏，周末才是人生"。衍生出"通勤穿搭显瘦公式""周末胶囊衣橱"等内容。', tags: ['穿搭', '生活方式', '职场'] },
+                { title: '「自助修眉」成男生新社交货币', desc: '快手热榜：县域男生分享自助修眉教程，意外成为"精致男孩"入门', platform: '快手热榜', detail: '一批县域男生在快手分享"自助修眉""刮胡子细节""发型打理"教程，意外成为"精致男孩"入门内容。视频风格朴实，工具多在 20 元以内，修眉前后对比明显。评论区女性用户喊话"希望男同事也学一下"，话题延伸至"男女审美共同进步""男生化妆去污名化"。相关品类（小眉刀、修眉剪、男士素颜霜）搜索量大涨。', tags: ['生活', '男性', '审美'] },
+                { title: '「返乡 vlog」年轻人回县城', desc: '快手热榜：95 后辞职回县城开咖啡店/烘焙坊，真实记录走红', platform: '快手热榜', detail: '一批 95 后、00 后在快手发布"辞职回县城开店"系列 vlog：开咖啡店、烘焙坊、宠物店、花艺工作室，用真实镜头记录选品、装修、客流、亏损与坚持。视频里"县城老板的一天"比想象中更累，但"时间自由、陪伴家人"成为最大吸引力。话题带动县域小成本创业讨论，也有博主提醒"不要美化冲动型返乡，需提前测算现金流"。', tags: ['返乡', '创业', '县城'] },
+                { title: '「老铁助农」直播助农季', desc: '快手热榜：地方农人 + 头部主播联合助农，单场水果销售破百万斤', platform: '快手热榜', detail: '快手"老铁助农"直播季启动：地方果农与头部主播联合直播，陕西苹果、四川猕猴桃、广西百香果等当季水果单场销售破百万斤。直播画面里"现摘现发""果园直发""坏果包赔"等承诺强化信任，老铁文化下的"熟人推荐"模式缩短决策路径。话题也带动"农产品品牌化""电商助农可持续性"等深度讨论。', tags: ['助农', '电商', '直播'] },
+                { title: '「月薪 1 万 vs 1 千生活费」中外对比', desc: '百度热搜：中国一线城市与海外二三线城市的"生活质量性价比"讨论', platform: '百度热搜', detail: '百度热搜出现一组"中国一线月薪 1 万 vs 海外二三线月薪 1 万"的生活质量对比：房租、餐饮、交通、医疗可支配比例差异显著。讨论从单一物价扩展到"工作强度""社会安全""教育医疗可及性"等综合维度，催生大量"反向海归""远程办公回流"案例分享。客观来看不再有绝对优劣，而是不同人生优先级下的取舍。', tags: ['社会', '生活', '国际'] },
+                { title: '「医保异地结算」覆盖再扩大', desc: '百度热搜：跨省异地就医直接结算医院突破 4 万家', platform: '百度热搜', detail: '"医保异地就医直接结算"再度登上百度热搜，覆盖医院突破 4 万家、门诊费用跨省结算试点扩展到所有省份。官方解读政策细节（备案流程、报销比例、药品目录），网友晒出"老家参保、北京看病直接结算"的真实经历。配套话题"异地安置退休""跨省急诊抢救"也获得大量搜索，办事指南类内容流量明显上涨。', tags: ['医保', '民生', '政策'] }
             ]
         };
 
@@ -10508,7 +10517,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             Object.keys(hotTemplates).forEach(cat => {
                 const templates = hotTemplates[cat];
                 if (cat === '国内') {
-                    // ===== 国内：按主流平台分组，每个平台至少 1-2 条 =====
+                    // ===== 国内：按主流平台分组，每个平台显示 4-5 条 =====
                     // 无平台标签的旧模板随机归入某平台
                     const byPlatform = {};
                     hotSourcesCN.forEach(p => byPlatform[p] = []);
@@ -10519,8 +10528,8 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                     hotSourcesCN.forEach((p, pi) => {
                         const pool = byPlatform[p] || [];
                         if (!pool.length) return;
-                        // 每个平台取 1-2 条
-                        const n = Math.min(1 + Math.floor(seededRandom(baseSeed + pi * 7 + p.length) * 2), pool.length);
+                        // 每个平台取 4-5 条（让用户能看完国内全部热搜）
+                        const n = Math.min(4 + Math.floor(seededRandom(baseSeed + pi * 7 + p.length) * 2), pool.length);
                         const shuffled = pool.slice();
                         for (let i = shuffled.length - 1; i > 0; i--) {
                             const j = Math.floor(seededRandom(baseSeed + p.charCodeAt(0) + i * 29) * (i + 1));
