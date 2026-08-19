@@ -3275,6 +3275,16 @@
             cursor: pointer; border: 1px dashed #d1d5db; vertical-align: middle;
         }
         body.dark-mode .cal-extra-chip-inline { background: #1f1f2e; color: #9ca3af; border-color: #444; }
+        .cal-node-chip-inline {
+            display: inline-flex; align-items: center; gap: 1px; font-size: 8.5px;
+            background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe;
+            border-radius: 8px; padding: 0 4px; height: 14px; line-height: 14px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62px;
+            cursor: pointer; vertical-align: middle;
+        }
+        .cal-node-chip-inline:hover { background: #ddd6fe; }
+        .cal-node-chip-inline.done { opacity: .55; text-decoration: line-through; }
+        body.dark-mode .cal-node-chip-inline { background: #3b0764; color: #d8b4fe; border-color: #6b21a8; }
         body.dark-mode .cal-extra-chip { background: #1f2937; color: #9ca3af; border-color: #374151; }
         .mem-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: #faf9f7; margin-bottom: 6px; }
         body.dark-mode .mem-item { background: #232335; }
@@ -6109,6 +6119,39 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         }
         body.dark-mode .gt-cal-nav-btn { background: #252535; border-color: #444; color: #ccc; }
         .gt-week-summary { margin-top: 10px; }
+        /* 点击日期后的当日明细 */
+        .gt-day-detail {
+            margin-top: 10px; background: #faf9f7; border: 1px solid #efebe4;
+            border-radius: 12px; padding: 12px 14px; display: none;
+        }
+        body.dark-mode .gt-day-detail { background: #232335; border-color: #2e2e42; }
+        .gt-day-detail.show { display: block; }
+        .gt-dd-head { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        body.dark-mode .gt-dd-head { color: #ddd; }
+        .gt-dd-close { margin-left: auto; cursor: pointer; font-size: 12px; color: #999; padding: 2px 8px; border-radius: 8px; border: 1px solid #e0ded9; background: #fff; }
+        body.dark-mode .gt-dd-close { background: #252535; border-color: #444; color: #ccc; }
+        .gt-dd-sum { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 10px; }
+        .gt-dd-stat { background: #fff; border-radius: 10px; padding: 8px 12px; }
+        body.dark-mode .gt-dd-stat { background: #1f1f2e; }
+        .gt-dd-stat-label { font-size: 11px; color: #999; }
+        .gt-dd-stat-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+        .gt-dd-stat-val.earn { color: #10b981; }
+        .gt-dd-stat-val.use { color: #ef4444; }
+        .gt-dd-stat-val.play { color: #f59e0b; }
+        .gt-dd-list { display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto; }
+        .gt-dd-item { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 5px 8px; background: #fff; border-radius: 8px; }
+        body.dark-mode .gt-dd-item { background: #1f1f2e; }
+        .gt-dd-item .gt-dd-min { margin-left: auto; font-weight: 700; }
+        .gt-dd-main { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #555; }
+        body.dark-mode .gt-dd-main { color: #bbb; }
+        .gt-dd-min.earn { color: #10b981; }
+        .gt-dd-min.use { color: #ef4444; }
+        .gt-dd-empty { font-size: 12px; color: #999; text-align: center; padding: 10px 0; }
+        .gt-cal-day.clickable { cursor: pointer; }
+        .gt-cal-day.clickable:hover { box-shadow: 0 0 0 1px #7c3aed inset; }
+        .gt-cal-day.selected { outline: 2px solid #7c3aed; outline-offset: -1px; }
+        .gt-cal-day-min.earn { background: #10b981; }
+        .gt-cal-day-min.use { background: #ef4444; }
         .gt-week-sum-title { font-size: 12.5px; font-weight: 600; color: #555; margin-bottom: 6px; }
         body.dark-mode .gt-week-sum-title { color: #ccc; }
         .gt-week-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
@@ -7886,6 +7929,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         <div class="gt-play-stat"><span class="gt-play-stat-label">⚡ 日均(本周)</span><span class="gt-play-stat-val" id="gtPlayDaily">0 分钟</span></div>
                     </div>
                     <div class="gt-calendar" id="gtPlayCalendar"></div>
+                    <div class="gt-day-detail" id="gtDayDetail"></div>
                     <div class="gt-week-summary" id="gtWeekSummary"></div>
                 </div>
             </div>
@@ -8492,7 +8536,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         let ganttStartDate = addDays(new Date(), -7); // 甘特图默认显示前7天到后30天
         let ganttDayWidth = 40; // 每天宽度(px)
 
-        // ========== 主题风格（多主题） ==========
+        // ========== 主题风格（多主题，深色为主） ==========
         const NIKO_THEMES = {
             default: {
                 name: '☀️ 简约白', dark: false,
@@ -8508,54 +8552,55 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 name: '🌙 深夜黑', dark: true,
                 swatch: 'linear-gradient(135deg,#121218 55%,#0d0d16 55%)',
                 vars: {
-                    '--app-bg': '#121218', '--sidebar-bg': '#0d0d16', '--sidebar-text': '#cbd5e1',
+                    '--app-bg': 'linear-gradient(160deg,#14141c 0%,#101018 60%,#0d0d14 100%)',
+                    '--sidebar-bg': '#0d0d16', '--sidebar-text': '#cbd5e1',
                     '--sidebar-hover': '#1a1a2a', '--sidebar-active': '#667eea',
                     '--accent': '#818cf8', '--accent2': '#a78bfa',
-                    '--card-bg': '#1f1f2e', '--card-border': '#333345', '--text': '#d0d0d8', '--muted': '#888899'
+                    '--card-bg': '#1f1f2e', '--card-bg-2': '#181824', '--card-border': '#333345', '--text': '#d0d0d8', '--muted': '#888899'
                 }
             },
             forest: {
-                name: '🌲 森系青绿', dark: false,
-                swatch: 'linear-gradient(135deg,#eef5ec 55%,#1e3527 55%)',
+                name: '🌲 暗夜森林', dark: true,
+                swatch: 'linear-gradient(135deg,#0f1a13 55%,#0a120c 55%)',
                 vars: {
-                    '--app-bg': 'linear-gradient(160deg,#f0f6ee 0%,#e2efe0 60%,#d5e9d8 100%)',
-                    '--sidebar-bg': '#1e3527', '--sidebar-text': '#dbe8dd',
-                    '--sidebar-hover': '#2a4634', '--sidebar-active': '#34a56f',
-                    '--accent': '#2f9e63', '--accent2': '#1f7a4d',
-                    '--card-bg': '#f2faf0', '--card-bg-2': '#e4f2e0', '--card-border': '#cfe3ca', '--text': '#24402c', '--muted': '#5f7d68'
+                    '--app-bg': 'linear-gradient(160deg,#101c15 0%,#0d1711 60%,#0b120d 100%)',
+                    '--sidebar-bg': '#0a120c', '--sidebar-text': '#cfe8d8',
+                    '--sidebar-hover': '#16271c', '--sidebar-active': '#34d399',
+                    '--accent': '#34d399', '--accent2': '#10b981',
+                    '--card-bg': '#16251b', '--card-bg-2': '#101c14', '--card-border': '#2a4235', '--text': '#d1e8da', '--muted': '#7fb39a'
                 }
             },
             mocha: {
-                name: '☕ 暖咖', dark: false,
-                swatch: 'linear-gradient(135deg,#f7f1e7 55%,#3a2a1a 55%)',
+                name: '☕ 摩卡深夜', dark: true,
+                swatch: 'linear-gradient(135deg,#1c1410 55%,#120c08 55%)',
                 vars: {
-                    '--app-bg': 'linear-gradient(160deg,#faf5ec 0%,#f3e8d3 60%,#ecd9bd 100%)',
-                    '--sidebar-bg': '#3a2a1a', '--sidebar-text': '#f0e4d2',
-                    '--sidebar-hover': '#4a3a28', '--sidebar-active': '#c8823a',
-                    '--accent': '#b96a2e', '--accent2': '#8f4f1f',
-                    '--card-bg': '#fdf6ec', '--card-bg-2': '#f5ead6', '--card-border': '#e6d3b8', '--text': '#3a2f22', '--muted': '#8a7760'
+                    '--app-bg': 'linear-gradient(160deg,#1e1611 0%,#19120d 60%,#14100c 100%)',
+                    '--sidebar-bg': '#120c08', '--sidebar-text': '#efdcc4',
+                    '--sidebar-hover': '#2a1e14', '--sidebar-active': '#f59e0b',
+                    '--accent': '#f5a524', '--accent2': '#d97706',
+                    '--card-bg': '#251b12', '--card-bg-2': '#1c140d', '--card-border': '#3d2e1f', '--text': '#ece0d2', '--muted': '#a08a72'
                 }
             },
             ocean: {
-                name: '🌊 海洋蓝', dark: false,
-                swatch: 'linear-gradient(135deg,#eef5fb 55%,#0f2c4d 55%)',
+                name: '🌊 深海蓝', dark: true,
+                swatch: 'linear-gradient(135deg,#0c1626 55%,#080e1a 55%)',
                 vars: {
-                    '--app-bg': 'linear-gradient(160deg,#eef6fc 0%,#dceaf6 60%,#cfe3f2 100%)',
-                    '--sidebar-bg': '#0f2c4d', '--sidebar-text': '#d7e7f5',
-                    '--sidebar-hover': '#1a3a5e', '--sidebar-active': '#3b82f6',
-                    '--accent': '#2563eb', '--accent2': '#1e40af',
-                    '--card-bg': '#f0f7fd', '--card-bg-2': '#dcebf8', '--card-border': '#c6ddf0', '--text': '#1f2f40', '--muted': '#5c7a94'
+                    '--app-bg': 'linear-gradient(160deg,#0e192b 0%,#0c1524 60%,#0a111f 100%)',
+                    '--sidebar-bg': '#080e1a', '--sidebar-text': '#d3e6f8',
+                    '--sidebar-hover': '#142a44', '--sidebar-active': '#38bdf8',
+                    '--accent': '#38bdf8', '--accent2': '#2563eb',
+                    '--card-bg': '#12203a', '--card-bg-2': '#0d1829', '--card-border': '#24406a', '--text': '#d6e6f7', '--muted': '#7ea2c8'
                 }
             },
             lavender: {
-                name: '🪐 星空紫', dark: false,
-                swatch: 'linear-gradient(135deg,#f4f0fa 55%,#241a3d 55%)',
+                name: '🪐 星云紫', dark: true,
+                swatch: 'linear-gradient(135deg,#140f24 55%,#0d0a18 55%)',
                 vars: {
-                    '--app-bg': 'linear-gradient(160deg,#f5f1fb 0%,#e9e0f6 60%,#ded2f0 100%)',
-                    '--sidebar-bg': '#241a3d', '--sidebar-text': '#dcd2ee',
-                    '--sidebar-hover': '#33274f', '--sidebar-active': '#8b5cf6',
-                    '--accent': '#7c3aed', '--accent2': '#5b21b6',
-                    '--card-bg': '#f7f3fd', '--card-bg-2': '#eae0f8', '--card-border': '#dcd0f0', '--text': '#2e2440', '--muted': '#7a6a96'
+                    '--app-bg': 'linear-gradient(160deg,#171129 0%,#131020 60%,#0f0c1c 100%)',
+                    '--sidebar-bg': '#0d0a18', '--sidebar-text': '#e0d9f5',
+                    '--sidebar-hover': '#241b40', '--sidebar-active': '#a78bfa',
+                    '--accent': '#a78bfa', '--accent2': '#7c3aed',
+                    '--card-bg': '#1d1535', '--card-bg-2': '#151027', '--card-border': '#3a2d63', '--text': '#e0d9f5', '--muted': '#9a8fc0'
                 }
             }
         };
@@ -10012,16 +10057,21 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 const dateHeader = document.createElement('div');
                 dateHeader.className = 'day-date';
                 const wdName = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
-                // 中国传统节日 & 纪念日标签：内联在日期数字旁边（不单独占行）
+                // 中国传统节日 & 纪念日 & 买量节点标签：内联在日期数字旁边（不单独占行）
                 const festChips = cnFestivalShow ? getFestivalsForDate(dateStr) : [];
                 const memChips = memorialShow ? getMemorialsForDate(dateStr) : [];
+                const dayNodes = marketNodesShow ? getNodesForDate(dateStr) : [];
                 let inlineTags = '';
-                if (festChips.length || memChips.length) {
+                if (festChips.length || memChips.length || dayNodes.length) {
                     const allTags = [
                         ...festChips.map(f => `<span class="cal-fest-chip-inline${f.holiday ? ' holiday' : ''}" title="${escapeHtml(f.name)}">${f.holiday ? '🎉' : '🏮'}${escapeHtml(f.name)}</span>`),
-                        ...memChips.map(m => `<span class="cal-mem-chip-inline" title="${escapeHtml((m.note || m.name) + ' · ' + m.date)}" onclick="event.stopPropagation();openMemorialModal()">💝${escapeHtml(m.name)}</span>`)
+                        ...memChips.map(m => `<span class="cal-mem-chip-inline" title="${escapeHtml((m.note || m.name) + ' · ' + m.date)}" onclick="event.stopPropagation();openMemorialModal()">💝${escapeHtml(m.name)}</span>`),
+                        ...dayNodes.slice(0, 2).map(n => `<span class="cal-node-chip-inline${n.done ? ' done' : ''}" title="${escapeHtml(n.title + ' (' + n.date + ')' + (n.note ? ' — ' + n.note : ''))}" onclick="event.stopPropagation();openMarketNodeModal('${n.id}')">${n.done ? '✅' : '🎯'}${escapeHtml(n.title)}</span>`)
                     ];
-                    const MAX_TAGS = 2;
+                    if (dayNodes.length > 2) {
+                        allTags.push(`<span class="cal-extra-chip-inline" title="查看该日全部买量节点" onclick="event.stopPropagation();openMarketNodeModal()">+${dayNodes.length - 2}节点</span>`);
+                    }
+                    const MAX_TAGS = 3;
                     inlineTags = `<span class="day-fest-inline">${allTags.slice(0, MAX_TAGS).join('')}${allTags.length > MAX_TAGS ? `<span class="cal-extra-chip-inline" title="打开纪念日管理 / 查看节日">+${allTags.length - MAX_TAGS}</span>` : ''}</span>`;
                 }
                 dateHeader.innerHTML = `<span style="display:inline-flex;align-items:center;gap:3px;"><span class="day-weekday">${wdName}</span>${date.getDate()}${inlineTags}</span>${dayEvents.length ? `<span class="day-count">${dayEvents.length}</span>` : ''}`;
@@ -10049,30 +10099,6 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                     eventsContainer.appendChild(item);
                 });
                 cell.appendChild(eventsContainer);
-                // 买量节点 chips（受「🎯 节点」开关控制；每格最多显示 2 条，多的折叠为 +N，不霸占任务区）
-                const dayNodes = marketNodesShow ? getNodesForDate(dateStr) : [];
-                if (dayNodes.length) {
-                    const nodeWrap = document.createElement('div');
-                    nodeWrap.style.cssText = 'display:flex;flex-direction:row;flex-wrap:wrap;gap:2px;margin-top:2px;';
-                    const MAX_CHIPS = 2;
-                    dayNodes.slice(0, MAX_CHIPS).forEach(n => {
-                        const chip = document.createElement('div');
-                        chip.className = 'market-node-chip' + (n.done ? ' done' : '');
-                        chip.innerHTML = `${n.done ? '✅' : '🎯'} ${escapeHtml(n.title)}`;
-                        chip.title = `${n.title} (${n.date})${n.note ? ' — ' + n.note : ''}`;
-                        chip.addEventListener('click', (e) => { e.stopPropagation(); openMarketNodeModal(n.id); });
-                        nodeWrap.appendChild(chip);
-                    });
-                    if (dayNodes.length > MAX_CHIPS) {
-                        const more = document.createElement('div');
-                        more.className = 'market-node-chip';
-                        more.innerHTML = `+${dayNodes.length - MAX_CHIPS} 个节点`;
-                        more.title = '查看该日全部买量节点';
-                        more.addEventListener('click', (e) => { e.stopPropagation(); openMarketNodeModal(); });
-                        nodeWrap.appendChild(more);
-                    }
-                    cell.appendChild(nodeWrap);
-                }
                 cell.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; cell.classList.add('drag-over'); });
                 cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
                 cell.addEventListener('drop', (e) => { e.preventDefault(); cell.classList.remove('drag-over'); if (draggedEventId) moveEventToDate(draggedEventId, dateStr); });
@@ -16658,6 +16684,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (typeof showToast === 'function') showToast(`🎮 已记录游玩 ${fmtMin(min)}${note ? '（' + note + '）' : ''}`);
         }
         let gtCalOffset = 0; // 0=本月, -1=上月, 1=下月…
+        let gtSelectedDate = null; // 选中查看明细的日期
         function gtCalTitle() {
             const d = new Date();
             d.setDate(1);
@@ -16671,6 +16698,48 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (min < 60) return '#0ea5e9';
             if (min < 120) return '#f59e0b';
             return '#ef4444';
+        }
+        // 某一天的赚/花明细（来自游戏时间流水）
+        function gtDayFlow(dateStr) {
+            const d = gtData();
+            const list = (d.history || []).filter(e => e.date === dateStr && (e.type === 'earn' || e.type === 'use'));
+            const earn = list.filter(e => e.type === 'earn').reduce((s, e) => s + e.min, 0);
+            const use = list.filter(e => e.type === 'use').reduce((s, e) => s + e.min, 0);
+            return { earn: earn, use: use, items: list };
+        }
+        // 点击日期：选中并展示当天赚/花/游玩明细
+        function gtSelectDate(dateStr) {
+            gtSelectedDate = (gtSelectedDate === dateStr) ? null : dateStr;
+            renderGameTimePage();
+        }
+        function renderGtDayDetail() {
+            const box = document.getElementById('gtDayDetail');
+            if (!box) return;
+            if (!gtSelectedDate) { box.classList.remove('show'); return; }
+            const flow = gtDayFlow(gtSelectedDate);
+            const playDay = gtPlayDay(gtSelectedDate);
+            const playMin = playDay ? (playDay.minutes || 0) : 0;
+            const noteList = (playDay && playDay.notes && playDay.notes.length)
+                ? playDay.notes.map(n => `<div class="gt-dd-item"><span>🎮 ${escapeHtml(n.note || '游玩')}</span><span class="gt-dd-min play">${Number(n.min) || ''} 分</span></div>`).join('')
+                : '';
+            const earnList = flow.items.filter(e => e.type === 'earn').map(e =>
+                `<div class="gt-dd-item"><span class="gt-h-type earn">赚取</span><span class="gt-dd-main">${escapeHtml(e.reason || '')}</span><span class="gt-dd-min earn">+${e.min} 分</span></div>`).join('');
+            const useList = flow.items.filter(e => e.type === 'use').map(e =>
+                `<div class="gt-dd-item"><span class="gt-h-type use">消耗</span><span class="gt-dd-main">${escapeHtml(e.reason || '')}</span><span class="gt-dd-min use">-${e.min} 分</span></div>`).join('');
+            const listHtml = (earnList || useList || noteList)
+                ? `<div class="gt-dd-list">${noteList}${earnList}${useList}</div>`
+                : '<div class="gt-dd-empty">这一天没有赚取、消耗或游玩记录</div>';
+            box.innerHTML = `
+                <div class="gt-dd-head">📆 ${gtSelectedDate} 明细
+                    <button class="gt-dd-close" onclick="gtSelectDate('${gtSelectedDate}')">✕ 关闭</button>
+                </div>
+                <div class="gt-dd-sum">
+                    <div class="gt-dd-stat"><div class="gt-dd-stat-label">🎁 赚取</div><div class="gt-dd-stat-val earn">${flow.earn ? '+' + flow.earn + ' 分' : '—'}</div></div>
+                    <div class="gt-dd-stat"><div class="gt-dd-stat-label">🔥 消耗</div><div class="gt-dd-stat-val use">${flow.use ? '-' + flow.use + ' 分' : '—'}</div></div>
+                    <div class="gt-dd-stat"><div class="gt-dd-stat-label">🎮 实际游玩</div><div class="gt-dd-stat-val play">${playMin ? fmtMin(playMin) : '—'}</div></div>
+                </div>
+                ${listHtml}`;
+            box.classList.add('show');
         }
         function renderPlayCalendar() {
             const box = document.getElementById('gtPlayCalendar');
@@ -16691,20 +16760,26 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             // 上月补位
             for (let i = firstWeekday - 1; i >= 0; i--) {
                 const d = prevDays - i;
-                const ds = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`; // 实际属于上月，仅占位
                 cells.push(`<div class="gt-cal-day other-month"><span class="gt-cal-day-num">${d}</span></div>`);
             }
-            // 本月
+            // 本月：每日显示 赚/花/游玩 徽章，点击查看当天明细
             for (let d = 1; d <= daysInMonth; d++) {
                 const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const min = minByDate[ds] || 0;
                 const dayLog = logs.find(l => l.date === ds);
                 const note = dayLog && dayLog.notes && dayLog.notes.length ? dayLog.notes[dayLog.notes.length - 1].note : '';
                 const isToday = ds === todayStr;
-                const color = gtCalMinColor(min);
-                cells.push(`<div class="gt-cal-day${isToday ? ' today' : ''}" title="${ds}${min ? ' · 游玩 ' + min + ' 分钟' : ''}">
+                const isSelected = ds === gtSelectedDate;
+                const flow = gtDayFlow(ds);
+                // 徽章：实际游玩 > 赚取 > 消耗
+                let badge = '';
+                if (min) badge = `<span class="gt-cal-day-min" style="background:${gtCalMinColor(min)};" title="实际游玩">🎮 ${min}分</span>`;
+                if (flow.earn) badge += `<span class="gt-cal-day-min earn" title="赚取">+${flow.earn}</span>`;
+                if (flow.use) badge += `<span class="gt-cal-day-min use" title="消耗">-${flow.use}</span>`;
+                const hasData = min || flow.earn || flow.use;
+                cells.push(`<div class="gt-cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${hasData ? ' clickable' : ''}" onclick="${hasData ? `gtSelectDate('${ds}')` : ''}" title="${ds}${flow.earn ? ' · 赚 ' + flow.earn + ' 分' : ''}${flow.use ? ' · 花 ' + flow.use + ' 分' : ''}${min ? ' · 玩 ' + min + ' 分' : ''}">
                     <span class="gt-cal-day-num">${d}</span>
-                    ${min ? `<span class="gt-cal-day-min" style="background:${color};">${min}分</span>` : ''}
+                    ${badge}
                     ${note ? `<span class="gt-cal-day-note">${escapeHtml(note)}</span>` : ''}
                 </div>`);
             }
@@ -16726,6 +16801,8 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const monthTotal = Object.keys(minByDate).filter(ds => ds.startsWith(`${year}-${String(month + 1).padStart(2, '0')}`)).reduce((s, ds) => s + minByDate[ds], 0);
             const statMonth = document.getElementById('gtPlayMonth');
             if (statMonth) statMonth.textContent = fmtMin(monthTotal);
+            // 当日明细面板
+            renderGtDayDetail();
         }
         // 本周（周一~周日）总结 + 最近4周趋势
         function renderWeekSummary() {
