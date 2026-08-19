@@ -6900,6 +6900,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     </label>
                     <button class="btn-small primary" style="background:#ec4899;border-color:#ec4899;" onclick="openMemorialModal()">💝 纪念日</button>
                     <button class="btn-small primary" style="background:#8b5cf6;border-color:#8b5cf6;" onclick="openMarketNodeModal()">🎯 买量节点</button>
+                    <button class="btn-small primary" style="background:#f59e0b;border-color:#f59e0b;" onclick="openTimeAudit()" title="自动统计各轨道时长占比 vs 上周，回答时间花哪了">⏱ 时间审计</button>
                     <div class="top-stats">
                         <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">总任务</div></div>
                         <div class="stat-card"><div class="stat-num" id="statDone">0</div><div class="stat-label">已完成</div></div>
@@ -7078,6 +7079,20 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="node-list" id="memorialList" style="max-height:260px;"></div>
             <div class="modal-footer">
                 <button class="btn" onclick="closeMemorialModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 时间审计周报弹窗 -->
+    <div class="modal-mask" id="timeAuditModal" onclick="if(event.target===this)closeTimeAudit()">
+        <div class="modal" style="width:520px;">
+            <h3>⏱ 时间审计周报</h3>
+            <p style="font-size:12px;color:#888;margin-bottom:12px;">基于日历里的执行块/固定行程自动统计——本周各轨道时长占比 vs 上周，回答"时间花哪了"</p>
+            <div id="timeAuditBody" style="max-height:420px;overflow-y:auto;font-size:13px;">
+                <div style="text-align:center;color:#aaa;padding:20px;">统计中...</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeTimeAudit()">关闭</button>
             </div>
         </div>
     </div>
@@ -7627,7 +7642,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             </div>
                             <textarea id="bookNoteQuote" placeholder="摘抄金句（必填）"></textarea>
                             <textarea id="bookNoteThought" placeholder="我的感想 / 怎么用进买量素材（可选）"></textarea>
-                            <div style="display:flex;justify-content:flex-end;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                                <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#888;cursor:pointer;" title="勾选后，保存笔记的同时自动写入便签看板（💡 灵感），输入立刻进入加工管线，不睡在书架里">
+                                    <input type="checkbox" id="bookNoteToInspired" checked style="accent-color:#8b5cf6;">
+                                    💡 保存时同时沉淀为灵感便签
+                                </label>
                                 <button class="book-btn primary" onclick="addBookNote()">📝 保存笔记</button>
                             </div>
                         </div>
@@ -9664,6 +9683,108 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         // 习惯打卡初始化
         renderTodayHabits();
 // ===== 计划看板专属JS =====
+
+        // ===== 时间审计周报：统计本周 vs 上周各轨道时长占比 =====
+        const TIME_TRACK_COLORS = {
+            content: '#3b82f6', deals: '#f59e0b', film: '#ef4444', renovation: '#10b981',
+            fitness: '#14b8a6', relationship: '#ec4899'
+        };
+        const TIME_TRACK_NAMES = {
+            content: '内容事业', deals: '商单交付', film: '影片项目', renovation: '装修',
+            fitness: '身体健康', relationship: '关系'
+        };
+        function openTimeAudit() {
+            document.getElementById('timeAuditModal').classList.add('show');
+            renderTimeAudit();
+        }
+        function closeTimeAudit() { document.getElementById('timeAuditModal').classList.remove('show'); }
+
+        // 计算某事件在 [weekStart, weekEnd] 区间内的总时长（分钟）
+        // 有 startTime/endTime 才算时间；跨天任务按覆盖天数 × 单日时长
+        function timeAuditEventMin(ev, weekStart, weekEnd) {
+            if (!ev.startTime || !ev.endTime) return 0;
+            const start = ev.startDate || ev.startDate === '' ? ev.startDate : formatDate(new Date());
+            const end = ev.endDate || ev.endDate === '' ? start : ev.endDate;
+            if (end < weekStart || start > weekEnd) return 0;
+            const overlapStart = start > weekStart ? start : weekStart;
+            const overlapEnd = end < weekEnd ? end : weekEnd;
+            const days = Math.round((new Date(overlapEnd) - new Date(overlapStart)) / 86400000) + 1;
+            const [sh, sm] = (ev.startTime || '00:00').split(':').map(Number);
+            const [eh, em] = (ev.endTime || '00:00').split(':').map(Number);
+            let perDay = (eh * 60 + em) - (sh * 60 + sm);
+            if (perDay < 0) perDay += 1440; // 跨午夜兜底
+            return Math.max(0, perDay * Math.max(1, days));
+        }
+        function renderTimeAudit() {
+            const box = document.getElementById('timeAuditBody');
+            if (!box) return;
+            const now = new Date();
+            const thisMon = getMonday(now);
+            const lastMon = addDays(thisMon, -7);
+            const fmt = (d) => formatDate(d);
+            const thisStart = fmt(thisMon), thisEnd = fmt(addDays(thisMon, 6));
+            const lastStart = fmt(lastMon), lastEnd = fmt(addDays(lastMon, 6));
+
+            const agg = {}; // track -> {min, lastMin}
+            events.forEach(ev => {
+                const t = ev.track || 'other';
+                if (!agg[t]) agg[t] = { min: 0, lastMin: 0 };
+                agg[t].min += timeAuditEventMin(ev, thisStart, thisEnd);
+                agg[t].lastMin += timeAuditEventMin(ev, lastStart, lastEnd);
+            });
+
+            const total = Object.values(agg).reduce((s, v) => s + v.min, 0);
+            const lastTotal = Object.values(agg).reduce((s, v) => s + v.lastMin, 0);
+            const fmtMin = (m) => {
+                m = Math.round(m || 0);
+                if (m >= 60) { const h = Math.floor(m / 60); const r = m % 60; return r ? `${h}时${r}分` : `${h}小时`; }
+                return `${m}分钟`;
+            };
+            const rows = Object.keys(agg).map(t => ({ t, ...agg[t] })).sort((a, b) => b.min - a.min);
+            const maxMin = Math.max(60, ...rows.map(r => r.min));
+            const pct = (m) => total ? Math.round(m / total * 100) : 0;
+
+            let html = `
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+                    <div style="background:var(--card-bg, #faf9f7);border-radius:10px;padding:10px 12px;text-align:center;">
+                        <div style="font-size:11px;color:#999;">本周总时长</div>
+                        <div style="font-size:20px;font-weight:700;color:#667eea;margin-top:2px;">${fmtMin(total)}</div>
+                    </div>
+                    <div style="background:var(--card-bg, #faf9f7);border-radius:10px;padding:10px 12px;text-align:center;">
+                        <div style="font-size:11px;color:#999;">上周总时长</div>
+                        <div style="font-size:20px;font-weight:700;color:#888;margin-top:2px;">${fmtMin(lastTotal)}</div>
+                    </div>
+                    <div style="background:var(--card-bg, #faf9f7);border-radius:10px;padding:10px 12px;text-align:center;">
+                        <div style="font-size:11px;color:#999;">环比</div>
+                        <div style="font-size:20px;font-weight:700;color:${total >= lastTotal ? '#10b981' : '#ef4444'};margin-top:2px;">${total > lastTotal ? '↑' : total < lastTotal ? '↓' : '—'} ${fmtMin(Math.abs(total - lastTotal))}</div>
+                    </div>
+                </div>`;
+
+            if (!rows.length) {
+                html += '<div style="text-align:center;color:#aaa;padding:16px;">本周还没有带时间的安排。给执行块/固定行程设置起止时间后，这里会自动统计。</div>';
+            } else {
+                html += rows.map(r => {
+                    const name = TIME_TRACK_NAMES[r.t] || r.t;
+                    const color = TIME_TRACK_COLORS[r.t] || '#888';
+                    const diff = r.min - r.lastMin;
+                    const diffTxt = diff > 0 ? `<span style="color:#10b981;">↑${fmtMin(diff)}</span>` : diff < 0 ? `<span style="color:#ef4444;">↓${fmtMin(-diff)}</span>` : '<span style="color:#999;">持平</span>';
+                    const barW = Math.max(2, Math.round(r.min / maxMin * 100));
+                    return `<div style="margin-bottom:10px;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+                            <span style="width:10px;height:10px;border-radius:3px;background:${color};flex-shrink:0;"></span>
+                            <span style="font-weight:500;font-size:13px;">${name}</span>
+                            <span style="font-size:11px;color:#999;">${fmtMin(r.min)} · ${pct(r.min)}%</span>
+                            <span style="margin-left:auto;font-size:11px;">vs 上周 ${diffTxt}</span>
+                        </div>
+                        <div style="height:12px;background:#eee;border-radius:6px;overflow:hidden;">
+                            <div style="height:100%;width:${barW}%;background:${color};border-radius:6px;"></div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+            html += '<div style="font-size:11px;color:#999;margin-top:10px;border-top:1px dashed #ddd;padding-top:8px;">仅统计设置了起止时间的执行块与固定行程；无时间安排的任务不计入。数据来源：日历事件。</div>';
+            box.innerHTML = html;
+        }
 
         // ===== 买量节点 =====
         // AI 搜索的预置节点（2026-08-13 更新，来源：公开新闻报道/展会官方排期；日期以官方为准，可自行编辑/删除）
@@ -14515,25 +14636,32 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (!quote) { showToast('⚠️ 金句摘抄不能为空'); return; }
             const page = document.getElementById('bookNotePage').value.trim();
             const thought = document.getElementById('bookNoteThought').value.trim();
-            bookNotes.unshift({
+            const note = {
                 id: 'bn_' + Date.now(), bookId: bookId, page: page,
                 quote: quote, thought: thought, date: bookTodayStr(), converted: false
-            });
+            };
+            bookNotes.unshift(note);
+            // "保存时同时沉淀为灵感便签"勾选 → 输入立刻进入加工管线
+            const toInspired = document.getElementById('bookNoteToInspired');
+            let settled = false;
+            if (toInspired && toInspired.checked) {
+                settled = bookNoteToInspirationCore(note);
+            }
             bookSaveNotes();
             document.getElementById('bookNoteQuote').value = '';
             document.getElementById('bookNotePage').value = '';
             document.getElementById('bookNoteThought').value = '';
             renderBookPage();
-            showToast('📝 笔记已保存');
+            showToast(settled ? '📝 笔记已保存，并已沉淀为灵感便签' : '📝 笔记已保存');
         }
-        function bookNoteToInspiration(id) {
-            const n = bookNotes.find(x => x.id === id);
-            if (!n || n.converted) return;
+        // 把一条读书笔记写入便签看板（💡 灵感），返回是否成功沉淀
+        function bookNoteToInspirationCore(n) {
+            if (!n || n.converted) return false;
             const b = bookFindItem(n.bookId);
             const all = safeStorage.get('niko_inspiration_notes', []);
             const prefix = '【读书】《' + (b ? b.title : '') + '》P' + n.page;
             const dup = all.find(x => !x.deleted && x.source === '读书' && x.bookRef === n.bookId && x.page === n.page && x.content && x.content.startsWith(prefix));
-            if (dup) { showToast('⚠️ 这条笔记已经转过灵感了'); return; }
+            if (dup) { showToast('⚠️ 这条笔记已经转过灵感了'); return false; }
             all.unshift({
                 id: 'note_' + Date.now(),
                 content: prefix + '\n「' + n.quote + '」' + (n.thought ? '\n' + n.thought : ''),
@@ -14547,9 +14675,17 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             });
             safeStorage.set('niko_inspiration_notes', all);
             n.converted = true;
-            bookSaveNotes();
-            renderBookPage();
-            showToast('💡 已转为灵感便签（切到便签看板查看）');
+            return true;
+        }
+        function bookNoteToInspiration(id) {
+            const n = bookNotes.find(x => x.id === id);
+            if (!n || n.converted) return;
+            const ok = bookNoteToInspirationCore(n);
+            if (ok) {
+                bookSaveNotes();
+                renderBookPage();
+                showToast('💡 已转为灵感便签（切到便签看板查看）');
+            }
         }
         function deleteBookNote(id) {
             if (!confirm('确定删除这条笔记吗？')) return;
