@@ -6203,7 +6203,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         .cp-wrap { display:flex; flex-direction:column; gap:14px; }
         .cp-hero {
             background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 60%, #7c3aed 100%);
-            border-radius: 16px; padding: 20px 24px; color: #fff; flex-shrink: 0;
+            border-radius: 16px; padding: 18px 24px; color: #fff; flex-shrink: 0;
             display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
         }
         .cp-hero h2 { font-size: 20px; font-weight: 700; }
@@ -6211,18 +6211,32 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         .cp-hero-score { text-align:center; }
         .cp-hero-score .num { font-size: 34px; font-weight: 800; line-height: 1.1; }
         .cp-hero-score .lbl { font-size: 11px; color: rgba(255,255,255,.7); }
+        /* Tab 切换 */
+        .cp-tabs { display:flex; gap:8px; flex-shrink:0; flex-wrap:wrap; }
+        .cp-tab {
+            padding: 7px 16px; border-radius: 18px; cursor: pointer; font-size: 13px;
+            background: #f1f3f5; color: #555; border: 1px solid transparent; transition: all .2s;
+            user-select: none;
+        }
+        body.dark-mode .cp-tab { background: #232335; color: #aaa; }
+        .cp-tab:hover { border-color: #8b5cf6; }
+        .cp-tab.active { background: #8b5cf6; color: #fff; }
+        .cp-view { display: none; }
+        .cp-view.active { display: block; }
         .cp-grid { display:grid; grid-template-columns: 1fr 1fr; gap:14px; align-items:start; }
         @media (max-width: 900px) { .cp-grid { grid-template-columns: 1fr; } }
-        .cp-card { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 16px 18px; }
+        .cp-card {
+            background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 16px 18px;
+        }
         body.dark-mode .cp-card { background: #1f1f2e; border-color: #333345; }
         .cp-card-title { font-size: 14px; font-weight: 600; color: #444; margin-bottom: 12px; display:flex; align-items:center; gap:8px; }
         body.dark-mode .cp-card-title { color: #ddd; }
         .cp-card-title span { font-size: 11px; font-weight: 400; color: #999; }
-        /* 雷达图容器 */
+        /* 雷达图 */
         .cp-radar-wrap { position: relative; }
-        .cp-radar { width: 100%; max-width: 380px; margin: 0 auto; display: block; }
+        .cp-radar { width: 100%; max-width: 400px; margin: 0 auto; display: block; }
         /* 八维格子 */
-        .cp-dims { display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:8px; }
+        .cp-dims { display:grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap:8px; }
         .cp-dim {
             background: #faf9f7; border: 1px solid #efebe4; border-radius: 10px; padding: 10px 12px;
             cursor: pointer; transition: all .15s;
@@ -6236,20 +6250,77 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         body.dark-mode .cp-dim-bar { background: #2e2e42; }
         .cp-dim-bar-fill { height: 100%; border-radius: 4px; }
         .cp-dim-tip { font-size: 10.5px; color: #999; margin-top: 4px; line-height: 1.4; }
+        /* 飞轮（链式布局） */
+        .cp-wheel { display:flex; flex-direction:column; gap:8px; }
+        .cp-wheel-row {
+            display:flex; align-items:center; gap:8px; background:#faf9f7; border:1px solid #efebe4;
+            border-radius: 10px; padding: 8px 12px;
+        }
+        body.dark-mode .cp-wheel-row { background: #232335; border-color: #2e2e42; }
+        .cp-wheel-node { display:flex; flex-direction:column; align-items:center; min-width: 68px; }
+        .cp-wheel-node .icon { font-size: 20px; }
+        .cp-wheel-node .nm { font-size: 12px; font-weight: 600; color: #555; }
+        body.dark-mode .cp-wheel-node .nm { color: #ccc; }
+        .cp-wheel-link { flex: 1; text-align:center; }
+        .cp-wheel-link .rel { font-size: 13px; font-weight: 700; }
+        .cp-wheel-link .desc { font-size: 10px; color: #999; }
         /* 一年预测 */
         .cp-pred-list { display:flex; flex-direction:column; gap:10px; }
-        .cp-pred-item { display:flex; align-items:center; gap:10px; padding: 10px 12px; background:#faf9f7; border-radius: 10px; }
+        .cp-pred-item { display:flex; align-items:flex-start; gap:10px; padding: 10px 12px; background:#faf9f7; border-radius: 10px; }
         body.dark-mode .cp-pred-item { background: #232335; }
         .cp-pred-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
         .cp-pred-main { flex: 1; min-width: 0; }
         .cp-pred-label { font-size: 12px; color: #888; }
-        .cp-pred-val { font-size: 16px; font-weight: 700; color: #444; }
+        .cp-pred-val { font-size: 15px; font-weight: 700; color: #444; }
         body.dark-mode .cp-pred-val { color: #ddd; }
         .cp-pred-now { font-size: 11px; color: #999; }
         .cp-pred-arrow { color: #8b5cf6; font-weight: 700; }
+        .cp-pred-sug { font-size: 11.5px; color: #6d28d9; margin-top: 3px; line-height: 1.5; }
+        body.dark-mode .cp-pred-sug { color: #c4b5fd; }
         .cp-insight { margin-top: 12px; background: #f6f4ff; border-left: 3px solid #8b5cf6; border-radius: 0 10px 10px 0; padding: 10px 14px; font-size: 12.5px; color: #4c3d8a; line-height: 1.7; }
         body.dark-mode .cp-insight { background: #2a2340; color: #c4b5fd; }
         .cp-empty { text-align:center; color:#aaa; font-size: 13px; padding: 20px; }
+        /* 成就 */
+        .cp-ach-sum { display:flex; align-items:center; gap:14px; margin-bottom: 14px; flex-wrap: wrap; }
+        .cp-ach-big { font-size: 30px; font-weight: 800; color: #8b5cf6; }
+        .cp-ach-progress { flex:1; min-width: 180px; height: 10px; background:#e8e6e1; border-radius: 6px; overflow: hidden; }
+        body.dark-mode .cp-ach-progress { background:#2e2e42; }
+        .cp-ach-progress-fill { height:100%; background: linear-gradient(90deg,#8b5cf6,#a78bfa); border-radius:6px; transition: width .4s; }
+        .cp-ach-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap:10px; }
+        .cp-ach {
+            background:#faf9f7; border:1px solid #efebe4; border-radius:12px; padding:12px 10px; text-align:center;
+            transition: all .15s;
+        }
+        body.dark-mode .cp-ach { background:#232335; border-color:#2e2e42; }
+        .cp-ach.locked { opacity:.38; filter: grayscale(1); }
+        .cp-ach .ic { font-size: 28px; line-height: 1.2; }
+        .cp-ach .nm { font-size: 12px; font-weight: 600; color:#555; margin-top: 6px; }
+        body.dark-mode .cp-ach .nm { color:#ccc; }
+        .cp-ach .dc { font-size: 10px; color:#999; margin-top: 3px; line-height:1.4; }
+        .cp-ach .st { font-size: 10px; margin-top: 6px; padding: 2px 8px; border-radius: 10px; display:inline-block; }
+        .cp-ach .st.got { background:#e9f9f0; color:#10b981; }
+        .cp-ach .st.no { background:#f1f3f5; color:#999; }
+        body.dark-mode .cp-ach .st.got { background:#0f3d2e; color:#34d399; }
+        body.dark-mode .cp-ach .st.no { background:#2e2e42; color:#777; }
+        /* 第二人格复盘 */
+        .cp-ai-toolbar { display:flex; align-items:center; gap:10px; margin-bottom: 14px; flex-wrap: wrap; }
+        .cp-ai-persona {
+            display:flex; align-items:center; gap:8px; padding: 7px 14px; border-radius: 18px; cursor:pointer;
+            font-size: 12.5px; border: 1px solid #e5e0d8; background:#faf9f7; color:#555;
+        }
+        body.dark-mode .cp-ai-persona { background:#232335; border-color:#2e2e42; color:#ccc; }
+        .cp-ai-persona.active { border-color:#8b5cf6; background:#ede9fe; color:#5b21b6; }
+        body.dark-mode .cp-ai-persona.active { background:#2a2340; color:#c4b5fd; }
+        .cp-ai-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 70%, #7c3aed 100%);
+            border-radius: 14px; padding: 18px 20px; color:#fff; line-height: 1.85; font-size: 13.5px;
+        }
+        .cp-ai-card .title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #fff; }
+        .cp-ai-card .msg { color: rgba(255,255,255,.9); white-space: pre-wrap; }
+        .cp-ai-card .sec { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,.25); font-size: 12.5px; color: rgba(255,255,255,.82); white-space: pre-wrap; }
+        .cp-ai-regenerate { margin-top: 12px; font-size: 12px; color:#8b5cf6; cursor:pointer; padding: 6px 14px; border:1px solid #c4b5fd; border-radius: 14px; display:inline-block; }
+        .cp-ai-regenerate:hover { background:#ede9fe; }
+        body.dark-mode .cp-ai-regenerate:hover { background:#2a2340; }
         .cp-refresh { font-size: 11px; color: #8b5cf6; cursor: pointer; margin-left:auto; padding: 3px 10px; border: 1px solid #c4b5fd; border-radius: 12px; }
         .cp-refresh:hover { background: #ede9fe; }
 /* ===== 育儿手册专属CSS ===== */
@@ -8012,7 +8083,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 <div class="cp-hero">
                     <div>
                         <h2>📈 复利面板</h2>
-                        <p>八维复利指数 + 一年后的你 —— 把成长变成看得见的复利</p>
+                        <p>八维复利指数 · 成就徽章 · 第二人格复盘 · 深度预测 —— 把成长变成看得见的复利</p>
                     </div>
                     <div class="cp-hero-score">
                         <div class="num" id="cpTotalScore">—</div>
@@ -8020,28 +8091,68 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     </div>
                 </div>
 
-                <div class="cp-grid">
-                    <div class="cp-card">
-                        <div class="cp-card-title">🕸 八维复利雷达 <span>基于你的真实数据实时计算</span></div>
-                        <div class="cp-radar-wrap">
-                            <svg class="cp-radar" id="cpRadar" viewBox="0 0 380 340" role="img" aria-label="八维复利雷达图"></svg>
+                <div class="cp-tabs">
+                    <span class="cp-tab active" data-cp="radar" onclick="cpSwitchView('radar')">🕸 复利雷达</span>
+                    <span class="cp-tab" data-cp="ach" onclick="cpSwitchView('ach')">🏅 成就徽章</span>
+                    <span class="cp-tab" data-cp="ai" onclick="cpSwitchView('ai')">🧠 第二人格</span>
+                    <span class="cp-tab" data-cp="pred" onclick="cpSwitchView('pred')">⏳ 深度预测</span>
+                </div>
+
+                <!-- 视图：复利雷达 -->
+                <div class="cp-view active" id="cpViewRadar">
+                    <div class="cp-grid">
+                        <div class="cp-card">
+                            <div class="cp-card-title">🕸 八维复利雷达 <span>基于你的真实数据实时计算</span></div>
+                            <div class="cp-radar-wrap">
+                                <svg class="cp-radar" id="cpRadar" viewBox="0 0 400 360" role="img" aria-label="八维复利雷达图"></svg>
+                            </div>
+                        </div>
+                        <div class="cp-card">
+                            <div class="cp-card-title">🎯 八维复利指数 <span>点击格子看说明</span></div>
+                            <div class="cp-dims" id="cpDims"></div>
+                            <div style="margin-top:14px;">
+                                <div class="cp-card-title" style="margin-bottom:8px;">🧭 复利飞轮 <span>四链循环</span></div>
+                                <div class="cp-wheel" id="cpWheel"></div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
+                <!-- 视图：成就徽章 -->
+                <div class="cp-view" id="cpViewAch">
                     <div class="cp-card">
-                        <div class="cp-card-title">🎯 八维复利指数 <span>点击格子看说明</span></div>
-                        <div class="cp-dims" id="cpDims"></div>
+                        <div class="cp-card-title">🏅 成就徽章 <span>用真实数据解锁称号</span></div>
+                        <div class="cp-ach-sum">
+                            <div class="cp-ach-big" id="cpAchCount">0/0</div>
+                            <div style="font-size:12px;color:#888;">已解锁 <b id="cpAchGot">0</b> / <span id="cpAchTotal">20</span> 枚徽章</div>
+                            <div class="cp-ach-progress"><div class="cp-ach-progress-fill" id="cpAchBar" style="width:0%"></div></div>
+                        </div>
+                        <div class="cp-ach-grid" id="cpAchGrid"></div>
                     </div>
+                </div>
 
+                <!-- 视图：第二人格 -->
+                <div class="cp-view" id="cpViewAi">
                     <div class="cp-card">
-                        <div class="cp-card-title">⏳ 一年复利预测 <span>按当前节奏外推 365 天</span></div>
+                        <div class="cp-card-title">🧠 AI 分身复盘官 <span>第二人格 · 用你的数据说你</span></div>
+                        <div class="cp-ai-toolbar">
+                            <span class="cp-ai-persona active" id="cpPersonaStrict" onclick="cpSetPersona('strict')">😈 毒舌模式</span>
+                            <span class="cp-ai-persona" id="cpPersonaWarm" onclick="cpSetPersona('warm')">😇 温柔模式</span>
+                            <span style="font-size:11px;color:#999;">切换人格，看同一个数据被怎么解读</span>
+                        </div>
+                        <div class="cp-ai-card" id="cpAiCard">
+                            <div class="title">🧠 第二人格加载中...</div>
+                        </div>
+                        <div class="cp-ai-regenerate" onclick="cpRenderAI()">🔄 换一种说法</div>
+                    </div>
+                </div>
+
+                <!-- 视图：深度预测 -->
+                <div class="cp-view" id="cpViewPred">
+                    <div class="cp-card">
+                        <div class="cp-card-title">⏳ 一年复利预测 <span>外推 365 天，并给出可执行的建议</span></div>
                         <div class="cp-pred-list" id="cpPredictions"></div>
                         <div class="cp-insight" id="cpInsight"></div>
-                    </div>
-
-                    <div class="cp-card">
-                        <div class="cp-card-title">🧭 复利飞轮 <span>四链循环</span></div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="cpWheel"></div>
                     </div>
                 </div>
             </div>
@@ -17101,8 +17212,6 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             renderGameTimePage();
         }
 // ===== 复利面板 =====
-        // 数据源：健康(habit_logs) 认知(books/book_logs/book_notes) 时间(work_calendar_events)
-        // 产品/内容(便签 notes) 财务(niko_memberships) 人脉(relationship 轨道事件) 身份(综合)
         const CP_DIM_DEFS = [
             { key: 'health',  name: '健康复利', icon: '💪', color: '#14b8a6', desc: '身体是复利的地基。基于近 30 天习惯打卡率。' },
             { key: 'cognition', name: '认知复利', icon: '🧠', color: '#34d399', desc: '输入沉淀。基于读书本数、打卡频率与笔记数。' },
@@ -17123,23 +17232,20 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         function cpCount(list, fn) { return (list || []).filter(fn).length; }
         function cpSum(list, fn) { return (list || []).reduce((s, x) => s + (fn(x) || 0), 0); }
 
-        // 计算八维指数（0-100），全部基于 localStorage 真实数据
         function cpCompute() {
             const dims = {};
             const cut30 = cp30days();
             const [ws, we] = cpWeekRange();
 
-            // 健康：近 30 天习惯打卡率（有打卡习惯前提下）
             const habits = safeStorage.get('niko_habits', []);
             const habitLogs = safeStorage.get('niko_habit_logs', []);
             if (habits.length) {
                 const recent = habitLogs.filter(l => l.date >= cut30);
                 const perHabit = habits.map(h => cpCount(recent, l => l.habitId === h.id));
                 const avgRate = (cpSum(perHabit, v => v) / habits.length) / 30 * 100;
-                dims.health = cpClamp(avgRate * 2.2); // 30天全勤=100左右
+                dims.health = cpClamp(avgRate * 2.2);
             } else dims.health = 0;
 
-            // 认知：读书（在读/读完占比 30% + 打卡频率 40% + 笔记 30%）
             const books = safeStorage.get('niko_books', []);
             const bookLogs = safeStorage.get('niko_book_logs', []);
             const bookNotes = safeStorage.get('niko_book_notes', []);
@@ -17152,83 +17258,81 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             cog += cpClamp((bookNotes.length / 20) * 30);
             dims.cognition = cpClamp(cog);
 
-            // 时间：本周时间块覆盖 + 完成度
             const events = safeStorage.get('work_calendar_events', []);
-            // 事件与本周区间有交集（startDate<=周日 && endDate>=周一）
             const weekEvents = events.filter(e => (e.startDate || '') <= we && (e.endDate || e.startDate || '') >= ws);
             const withTime = weekEvents.filter(e => e.startTime);
             let timeScore = 0;
             if (withTime.length) {
-                timeScore += Math.min(60, withTime.length * 6);          // 每周 10 个时间块满分
+                timeScore += Math.min(60, withTime.length * 6);
                 const done = cpCount(withTime, e => e.status === 'done');
-                timeScore += (done / withTime.length) * 40;               // 完成度
+                timeScore += (done / withTime.length) * 40;
             }
             dims.time = cpClamp(timeScore);
 
-            // 产品：便签（脚本/素材方向）近 30 天新增
             const notes = safeStorage.get('niko_inspiration_notes', []);
             const active = notes.filter(n => !n.deleted && (!n.archived || n.updatedAt >= cut30));
             const recentNotes = notes.filter(n => !n.deleted && n.createdAt && n.createdAt.slice(0, 10) >= cut30);
             dims.product = cpClamp(Math.min(50, active.length * 3) + Math.min(50, recentNotes.length * 8));
 
-            // 财务：会员订阅金额/数量
             const memberships = safeStorage.get('niko_memberships', []);
             const memAmount = cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0);
             const memActive = cpCount(memberships, m => !m.status || m.status !== 'expired');
             dims.finance = cpClamp(Math.min(60, memActive * 12) + Math.min(40, memAmount / 500 * 40));
 
-            // 人脉：关系轨道任务（近 90 天）
             const relEvents = events.filter(e => e.track === 'relationship' && e.startDate >= cut30);
             dims.network = cpClamp(Math.min(100, relEvents.length * 12));
 
-            // 内容：便签+文案+梗+热点收藏总量（近30天活跃）
             const copies = safeStorage.get('niko_copy_library', []);
             const memes = safeStorage.get('niko_memes', []);
             const contentActive = (notes.filter(n => !n.deleted).length) + copies.length + memes.length;
             const recentContent = recentNotes.length + cpCount(copies, c => c.updatedAt && c.updatedAt.slice(0, 10) >= cut30);
             dims.content = cpClamp(Math.min(50, contentActive * 1.2) + Math.min(50, recentContent * 6));
 
-            // 身份：内容+产品+人脉 加权
             dims.identity = cpClamp((dims.content * 0.4) + (dims.product * 0.35) + (dims.network * 0.25));
 
             const total = cpClamp(cpSum(Object.values(dims), v => v) / 8);
             return { dims, total };
         }
 
-        // 渲染雷达图（纯 SVG）
+        // ===== 视图切换 =====
+        function cpSwitchView(v) {
+            document.querySelectorAll('.cp-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-cp') === v));
+            document.querySelectorAll('.cp-view').forEach(p => p.classList.remove('active'));
+            const el = document.getElementById('cpView' + v.charAt(0).toUpperCase() + v.slice(1));
+            if (el) el.classList.add('active');
+        }
+
+        // ===== 雷达图 =====
         function cpRenderRadar(scores) {
             const svg = document.getElementById('cpRadar');
             if (!svg) return;
-            const cx = 190, cy = 160, R = 115;
+            const cx = 200, cy = 165, R = 108;
             const n = CP_DIM_DEFS.length;
             const pt = (i, r) => {
                 const ang = (Math.PI * 2 * i) / n - Math.PI / 2;
                 return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
             };
             let html = '';
-            // 网格环
             [0.25, 0.5, 0.75, 1].forEach(f => {
                 const pts = CP_DIM_DEFS.map((_, i) => pt(i, R * f).join(',')).join(' ');
                 html += `<polygon points="${pts}" fill="none" stroke="rgba(139,92,246,.25)" stroke-width="0.5"/>`;
             });
-            // 轴线
             CP_DIM_DEFS.forEach((d, i) => {
                 const [x, y] = pt(i, R);
                 html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(139,92,246,.18)" stroke-width="0.5"/>`;
             });
-            // 数据多边形
             const dataPts = CP_DIM_DEFS.map((d, i) => pt(i, R * (scores[d.key] / 100)).join(',')).join(' ');
             html += `<polygon points="${dataPts}" fill="rgba(139,92,246,.22)" stroke="#8b5cf6" stroke-width="1.5"/>`;
-            // 数据点 + 标签
+            // 标签固定在外圈（R+22 放名称、R+36 放分值），避免与中心/彼此重叠
             CP_DIM_DEFS.forEach((d, i) => {
                 const [x, y] = pt(i, R * (scores[d.key] / 100));
                 html += `<circle cx="${x}" cy="${y}" r="3" fill="${d.color}"/>`;
-                const [lx, ly] = pt(i, R + 24);
-                html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="11" fill="${d.color}">${d.name}</text>`;
-                const [vx, vy] = pt(i, R + 42);
-                html += `<text x="${vx}" y="${vy}" text-anchor="middle" dominant-baseline="central" font-size="10.5" font-weight="bold" fill="${d.color}">${scores[d.key]}</text>`;
+                const [lx, ly] = pt(i, R + 22);
+                html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="11.5" font-weight="500" fill="${d.color}">${d.name}</text>`;
+                const [vx, vy] = pt(i, R + 38);
+                html += `<text x="${vx}" y="${vy}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="bold" fill="${d.color}">${scores[d.key]}</text>`;
             });
-            html += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="bold" fill="#8b5cf6">复利</text>`;
+            html += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="bold" fill="#8b5cf6">复利</text>`;
             svg.innerHTML = html;
         }
 
@@ -17248,13 +17352,197 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
         }
 
-        // 一年复利预测：按当前节奏外推 365 天
+        // ===== 复利飞轮（链式，关系明确） =====
+        function cpRenderWheel() {
+            const box = document.getElementById('cpWheel');
+            if (!box) return;
+            const chains = [
+                { from: '💪', name1: '健康', rel: '支撑', to: '🧠', name2: '认知', color: '#14b8a6', desc: '身体是认知的硬件' },
+                { from: '⏰', name1: '时间', rel: '催化', to: '📦', name2: '产品', color: '#38bdf8', desc: '投入催生产出' },
+                { from: '💰', name1: '财务', rel: '放大', to: '🤝', name2: '人脉', color: '#fbbf24', desc: '选择权换来连接' },
+                { from: '📝', name1: '内容', rel: '反哺', to: '🏆', name2: '身份', color: '#a78bfa', desc: '输出沉淀为品牌' }
+            ];
+            box.innerHTML = chains.map(c => `
+                <div class="cp-wheel-row">
+                    <div class="cp-wheel-node"><span class="icon">${c.from}</span><span class="nm">${c.name1}</span></div>
+                    <div class="cp-wheel-link">
+                        <div class="rel" style="color:${c.color};">${c.rel}</div>
+                        <div class="desc">${c.desc}</div>
+                    </div>
+                    <div class="cp-wheel-node"><span class="icon">${c.to}</span><span class="nm">${c.name2}</span></div>
+                </div>`).join('');
+        }
+
+        // ===== 成就徽章（20 个，全部由真实数据判定） =====
+        const CP_ACHIEVEMENTS = [
+            { id: 'a01', icon: '🐣', name: '初入江湖', desc: '完成第 1 次习惯打卡', check: d => d.habitTotal >= 1 },
+            { id: 'a02', icon: '🔥', name: '七日连击', desc: '连续打卡 7 天', check: d => d.habitStreak >= 7 },
+            { id: 'a03', icon: '⚡', name: '三十铁人', desc: '近 30 天打卡 ≥ 20 天', check: d => d.habit30 >= 20 },
+            { id: 'a04', icon: '🌅', name: '早鸟认证', desc: '累计 30 次早间打卡', check: d => d.habitTotal >= 30 },
+            { id: 'a05', icon: '📚', name: '翻开第一页', desc: '书架添加第 1 本书', check: d => d.books >= 1 },
+            { id: 'a06', icon: '🏛', name: '书山有路', desc: '读完 1 本书', check: d => d.booksDone >= 1 },
+            { id: 'a07', icon: '📖', name: '深耕细读', desc: '累计读完 5 本', check: d => d.booksDone >= 5 },
+            { id: 'a08', icon: '📝', name: '笔记匠人', desc: '写下 10 条读书笔记', check: d => d.bookNotes >= 10 },
+            { id: 'a09', icon: '💡', name: '灵感火花', desc: '创建第 1 张便签', check: d => d.notes >= 1 },
+            { id: 'a10', icon: '🌊', name: '灵感泉涌', desc: '便签达到 50 张', check: d => d.notes >= 50 },
+            { id: 'a11', icon: '⏰', name: '时间主宰', desc: '创建过 20 个时间块', check: d => d.timeBlocks >= 20 },
+            { id: 'a12', icon: '✅', name: '任务终结者', desc: '完成 50 个任务', check: d => d.doneEvents >= 50 },
+            { id: 'a13', icon: '🎮', name: '游戏人生', desc: '游戏时间累计 10 小时', check: d => d.gameMin >= 600 },
+            { id: 'a14', icon: '💰', name: '财务觉醒', desc: '记录第 1 笔订阅', check: d => d.memberships >= 1 },
+            { id: 'a15', icon: '📈', name: '月入千元', desc: '订阅月额 ≥ ¥1000', check: d => d.memAmount >= 1000 },
+            { id: 'a16', icon: '🎯', name: '本周全勤', desc: '本周时间块完成率 ≥ 80%', check: d => d.weekDoneRate >= 0.8 },
+            { id: 'a17', icon: '🧭', name: '复利入门', desc: '综合指数 ≥ 30', check: d => d.total >= 30 },
+            { id: 'a18', icon: '🚀', name: '复利进阶', desc: '综合指数 ≥ 60', check: d => d.total >= 60 },
+            { id: 'a19', icon: '👑', name: '复利大师', desc: '综合指数 ≥ 90', check: d => d.total >= 90 },
+            { id: 'a20', icon: '🌀', name: '飞轮运转', desc: '八维全部 ≥ 40（无短板）', check: d => d.allDims40 }
+        ];
+
+        // 收集成就判定所需的数据快照
+        function cpAchData() {
+            const habits = safeStorage.get('niko_habits', []);
+            const habitLogs = safeStorage.get('niko_habit_logs', []);
+            const books = safeStorage.get('niko_books', []);
+            const bookNotes = safeStorage.get('niko_book_notes', []);
+            const notes = safeStorage.get('niko_inspiration_notes', []);
+            const events = safeStorage.get('work_calendar_events', []);
+            const game = safeStorage.get('niko_game_time', {});
+            const memberships = safeStorage.get('niko_memberships', []);
+            const cut30 = cp30days();
+            const [ws, we] = cpWeekRange();
+            const habitDates = new Set(habitLogs.map(l => l.date));
+            // 最长连续天数
+            let streak = 0, cur = 0;
+            const d0 = new Date(); d0.setDate(d0.getDate() - 60);
+            for (let i = 0; i <= 60; i++) {
+                const dd = new Date(d0); dd.setDate(d0.getDate() + i);
+                const ds = formatDate(dd);
+                if (habitDates.has(ds)) { cur++; streak = Math.max(streak, cur); }
+                else cur = 0;
+            }
+            const weekEvents = events.filter(e => (e.startDate || '') <= we && (e.endDate || e.startDate || '') >= ws);
+            const withTime = weekEvents.filter(e => e.startTime);
+            const weekDoneRate = withTime.length ? cpCount(withTime, e => e.status === 'done') / withTime.length : 0;
+            const { dims, total } = cpCompute();
+            return {
+                habitTotal: habitLogs.length,
+                habitStreak: streak,
+                habit30: cpCount(habitLogs, l => l.date >= cut30),
+                books: books.length,
+                booksDone: cpCount(books, b => b.status === 'done'),
+                bookNotes: bookNotes.length,
+                notes: notes.filter(n => !n.deleted).length,
+                timeBlocks: cpCount(events, e => e.startTime),
+                doneEvents: cpCount(events, e => e.status === 'done'),
+                gameMin: (game.totalEarned || 0) + (game.balance || 0),
+                memberships: memberships.length,
+                memAmount: cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0),
+                weekDoneRate,
+                total,
+                allDims40: Object.values(dims).every(v => v >= 40)
+            };
+        }
+
+        function cpRenderAch() {
+            const grid = document.getElementById('cpAchGrid');
+            if (!grid) return;
+            const data = cpAchData();
+            const results = CP_ACHIEVEMENTS.map(a => ({ ...a, got: a.check(data) }));
+            const got = results.filter(r => r.got).length;
+            const total = CP_ACHIEVEMENTS.length;
+            document.getElementById('cpAchCount').textContent = `${got}/${total}`;
+            document.getElementById('cpAchGot').textContent = got;
+            document.getElementById('cpAchTotal').textContent = total;
+            document.getElementById('cpAchBar').style.width = Math.round(got / total * 100) + '%';
+            grid.innerHTML = results.map(r => `
+                <div class="cp-ach ${r.got ? '' : 'locked'}" title="${r.desc}">
+                    <div class="ic">${r.got ? r.icon : '🔒'}</div>
+                    <div class="nm">${r.name}</div>
+                    <div class="dc">${r.desc}</div>
+                    <span class="st ${r.got ? 'got' : 'no'}">${r.got ? '✓ 已解锁' : '未解锁'}</span>
+                </div>`).join('');
+        }
+
+        // ===== 第二人格复盘 =====
+        let cpPersona = 'strict';
+        function cpSetPersona(p) {
+            cpPersona = p;
+            document.getElementById('cpPersonaStrict').classList.toggle('active', p === 'strict');
+            document.getElementById('cpPersonaWarm').classList.toggle('active', p === 'warm');
+            cpRenderAI();
+        }
+        function cpRenderAI() {
+            const card = document.getElementById('cpAiCard');
+            if (!card) return;
+            const { dims, total } = cpCompute();
+            const data = cpAchData();
+            const top = CP_DIM_DEFS.slice().sort((a, b) => dims[b.key] - dims[a.key])[0];
+            const low = CP_DIM_DEFS.slice().sort((a, b) => dims[a.key] - dims[b.key])[0];
+            const [ws, we] = cpWeekRange();
+            const weekEvents = safeStorage.get('work_calendar_events', []).filter(e => (e.startDate || '') <= we && (e.endDate || e.startDate || '') >= ws);
+            const weekDone = cpCount(weekEvents, e => e.status === 'done');
+            const weekTotal = weekEvents.length;
+            const cut30 = cp30days();
+            const notes30 = cpCount(safeStorage.get('niko_inspiration_notes', []), n => !n.deleted && n.createdAt && n.createdAt.slice(0, 10) >= cut30);
+            const bookLogs30 = cpCount(safeStorage.get('niko_book_logs', []), l => l.date >= cut30);
+            const gameLogs = safeStorage.get('niko_game_play_logs', []);
+            const game30 = cpSum(gameLogs.filter(l => l.date >= cut30), l => l.minutes);
+
+            const strictMsgs = [
+                '你这周嘴上说着要自律，数据可都记着呢。',
+                '别急着找借口，先看看自己这周到底干了什么。',
+                '复利这东西，骗得了别人，骗不了数据。',
+                '你对自己承诺了多少次"明天开始"？数据说你还没开始。'
+            ];
+            const warmMsgs = [
+                '这周辛苦了，先别急着否定自己，我们一起看看数据。',
+                '每一个开始都值得被看见，包括这周的你。',
+                '别怕慢，复利本来就是慢慢滚起来的。',
+                '这周已经很棒了，下一周可以更好一点。'
+            ];
+            const strict = cpPersona === 'strict';
+            const openers = strict ? strictMsgs : warmMsgs;
+            const seed = new Date().getDate() + Math.floor(new Date().getHours() / 6);
+            const opener = openers[seed % openers.length];
+
+            const doneRate = weekTotal ? Math.round(weekDone / weekTotal * 100) : 0;
+            const verdict = strict
+                ? (doneRate >= 80 ? '完成率不错，但别得意，保持住才算数。' : doneRate >= 50 ? '过半了，但离"全力以赴"还差得远。' : '不到一半？你该问问自己时间都去哪了。')
+                : (doneRate >= 80 ? '完成率很棒，这周的你值得一个大大的肯定！' : doneRate >= 50 ? '过半了，已经在路上了，慢慢来。' : '这周节奏有点慢，没关系，下周重新出发。');
+
+            const lines = [];
+            lines.push(`⏱ 本周计划 ${weekTotal} 项，完成 ${weekDone} 项（${doneRate}%）——${verdict}`);
+            lines.push(`📚 近 30 天读书打卡 ${bookLogs30} 次${bookLogs30 < 10 ? '，输入太少了，认知复利滚不起来' : '，输入节奏不错'}`);
+            lines.push(`💡 近 30 天新增灵感 ${notes30} 条${notes30 < 5 ? '，想法太少了，多记多写' : '，产出活跃'}`);
+            lines.push(`🎮 近 30 天实际游玩 ${Math.round(game30 / 60)} 小时${game30 > 1800 ? '，游戏时间有点多了，注意控制' : '，娱乐节奏健康'}`);
+            const strongLine = strict ? `你最强的复利是「${top.name}」（${dims[top.key]} 分），但最强不代表可以躺着。` : `你最强的复利是「${top.name}」（${dims[top.key]} 分），这是你的优势，继续深耕。`;
+            const weakLine = strict ? `最弱的是「${low.name}」（${dims[low.key]} 分）——别假装看不见，它就是你的漏洞。` : `最需要关注的是「${low.name}」（${dims[low.key]} 分），从这里开始补，会很有成就感。`;
+            lines.push(`🧭 ${strongLine}`);
+            lines.push(`🧭 ${weakLine}`);
+
+            const advice = [];
+            if (dims.health < 40) advice.push(strict ? '先补健康：身体垮了，复利直接归零。' : '建议先照顾身体：早睡和运动，是其他一切复利的底座。');
+            if (dims.cognition < 40) advice.push(strict ? '读书打卡太少，输入不够，别指望输出。' : '每天留 20 分钟读书，输入会慢慢积累成你的底气。');
+            if (dims.time < 40) advice.push(strict ? '时间块都没几个，你的时间在裸奔。' : '试着给明天排 3 个时间块，把时间抓回自己手里。');
+            if (dims.product < 40) advice.push(strict ? '想法一堆不落地 = 零产出。挑一个做出来。' : '选一条最近的灵感把它做成成品，你会感受到"完成"的力量。');
+            if (dims.finance < 40) advice.push(strict ? '收入来源太单一，复利放大器没开。' : '可以考虑拓展一个收入来源，财务复利需要更多管道。');
+            if (dims.network < 40) advice.push(strict ? '人脉账户几乎是空的，别做孤岛。' : '主动联系一位老朋友吧，人脉也是需要维护的复利。');
+            if (dims.content < 40) advice.push(strict ? '内容产出太少，你的作品没人看见。' : '把最近的一个灵感发出去，内容复利从第一篇开始。');
+            if (advice.length === 0) advice.push(strict ? '看起来都在线，但别让"看起来不错"骗了你——加大剂量。' : '各方面都不错！下一步是挑一条链加倍投入，让它变成你的王牌。');
+
+            card.innerHTML = `
+                <div class="title">${strict ? '😈 毒舌版 · 第二人格' : '😇 温柔版 · 第二人格'}</div>
+                <div class="msg">${opener}</div>
+                <div class="sec">${lines.map(l => '· ' + l).join('\n')}</div>
+                <div class="sec">💡 <b>给你的建议：</b>\n${advice.map(a => '· ' + a).join('\n')}</div>
+                <div class="sec" style="font-size:11.5px;color:rgba(255,255,255,.6);">综合复利指数 ${total} · 数据截至 ${new Date().toLocaleDateString('zh-CN')}</div>`;
+        }
+
+        // ===== 深度预测（数量 + 可执行建议） =====
         function cpPredict(dims) {
             const cut30 = cp30days();
             const notes = safeStorage.get('niko_inspiration_notes', []);
             const books = safeStorage.get('niko_books', []);
             const bookLogs = safeStorage.get('niko_book_logs', []);
-            const game = safeStorage.get('niko_game_time', {});
             const gameLogs = safeStorage.get('niko_game_play_logs', []);
             const events = safeStorage.get('work_calendar_events', []);
             const memberships = safeStorage.get('niko_memberships', []);
@@ -17267,17 +17555,47 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const avgGamePerDay = gameToday / Math.max(1, Math.min(30, gameLogs.length || 30));
             const yearGameMin = Math.round(avgGamePerDay * 365);
             const weekEvents = events.filter(e => e.startTime);
-            const weekCount = weekEvents.length / Math.max(1, (weekEvents.reduce((s, e) => s + (e.startDate ? 1 : 0), 0) || 1));
             const yearDeep = Math.round(weekEvents.length / 4 * 52);
             const memAmount = cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0);
             const yearIncome = Math.round(memAmount * 12);
 
+            // 每一项都带"这意味着什么 + 该怎么做"
             const preds = [
-                { icon: '📚', label: '一年后累计读书', val: `${yearBooks} 本`, now: `现有 ${books.length} 本 · 月均约 ${Math.max(1, Math.round(monthBookLogs / 30 * 30))} 次打卡` },
-                { icon: '💡', label: '一年后灵感资产', val: `${yearNotes + notes.length} 条`, now: `现有 ${notes.filter(n => !n.deleted).length} 条` },
-                { icon: '🎮', label: '一年后游戏时长', val: `${Math.round(yearGameMin / 60)} 小时`, now: `日均 ${Math.round(avgGamePerDay)} 分钟` },
-                { icon: '⏳', label: '一年后时间块', val: `${yearDeep} 个`, now: `现有 ${weekEvents.length} 个` },
-                { icon: '💰', label: '一年后订阅收入', val: `¥${yearIncome.toLocaleString()}`, now: `当前月 ¥${memAmount.toLocaleString()}` }
+                {
+                    icon: '📚', label: '一年后累计读书',
+                    val: `${yearBooks} 本`, now: `现有 ${books.length} 本 · 近30天打卡 ${monthBookLogs} 次`,
+                    sug: monthBookLogs < 10
+                        ? '⚠️ 按现在的节奏一年读不完几本。建议：每天固定 20 分钟阅读（睡前/通勤），把"读书打卡"设成每日习惯拿到游戏时间奖励。'
+                        : '✅ 输入节奏健康。建议：每读完一本就写 3 条笔记并沉淀为灵感便签，让"读"变成"产出"。'
+                },
+                {
+                    icon: '💡', label: '一年后灵感资产',
+                    val: `${yearNotes + notes.filter(n => !n.deleted).length} 条`, now: `现有 ${notes.filter(n => !n.deleted).length} 条`,
+                    sug: note30 < 5
+                        ? '⚠️ 想法产出太慢。建议：热点转灵感 + 读书笔记沉淀两条管道都用起来，每天至少记 1 条。'
+                        : '✅ 灵感产出了，建议：每周挑 1 条灵感转成脚本/素材，别让它们躺在便签里。'
+                },
+                {
+                    icon: '🎮', label: '一年后游戏时长',
+                    val: `${Math.round(yearGameMin / 60)} 小时`, now: `日均 ${Math.round(avgGamePerDay)} 分钟`,
+                    sug: avgGamePerDay > 90
+                        ? '⚠️ 日均游戏超过 1.5 小时，一年就是 500+ 小时。建议：用"消耗制"管住自己，只花打卡赚来的时间。'
+                        : '✅ 娱乐节奏可控。游戏时间本来就是奖励，保持就好。'
+                },
+                {
+                    icon: '⏳', label: '一年后时间块',
+                    val: `${yearDeep} 个`, now: `现有 ${weekEvents.length} 个`,
+                    sug: weekEvents.length < 10
+                        ? '⚠️ 时间块太少，时间在裸奔。建议：每天睡前排好明天的 3 个时间块（含开始/结束时间），周末复盘完成率。'
+                        : '✅ 规划习惯已建立。建议：关注完成率而非数量，把每个时间块的产出写进备注。'
+                },
+                {
+                    icon: '💰', label: '一年后订阅收入',
+                    val: `¥${yearIncome.toLocaleString()}`, now: `当前月 ¥${memAmount.toLocaleString()}`,
+                    sug: memAmount < 500
+                        ? '⚠️ 财务复利还没滚起来。建议：梳理可量化的收入来源（商单/自媒体/游戏），每季度增加一个管道。'
+                        : '✅ 已有被动收入基础。建议：把复利面板的财务指数盯到 80+，新增订阅时及时记录。'
+                }
             ];
             const box = document.getElementById('cpPredictions');
             if (!box) return;
@@ -17286,47 +17604,39 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                     <span class="cp-pred-icon">${p.icon}</span>
                     <span class="cp-pred-main">
                         <div class="cp-pred-label">${p.label}</div>
-                        <div class="cp-pred-val">${p.val} <span class="cp-pred-arrow">→</span> <span style="font-size:12px;color:#999;">${p.now}</span></div>
+                        <div class="cp-pred-val">${p.val} <span class="cp-pred-arrow">→</span> <span class="cp-pred-now">${p.now}</span></div>
+                        <div class="cp-pred-sug">${p.sug}</div>
                     </span>
                 </div>`).join('');
-            // 综合洞察
+            // 综合洞察：不只报最强最弱，给"下一步动作"
             const top = CP_DIM_DEFS.slice().sort((a, b) => (dims[b.key] || 0) - (dims[a.key] || 0))[0];
             const low = CP_DIM_DEFS.slice().sort((a, b) => (dims[a.key] || 0) - (dims[b.key] || 0))[0];
             const insight = document.getElementById('cpInsight');
             if (insight) {
-                insight.innerHTML = `🧠 <b>复利洞察：</b>你的最强复利是「${top.name}」（${dims[top.key] || 0} 分）；最需要补的是「${low.name}」（${dims[low.key] || 0} 分）。一年后的你，取决于今天开始把最弱的那条链滚起来。`;
+                let chainSug = '';
+                if (low.key === 'health') chainSug = '先把早睡/运动设成习惯并开启游戏时间奖励，让身体为你"充电"——健康是认知的底层硬件。';
+                else if (low.key === 'cognition') chainSug = '打开读书看板挑一本概要库里的书，每天打卡 20 分钟——输入会在 90 天后显现。';
+                else if (low.key === 'time') chainSug = '明天就给最重要的 3 件事排上时间块（含起止时间），一周后回来看看时间指数涨了多少。';
+                else if (low.key === 'product') chainSug = '从灵感库里挑一条，今天就用"灵感→脚本"把它做成一版脚本草稿——产品复利从落地开始。';
+                else if (low.key === 'finance') chainSug = '给现有订阅续期日期设进日历，再调研一个可复利的收入管道——财务放大一切。';
+                else if (low.key === 'network') chainSug = '本周主动联系一位合作方/老朋友，把关系任务加进日历——人脉复利靠"记得"积累。';
+                else if (low.key === 'content') chainSug = '把最近一条灵感写成内容发出去（图文/短视频皆可）——内容会反哺身份。';
+                else chainSug = '把一条近期完成的灵感/作品归档进"内容资产库"，让产出自带复利。';
+                insight.innerHTML = `🧠 <b>复利洞察：</b>你的最强复利是「${top.name}」（${dims[top.key] || 0} 分），最需要补的是「${low.name}」（${dims[low.key] || 0} 分）。<br>🎯 <b>下一步动作：</b>${chainSug}`;
             }
         }
 
-        // 复利飞轮四链（健康→认知 / 时间→产品 / 财务→人脉 / 内容→身份）
-        function cpRenderWheel() {
-            const box = document.getElementById('cpWheel');
-            if (!box) return;
-            const pairs = [
-                ['💪', '健康', '→', '🧠', '认知', '#14b8a6'],
-                ['⏰', '时间', '→', '📦', '产品', '#38bdf8'],
-                ['💰', '财务', '→', '🤝', '人脉', '#fbbf24'],
-                ['📝', '内容', '→', '🏆', '身份', '#a78bfa']
-            ];
-            box.innerHTML = pairs.map(([i1, n1, ar, i2, n2, c]) => `
-                <div style="background:#faf9f7;border:1px solid #efebe4;border-radius:10px;padding:10px;text-align:center;">
-                    <div style="font-size:20px;">${i1}</div>
-                    <div style="font-size:12px;font-weight:600;color:#555;margin:2px 0;">${n1}</div>
-                    <div style="color:${c};font-size:12px;">→ 支撑/催化 →</div>
-                    <div style="font-size:20px;margin-top:2px;">${i2}</div>
-                    <div style="font-size:12px;font-weight:600;color:#555;">${n2}</div>
-                </div>`).join('');
-        }
-
-        // 主渲染
+        // ===== 主渲染 =====
         function renderCompoundPage() {
             const { dims, total } = cpCompute();
             const totalEl = document.getElementById('cpTotalScore');
             if (totalEl) totalEl.textContent = total;
             cpRenderRadar(dims);
             cpRenderDims(dims);
-            cpPredict(dims);
             cpRenderWheel();
+            cpRenderAch();
+            cpRenderAI();
+            cpPredict(dims);
         }
         if (typeof window.__NIKO_GAME_TEST__ !== 'undefined') renderCompoundPage();
 // ===== 育儿手册 =====
