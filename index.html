@@ -6323,6 +6323,13 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         body.dark-mode .cp-ai-regenerate:hover { background:#2a2340; }
         .cp-refresh { font-size: 11px; color: #8b5cf6; cursor: pointer; margin-left:auto; padding: 3px 10px; border: 1px solid #c4b5fd; border-radius: 12px; }
         .cp-refresh:hover { background: #ede9fe; }
+        body.dark-mode .cp-refresh:hover { background: #2a2340; }
+        .cp-invest-row { display:flex; align-items:center; gap:8px; padding:6px 10px; background:#faf9f7; border-radius:8px; margin-bottom:4px; font-size:12px; }
+        body.dark-mode .cp-invest-row { background:#232335; }
+        .cp-invest-input { padding:6px 8px; border:1px solid #ddd; border-radius:8px; font-size:12px; }
+        body.dark-mode .cp-invest-input { background:#232335; border-color:#2e2e42; color:#ddd; }
+        .cp-invest-btn { padding:6px 14px; background:#8b5cf6; color:#fff; border:none; border-radius:8px; font-size:12px; cursor:pointer; white-space:nowrap; }
+        .cp-invest-btn:hover { background:#7c3aed; }
 /* ===== 育儿手册专属CSS ===== */
         .parenting-page { display: flex; flex-direction: column; gap: 14px; }
         .parenting-stats {
@@ -8110,6 +8117,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                         <div class="cp-card">
                             <div class="cp-card-title">🎯 八维复利指数 <span>点击格子看说明</span></div>
                             <div class="cp-dims" id="cpDims"></div>
+                            <div style="margin-top:14px;">
+                                <div class="cp-card-title" style="margin-bottom:8px;">💰 投资资产 <span>录入本金和收益，计算财务复利</span></div>
+                                <div id="cpInvestBox" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;"></div>
+                                <div id="cpInvestList" style="margin-top:10px;"></div>
+                            </div>
                             <div style="margin-top:14px;">
                                 <div class="cp-card-title" style="margin-bottom:8px;">🧭 复利飞轮 <span>四链循环</span></div>
                                 <div class="cp-wheel" id="cpWheel"></div>
@@ -17217,7 +17229,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             { key: 'cognition', name: '认知复利', icon: '🧠', color: '#34d399', desc: '输入沉淀。基于读书本数、打卡频率与笔记数。' },
             { key: 'time',    name: '时间复利', icon: '⏰', color: '#38bdf8', desc: '时间投入产出。基于本周时间块覆盖与完成度。' },
             { key: 'product', name: '产品复利', icon: '📦', color: '#818cf8', desc: '产出积累。基于便签/脚本类内容的新增数量。' },
-            { key: 'finance', name: '财务复利', icon: '💰', color: '#fbbf24', desc: '收入资产积累。基于会员订阅金额与数量。' },
+            { key: 'finance', name: '财务复利', icon: '💰', color: '#fbbf24', desc: '可复利资产积累。基于投资本金与累计收益（非日常支出）。' },
             { key: 'network', name: '人脉复利', icon: '🤝', color: '#fb923c', desc: '关系连接。基于关系轨道任务与合作线索。' },
             { key: 'content', name: '内容复利', icon: '📝', color: '#f472b6', desc: '内容资产沉淀。基于便签/文案/梗/热点的产出量。' },
             { key: 'identity', name: '身份复利', icon: '🏆', color: '#a78bfa', desc: '个人品牌。内容+产品+人脉的综合体现。' }
@@ -17274,10 +17286,10 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const recentNotes = notes.filter(n => !n.deleted && n.createdAt && n.createdAt.slice(0, 10) >= cut30);
             dims.product = cpClamp(Math.min(50, active.length * 3) + Math.min(50, recentNotes.length * 8));
 
-            const memberships = safeStorage.get('niko_memberships', []);
-            const memAmount = cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0);
-            const memActive = cpCount(memberships, m => !m.status || m.status !== 'expired');
-            dims.finance = cpClamp(Math.min(60, memActive * 12) + Math.min(40, memAmount / 500 * 40));
+            const investments = safeStorage.get('niko_investments', []);
+            const invPrincipal = cpSum(investments, inv => Number(inv.principal) || 0);
+            const invProfit = cpSum(investments, inv => Number(inv.profit) || Number(inv.return) || 0);
+            dims.finance = cpClamp(Math.min(50, invPrincipal / 10000 * 50) + Math.min(50, Math.max(0, invProfit) / 5000 * 50));
 
             const relEvents = events.filter(e => e.track === 'relationship' && e.startDate >= cut30);
             dims.network = cpClamp(Math.min(100, relEvents.length * 12));
@@ -17323,14 +17335,12 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             });
             const dataPts = CP_DIM_DEFS.map((d, i) => pt(i, R * (scores[d.key] / 100)).join(',')).join(' ');
             html += `<polygon points="${dataPts}" fill="rgba(139,92,246,.22)" stroke="#8b5cf6" stroke-width="1.5"/>`;
-            // 标签固定在外圈（R+22 放名称、R+36 放分值），避免与中心/彼此重叠
+            // 标签：名称+分值合为一行放在 R+28，加白色描边避免相邻维度重叠
             CP_DIM_DEFS.forEach((d, i) => {
                 const [x, y] = pt(i, R * (scores[d.key] / 100));
                 html += `<circle cx="${x}" cy="${y}" r="3" fill="${d.color}"/>`;
-                const [lx, ly] = pt(i, R + 22);
-                html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="11.5" font-weight="500" fill="${d.color}">${d.name}</text>`;
-                const [vx, vy] = pt(i, R + 38);
-                html += `<text x="${vx}" y="${vy}" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="bold" fill="${d.color}">${scores[d.key]}</text>`;
+                const [lx, ly] = pt(i, R + 28);
+                html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="${d.color}" paint-order="stroke" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linejoin="round">${d.icon}${d.name}<tspan dx="3" font-size="12" font-weight="800">${scores[d.key]}</tspan></text>`;
             });
             html += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="bold" fill="#8b5cf6">复利</text>`;
             svg.innerHTML = html;
@@ -17373,28 +17383,89 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 </div>`).join('');
         }
 
-        // ===== 成就徽章（20 个，全部由真实数据判定） =====
+        // ===== 成就徽章（71 个，全部由真实数据判定） =====
         const CP_ACHIEVEMENTS = [
-            { id: 'a01', icon: '🐣', name: '初入江湖', desc: '完成第 1 次习惯打卡', check: d => d.habitTotal >= 1 },
-            { id: 'a02', icon: '🔥', name: '七日连击', desc: '连续打卡 7 天', check: d => d.habitStreak >= 7 },
-            { id: 'a03', icon: '⚡', name: '三十铁人', desc: '近 30 天打卡 ≥ 20 天', check: d => d.habit30 >= 20 },
-            { id: 'a04', icon: '🌅', name: '早鸟认证', desc: '累计 30 次早间打卡', check: d => d.habitTotal >= 30 },
-            { id: 'a05', icon: '📚', name: '翻开第一页', desc: '书架添加第 1 本书', check: d => d.books >= 1 },
-            { id: 'a06', icon: '🏛', name: '书山有路', desc: '读完 1 本书', check: d => d.booksDone >= 1 },
-            { id: 'a07', icon: '📖', name: '深耕细读', desc: '累计读完 5 本', check: d => d.booksDone >= 5 },
-            { id: 'a08', icon: '📝', name: '笔记匠人', desc: '写下 10 条读书笔记', check: d => d.bookNotes >= 10 },
-            { id: 'a09', icon: '💡', name: '灵感火花', desc: '创建第 1 张便签', check: d => d.notes >= 1 },
-            { id: 'a10', icon: '🌊', name: '灵感泉涌', desc: '便签达到 50 张', check: d => d.notes >= 50 },
-            { id: 'a11', icon: '⏰', name: '时间主宰', desc: '创建过 20 个时间块', check: d => d.timeBlocks >= 20 },
-            { id: 'a12', icon: '✅', name: '任务终结者', desc: '完成 50 个任务', check: d => d.doneEvents >= 50 },
-            { id: 'a13', icon: '🎮', name: '游戏人生', desc: '游戏时间累计 10 小时', check: d => d.gameMin >= 600 },
-            { id: 'a14', icon: '💰', name: '财务觉醒', desc: '记录第 1 笔订阅', check: d => d.memberships >= 1 },
-            { id: 'a15', icon: '📈', name: '月入千元', desc: '订阅月额 ≥ ¥1000', check: d => d.memAmount >= 1000 },
-            { id: 'a16', icon: '🎯', name: '本周全勤', desc: '本周时间块完成率 ≥ 80%', check: d => d.weekDoneRate >= 0.8 },
-            { id: 'a17', icon: '🧭', name: '复利入门', desc: '综合指数 ≥ 30', check: d => d.total >= 30 },
-            { id: 'a18', icon: '🚀', name: '复利进阶', desc: '综合指数 ≥ 60', check: d => d.total >= 60 },
-            { id: 'a19', icon: '👑', name: '复利大师', desc: '综合指数 ≥ 90', check: d => d.total >= 90 },
-            { id: 'a20', icon: '🌀', name: '飞轮运转', desc: '八维全部 ≥ 40（无短板）', check: d => d.allDims40 }
+            // --- 习惯打卡 (12) ---
+            { id: 'a01', icon: '🐣', name: '初入江湖', desc: '完成第1次习惯打卡', check: d => d.habitTotal >= 1 },
+            { id: 'a02', icon: '🔥', name: '七日连击', desc: '连续打卡7天', check: d => d.habitStreak >= 7 },
+            { id: 'a03', icon: '⚡', name: '三十铁人', desc: '近30天打卡≥20天', check: d => d.habit30 >= 20 },
+            { id: 'a04', icon: '🌅', name: '早鸟认证', desc: '累计30次打卡', check: d => d.habitTotal >= 30 },
+            { id: 'a21', icon: '💎', name: '百日筑基', desc: '累计打卡100次', check: d => d.habitTotal >= 100 },
+            { id: 'a22', icon: '🏆', name: '习惯千锤', desc: '累计打卡500次', check: d => d.habitTotal >= 500 },
+            { id: 'a23', icon: '📅', name: '半月不断', desc: '连续打卡15天', check: d => d.habitStreak >= 15 },
+            { id: 'a24', icon: '🎯', name: '月度全勤', desc: '近30天打卡≥25天', check: d => d.habit30 >= 25 },
+            { id: 'a25', icon: '🌱', name: '习惯播种', desc: '创建5个习惯', check: d => d.habitCount >= 5 },
+            { id: 'a26', icon: '🌳', name: '习惯森林', desc: '创建10个习惯', check: d => d.habitCount >= 10 },
+            { id: 'a27', icon: '🏔', name: '三十日不辍', desc: '连续打卡30天', check: d => d.habitStreak >= 30 },
+            { id: 'a28', icon: '⭐', name: '千日之功', desc: '累计打卡1000次', check: d => d.habitTotal >= 1000 },
+            // --- 读书 (10) ---
+            { id: 'a05', icon: '📚', name: '翻开第一页', desc: '书架添加第1本书', check: d => d.books >= 1 },
+            { id: 'a06', icon: '🏛', name: '书山有路', desc: '读完1本书', check: d => d.booksDone >= 1 },
+            { id: 'a07', icon: '📖', name: '深耕细读', desc: '累计读完5本', check: d => d.booksDone >= 5 },
+            { id: 'a08', icon: '📝', name: '笔记匠人', desc: '写下10条读书笔记', check: d => d.bookNotes >= 10 },
+            { id: 'a29', icon: '📚', name: '藏书家', desc: '书架达到10本', check: d => d.books >= 10 },
+            { id: 'a30', icon: '🏛', name: '私人图书馆', desc: '书架达到30本', check: d => d.books >= 30 },
+            { id: 'a31', icon: '🏃', name: '阅读马拉松', desc: '累计读完10本', check: d => d.booksDone >= 10 },
+            { id: 'a32', icon: '🎓', name: '读书百卷', desc: '累计读完20本', check: d => d.booksDone >= 20 },
+            { id: 'a33', icon: '✍️', name: '笔记百条', desc: '读书笔记50条', check: d => d.bookNotes >= 50 },
+            { id: 'a34', icon: '📆', name: '读书达人', desc: '近30天打卡15次', check: d => d.bookLogs30 >= 15 },
+            // --- 便签/灵感 (8) ---
+            { id: 'a09', icon: '💡', name: '灵感火花', desc: '创建第1张便签', check: d => d.notes >= 1 },
+            { id: 'a10', icon: '🌊', name: '灵感泉涌', desc: '便签达到50张', check: d => d.notes >= 50 },
+            { id: 'a35', icon: '🌾', name: '灵感丰收', desc: '便签达到100张', check: d => d.notes >= 100 },
+            { id: 'a36', icon: '💎', name: '灵感富翁', desc: '便签达到200张', check: d => d.notes >= 200 },
+            { id: 'a37', icon: '🏰', name: '灵感帝国', desc: '便签达到500张', check: d => d.notes >= 500 },
+            { id: 'a38', icon: '⚡', name: '日产灵感', desc: '近30天新增10条', check: d => d.notes30 >= 10 },
+            { id: 'a39', icon: '🚀', name: '灵感机器', desc: '近30天新增20条', check: d => d.notes30 >= 20 },
+            { id: 'a40', icon: '🌟', name: '灵感星河', desc: '近30天新增50条', check: d => d.notes30 >= 50 },
+            // --- 时间/任务 (10) ---
+            { id: 'a11', icon: '⏰', name: '时间主宰', desc: '创建20个时间块', check: d => d.timeBlocks >= 20 },
+            { id: 'a12', icon: '✅', name: '任务终结者', desc: '完成50个任务', check: d => d.doneEvents >= 50 },
+            { id: 'a41', icon: '🗺️', name: '时间规划师', desc: '创建50个时间块', check: d => d.timeBlocks >= 50 },
+            { id: 'a42', icon: '📊', name: '时间管家', desc: '创建100个时间块', check: d => d.timeBlocks >= 100 },
+            { id: 'a43', icon: '🎖️', name: '效率专家', desc: '完成100个任务', check: d => d.doneEvents >= 100 },
+            { id: 'a44', icon: '🌾', name: '任务收割机', desc: '完成200个任务', check: d => d.doneEvents >= 200 },
+            { id: 'a45', icon: '⚔️', name: '任务千杀', desc: '完成500个任务', check: d => d.doneEvents >= 500 },
+            { id: 'a16', icon: '🎯', name: '本周全勤', desc: '本周完成率≥80%', check: d => d.weekDoneRate >= 0.8 },
+            { id: 'a46', icon: '💯', name: '本周满分', desc: '本周完成率100%', check: d => d.weekDoneRate >= 1 },
+            { id: 'a47', icon: '🔥', name: '效率狂魔', desc: '本周完成率≥90%', check: d => d.weekDoneRate >= 0.9 },
+            // --- 游戏时间 (5) ---
+            { id: 'a13', icon: '🎮', name: '游戏人生', desc: '游戏时间累计10小时', check: d => d.gameMin >= 600 },
+            { id: 'a48', icon: '🕹️', name: '赚时达人', desc: '游戏累计赚取30小时', check: d => d.gameMin >= 1800 },
+            { id: 'a49', icon: '💰', name: '时间富翁', desc: '游戏累计赚取60小时', check: d => d.gameMin >= 3600 },
+            { id: 'a50', icon: '👑', name: '游戏老炮', desc: '游戏累计100小时', check: d => d.gameMin >= 6000 },
+            { id: 'a51', icon: '⚖️', name: '收支平衡', desc: '游戏消耗≥20小时', check: d => d.gameSpentMin >= 1200 },
+            // --- 投资财务 (8) ---
+            { id: 'a52', icon: '🏦', name: '投资入门', desc: '记录第1笔投资', check: d => d.invCount >= 1 },
+            { id: 'a53', icon: '💵', name: '万元资产', desc: '投资本金≥¥1万', check: d => d.invPrincipal >= 10000 },
+            { id: 'a54', icon: '💴', name: '五万元户', desc: '投资本金≥¥5万', check: d => d.invPrincipal >= 50000 },
+            { id: 'a55', icon: '💶', name: '十万元户', desc: '投资本金≥¥10万', check: d => d.invPrincipal >= 100000 },
+            { id: 'a56', icon: '💰', name: '百万资产', desc: '投资本金≥¥100万', check: d => d.invPrincipal >= 1000000 },
+            { id: 'a57', icon: '📈', name: '收益破千', desc: '累计收益≥¥1千', check: d => d.invProfit >= 1000 },
+            { id: 'a58', icon: '📊', name: '收益过万', desc: '累计收益≥¥1万', check: d => d.invProfit >= 10000 },
+            { id: 'a59', icon: '🎯', name: '收益率10%', desc: '投资收益率≥10%', check: d => d.invProfitRate >= 10 },
+            // --- 内容/文案/梗 (6) ---
+            { id: 'a60', icon: '✍️', name: '文案新手', desc: '文案库达到10条', check: d => d.copies >= 10 },
+            { id: 'a61', icon: '📖', name: '文案库50', desc: '文案库达到50条', check: d => d.copies >= 50 },
+            { id: 'a62', icon: '📚', name: '文案大师', desc: '文案库达到100条', check: d => d.copies >= 100 },
+            { id: 'a63', icon: '😂', name: '梗王', desc: '梗文化达到30条', check: d => d.memes >= 30 },
+            { id: 'a64', icon: '🤣', name: '梗帝', desc: '梗文化达到50条', check: d => d.memes >= 50 },
+            { id: 'a65', icon: '🔍', name: '热点猎人', desc: '热点条目达到20条', check: d => d.hotItems >= 20 },
+            // --- 人脉 (3) ---
+            { id: 'a66', icon: '🤝', name: '社交新手', desc: '关系任务5个', check: d => d.relEvents >= 5 },
+            { id: 'a67', icon: '🌐', name: '社交达人', desc: '关系任务15个', check: d => d.relEvents >= 15 },
+            { id: 'a68', icon: '🔗', name: '人脉广博', desc: '关系任务30个', check: d => d.relEvents >= 30 },
+            // --- 日记 (3) ---
+            { id: 'a69', icon: '📓', name: '日记新手', desc: '写5篇日记', check: d => d.diaryCount >= 5 },
+            { id: 'a70', icon: '📔', name: '日记达人', desc: '写20篇日记', check: d => d.diaryCount >= 20 },
+            { id: 'a71', icon: '📜', name: '日记大师', desc: '写50篇日记', check: d => d.diaryCount >= 50 },
+            // --- 综合/复利 (6) ---
+            { id: 'a17', icon: '🧭', name: '复利入门', desc: '综合指数≥30', check: d => d.total >= 30 },
+            { id: 'a18', icon: '🚀', name: '复利进阶', desc: '综合指数≥60', check: d => d.total >= 60 },
+            { id: 'a19', icon: '👑', name: '复利大师', desc: '综合指数≥90', check: d => d.total >= 90 },
+            { id: 'a20', icon: '🌀', name: '飞轮运转', desc: '八维全部≥40', check: d => d.allDims40 },
+            { id: 'a72', icon: '⬡', name: '六边形战士', desc: '八维全部≥50', check: d => d.allDims50 },
+            { id: 'a73', icon: '⬢', name: '八边形战士', desc: '八维全部≥60', check: d => d.allDims60 }
         ];
 
         // 收集成就判定所需的数据快照
@@ -17406,7 +17477,13 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const notes = safeStorage.get('niko_inspiration_notes', []);
             const events = safeStorage.get('work_calendar_events', []);
             const game = safeStorage.get('niko_game_time', {});
-            const memberships = safeStorage.get('niko_memberships', []);
+            const gamePlayLogs = safeStorage.get('niko_game_play_logs', []);
+            const investments = safeStorage.get('niko_investments', []);
+            const copies = safeStorage.get('niko_copy_library', []);
+            const memes = safeStorage.get('niko_memes', []);
+            const diary = safeStorage.get('niko_diary_entries', []);
+            const bookLogs = safeStorage.get('niko_book_logs', []);
+            const hotItems = safeStorage.get('niko_hot_items', []);
             const cut30 = cp30days();
             const [ws, we] = cpWeekRange();
             const habitDates = new Set(habitLogs.map(l => l.date));
@@ -17423,22 +17500,39 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const withTime = weekEvents.filter(e => e.startTime);
             const weekDoneRate = withTime.length ? cpCount(withTime, e => e.status === 'done') / withTime.length : 0;
             const { dims, total } = cpCompute();
+            const invPrincipal = cpSum(investments, inv => Number(inv.principal) || 0);
+            const invProfit = cpSum(investments, inv => Number(inv.profit) || Number(inv.return) || 0);
+            const gameSpentMin = cpSum(gamePlayLogs, l => l.type === 'spend' ? (l.minutes || 0) : 0);
             return {
                 habitTotal: habitLogs.length,
                 habitStreak: streak,
                 habit30: cpCount(habitLogs, l => l.date >= cut30),
+                habitCount: habits.length,
                 books: books.length,
                 booksDone: cpCount(books, b => b.status === 'done'),
                 bookNotes: bookNotes.length,
+                bookLogs30: cpCount(bookLogs, l => l.date >= cut30),
                 notes: notes.filter(n => !n.deleted).length,
+                notes30: cpCount(notes, n => !n.deleted && n.createdAt && n.createdAt.slice(0, 10) >= cut30),
                 timeBlocks: cpCount(events, e => e.startTime),
                 doneEvents: cpCount(events, e => e.status === 'done'),
                 gameMin: (game.totalEarned || 0) + (game.balance || 0),
-                memberships: memberships.length,
-                memAmount: cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0),
+                gameSpentMin: gameSpentMin,
+                invCount: investments.length,
+                invPrincipal,
+                invProfit,
+                invProfitRate: invPrincipal > 0 ? (invProfit / invPrincipal * 100) : 0,
+                copies: copies.length,
+                memes: memes.length,
+                hotItems: hotItems.length,
+                diaryCount: diary.filter(d => !d.deleted).length,
+                relEvents: cpCount(events, e => e.track === 'relationship'),
                 weekDoneRate,
                 total,
-                allDims40: Object.values(dims).every(v => v >= 40)
+                dims,
+                allDims40: Object.values(dims).every(v => v >= 40),
+                allDims50: Object.values(dims).every(v => v >= 50),
+                allDims60: Object.values(dims).every(v => v >= 60)
             };
         }
 
@@ -17524,7 +17618,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (dims.cognition < 40) advice.push(strict ? '读书打卡太少，输入不够，别指望输出。' : '每天留 20 分钟读书，输入会慢慢积累成你的底气。');
             if (dims.time < 40) advice.push(strict ? '时间块都没几个，你的时间在裸奔。' : '试着给明天排 3 个时间块，把时间抓回自己手里。');
             if (dims.product < 40) advice.push(strict ? '想法一堆不落地 = 零产出。挑一个做出来。' : '选一条最近的灵感把它做成成品，你会感受到"完成"的力量。');
-            if (dims.finance < 40) advice.push(strict ? '收入来源太单一，复利放大器没开。' : '可以考虑拓展一个收入来源，财务复利需要更多管道。');
+            if (dims.finance < 40) advice.push(strict ? '投资资产太少了，复利引擎没启动。' : '可以考虑开始小额投资，哪怕每月 500 也比纯消费强。');
             if (dims.network < 40) advice.push(strict ? '人脉账户几乎是空的，别做孤岛。' : '主动联系一位老朋友吧，人脉也是需要维护的复利。');
             if (dims.content < 40) advice.push(strict ? '内容产出太少，你的作品没人看见。' : '把最近的一个灵感发出去，内容复利从第一篇开始。');
             if (advice.length === 0) advice.push(strict ? '看起来都在线，但别让"看起来不错"骗了你——加大剂量。' : '各方面都不错！下一步是挑一条链加倍投入，让它变成你的王牌。');
@@ -17545,7 +17639,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const bookLogs = safeStorage.get('niko_book_logs', []);
             const gameLogs = safeStorage.get('niko_game_play_logs', []);
             const events = safeStorage.get('work_calendar_events', []);
-            const memberships = safeStorage.get('niko_memberships', []);
+            const investments = safeStorage.get('niko_investments', []);
 
             const monthBookLogs = cpCount(bookLogs, l => l.date >= cut30);
             const yearBooks = Math.round(monthBookLogs / 30 * 365) || books.length;
@@ -17556,8 +17650,9 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const yearGameMin = Math.round(avgGamePerDay * 365);
             const weekEvents = events.filter(e => e.startTime);
             const yearDeep = Math.round(weekEvents.length / 4 * 52);
-            const memAmount = cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0);
-            const yearIncome = Math.round(memAmount * 12);
+            const invPrincipal = cpSum(investments, inv => Number(inv.principal) || 0);
+            const invProfit = cpSum(investments, inv => Number(inv.profit) || Number(inv.return) || 0);
+            const yearAssets = Math.round((invPrincipal + invProfit) * 1.07);
 
             // 每一项都带"这意味着什么 + 该怎么做"
             const preds = [
@@ -17590,11 +17685,11 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                         : '✅ 规划习惯已建立。建议：关注完成率而非数量，把每个时间块的产出写进备注。'
                 },
                 {
-                    icon: '💰', label: '一年后订阅收入',
-                    val: `¥${yearIncome.toLocaleString()}`, now: `当前月 ¥${memAmount.toLocaleString()}`,
-                    sug: memAmount < 500
-                        ? '⚠️ 财务复利还没滚起来。建议：梳理可量化的收入来源（商单/自媒体/游戏），每季度增加一个管道。'
-                        : '✅ 已有被动收入基础。建议：把复利面板的财务指数盯到 80+，新增订阅时及时记录。'
+                    icon: '💰', label: '一年后可投资资产',
+                    val: `¥${yearAssets.toLocaleString()}`, now: `本金 ¥${invPrincipal.toLocaleString()} · 收益 ¥${invProfit.toLocaleString()}`,
+                    sug: invPrincipal < 10000
+                        ? '⚠️ 投资本金还很少。建议：每月定投 500-1000 到指数基金，让复利引擎先转起来。'
+                        : '✅ 已有投资基础。建议：持续定投 + 定期止盈，把复利面板的财务指数盯到 80+。'
                 }
             ];
             const box = document.getElementById('cpPredictions');
@@ -17618,12 +17713,72 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 else if (low.key === 'cognition') chainSug = '打开读书看板挑一本概要库里的书，每天打卡 20 分钟——输入会在 90 天后显现。';
                 else if (low.key === 'time') chainSug = '明天就给最重要的 3 件事排上时间块（含起止时间），一周后回来看看时间指数涨了多少。';
                 else if (low.key === 'product') chainSug = '从灵感库里挑一条，今天就用"灵感→脚本"把它做成一版脚本草稿——产品复利从落地开始。';
-                else if (low.key === 'finance') chainSug = '给现有订阅续期日期设进日历，再调研一个可复利的收入管道——财务放大一切。';
+                else if (low.key === 'finance') chainSug = '在复利面板录入你的投资资产（基金/股票本金和收益），让财务复利看得见——财务放大一切。';
                 else if (low.key === 'network') chainSug = '本周主动联系一位合作方/老朋友，把关系任务加进日历——人脉复利靠"记得"积累。';
                 else if (low.key === 'content') chainSug = '把最近一条灵感写成内容发出去（图文/短视频皆可）——内容会反哺身份。';
                 else chainSug = '把一条近期完成的灵感/作品归档进"内容资产库"，让产出自带复利。';
                 insight.innerHTML = `🧠 <b>复利洞察：</b>你的最强复利是「${top.name}」（${dims[top.key] || 0} 分），最需要补的是「${low.name}」（${dims[low.key] || 0} 分）。<br>🎯 <b>下一步动作：</b>${chainSug}`;
             }
+        }
+
+        // ===== 投资资产管理 =====
+        function cpRenderInvest() {
+            const box = document.getElementById('cpInvestBox');
+            const list = document.getElementById('cpInvestList');
+            if (!box || !list) return;
+            const investments = safeStorage.get('niko_investments', []);
+            const totalP = cpSum(investments, inv => Number(inv.principal) || 0);
+            const totalR = cpSum(investments, inv => Number(inv.profit) || Number(inv.return) || 0);
+            box.innerHTML = `
+                <div style="flex:1;min-width:120px;">
+                    <label style="font-size:11px;color:#888;">名称</label>
+                    <input id="cpInvName" type="text" placeholder="如：沪深300定投" class="cp-invest-input" style="width:100%;margin-top:2px;">
+                </div>
+                <div style="min-width:90px;">
+                    <label style="font-size:11px;color:#888;">本金¥</label>
+                    <input id="cpInvPrincipal" type="number" placeholder="0" class="cp-invest-input" style="width:100%;margin-top:2px;">
+                </div>
+                <div style="min-width:90px;">
+                    <label style="font-size:11px;color:#888;">收益¥</label>
+                    <input id="cpInvProfit" type="number" placeholder="0" class="cp-invest-input" style="width:100%;margin-top:2px;">
+                </div>
+                <button onclick="cpAddInvest()" class="cp-invest-btn">添加</button>
+            `;
+            if (!investments.length) {
+                list.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px;">暂无投资记录，添加第一笔开始追踪财务复利</div>';
+                return;
+            }
+            list.innerHTML = investments.map((inv, i) => {
+                const p = Number(inv.principal) || 0;
+                const r = Number(inv.profit) || Number(inv.return) || 0;
+                return `<div class="cp-invest-row">
+                    <span style="flex:1;font-weight:600;">${escapeHtml(inv.name || '未命名')}</span>
+                    <span style="color:#888;">本金 ¥${p.toLocaleString()}</span>
+                    <span style="color:${r >= 0 ? '#10b981' : '#ef4444'};font-weight:600;">${r >= 0 ? '+' : ''}¥${r.toLocaleString()}</span>
+                    <span onclick="cpDelInvest(${i})" style="cursor:pointer;color:#ef4444;font-size:16px;padding:0 4px;">×</span>
+                </div>`;
+            }).join('') + `<div style="margin-top:6px;font-size:12px;color:#555;font-weight:600;">合计：本金 ¥${totalP.toLocaleString()} · 收益 ¥${totalR.toLocaleString()} · 总资产 ¥${(totalP + totalR).toLocaleString()}</div>`;
+        }
+        function cpAddInvest() {
+            const name = document.getElementById('cpInvName').value.trim();
+            const principal = Number(document.getElementById('cpInvPrincipal').value) || 0;
+            const profit = Number(document.getElementById('cpInvProfit').value) || 0;
+            if (!name && !principal) return;
+            const investments = safeStorage.get('niko_investments', []);
+            investments.push({ name: name || '投资' + (investments.length + 1), principal, profit, createdAt: new Date().toISOString() });
+            safeStorage.set('niko_investments', investments);
+            document.getElementById('cpInvName').value = '';
+            document.getElementById('cpInvPrincipal').value = '';
+            document.getElementById('cpInvProfit').value = '';
+            cpRenderInvest();
+            renderCompoundPage();
+        }
+        function cpDelInvest(i) {
+            const investments = safeStorage.get('niko_investments', []);
+            investments.splice(i, 1);
+            safeStorage.set('niko_investments', investments);
+            cpRenderInvest();
+            renderCompoundPage();
         }
 
         // ===== 主渲染 =====
@@ -17634,6 +17789,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             cpRenderRadar(dims);
             cpRenderDims(dims);
             cpRenderWheel();
+            cpRenderInvest();
             cpRenderAch();
             cpRenderAI();
             cpPredict(dims);
