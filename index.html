@@ -3245,31 +3245,36 @@
         .market-node-chip.done { opacity: .5; text-decoration: line-through; }
         body.dark-mode .market-node-chip { background: #3b0764; color: #d8b4fe; border-color: #6b21a8; }
 
-        /* ===== 日历中国传统节日 & 纪念日标签 ===== */
-        .cal-fest-chip {
-            display: inline-flex; align-items: center; gap: 4px; font-size: 10px;
+        /* ===== 日历中国传统节日 & 纪念日标签（内联在日期数字旁，不单独占行） ===== */
+        .day-fest-inline {
+            display: inline-flex; align-items: center; gap: 2px; max-width: 110px;
+            overflow: hidden; vertical-align: middle;
+        }
+        .cal-fest-chip-inline {
+            display: inline-flex; align-items: center; gap: 1px; font-size: 8.5px;
             background: #fef3c7; color: #b45309; border: 1px solid #fde68a;
-            border-radius: 10px; padding: 1px 8px; margin: 1px 2px;
-            white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
-            cursor: default;
+            border-radius: 8px; padding: 0 4px; height: 14px; line-height: 14px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62px;
+            cursor: default; vertical-align: middle;
         }
-        body.dark-mode .cal-fest-chip { background: #451a03; color: #fbbf24; border-color: #78350f; }
-        .cal-fest-chip.holiday { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
-        body.dark-mode .cal-fest-chip.holiday { background: #450a0a; color: #f87171; border-color: #7f1d1d; }
-        .cal-mem-chip {
-            display: inline-flex; align-items: center; gap: 4px; font-size: 10px;
+        body.dark-mode .cal-fest-chip-inline { background: #451a03; color: #fbbf24; border-color: #78350f; }
+        .cal-fest-chip-inline.holiday { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        body.dark-mode .cal-fest-chip-inline.holiday { background: #450a0a; color: #f87171; border-color: #7f1d1d; }
+        .cal-mem-chip-inline {
+            display: inline-flex; align-items: center; gap: 1px; font-size: 8.5px;
             background: #fce7f3; color: #db2777; border: 1px solid #fbcfe8;
-            border-radius: 10px; padding: 1px 8px; margin: 1px 2px;
-            white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
-            cursor: pointer;
+            border-radius: 8px; padding: 0 4px; height: 14px; line-height: 14px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62px;
+            cursor: pointer; vertical-align: middle;
         }
-        .cal-mem-chip:hover { background: #fbcfe8; }
-        body.dark-mode .cal-mem-chip { background: #500724; color: #f9a8d4; border-color: #831843; }
-        .cal-extra-chip {
-            display: inline-flex; align-items: center; font-size: 10px;
-            background: #f3f4f6; color: #6b7280; border-radius: 10px; padding: 1px 8px; margin: 1px 2px;
-            cursor: pointer; border: 1px dashed #d1d5db;
+        .cal-mem-chip-inline:hover { background: #fbcfe8; }
+        body.dark-mode .cal-mem-chip-inline { background: #500724; color: #f9a8d4; border-color: #831843; }
+        .cal-extra-chip-inline {
+            display: inline-flex; align-items: center; font-size: 8.5px;
+            background: #f3f4f6; color: #6b7280; border-radius: 8px; padding: 0 4px; height: 14px; line-height: 14px;
+            cursor: pointer; border: 1px dashed #d1d5db; vertical-align: middle;
         }
+        body.dark-mode .cal-extra-chip-inline { background: #1f1f2e; color: #9ca3af; border-color: #444; }
         body.dark-mode .cal-extra-chip { background: #1f2937; color: #9ca3af; border-color: #374151; }
         .mem-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: #faf9f7; margin-bottom: 6px; }
         body.dark-mode .mem-item { background: #232335; }
@@ -3825,6 +3830,25 @@
         body.dark-mode .hot-view-tab { background: #222; color: #aaa; }
         .hot-view-tab:hover { border-color: #888; }
         .hot-view-tab.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+        /* 实时热搜直达链接区 */
+        .hot-live-links {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+            flex-shrink: 0; padding: 8px 12px;
+            background: #f6f8fc; border: 1px solid #e3e8f2; border-radius: 10px;
+            font-size: 12px;
+        }
+        body.dark-mode .hot-live-links { background: #1b1b28; border-color: #2c2c3a; }
+        .hot-live-title { font-weight: 600; color: #555; }
+        body.dark-mode .hot-live-title { color: #ccc; }
+        .hot-live-links a {
+            color: #667eea; text-decoration: none; padding: 3px 10px;
+            background: #eef2ff; border-radius: 12px; border: 1px solid #dfe6ff;
+            transition: all .15s;
+        }
+        body.dark-mode .hot-live-links a { background: #232338; border-color: #33334d; color: #a5b4fc; }
+        .hot-live-links a:hover { background: #667eea; color: #fff; }
+        .hot-live-note { font-size: 11px; color: #999; margin-left: 4px; }
 
         .comp-view { display: none; }
         .comp-view.active { display: block; }
@@ -7040,6 +7064,22 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     <span class="hot-view-tab" id="viewTabComp" onclick="switchHotView('comp')">🎯 竞品买量监控</span>
                 </div>
 
+                <!-- 实时热搜直达（点开真实平台热榜，验证/追实时） -->
+                <div class="hot-live-links" id="hotLiveLinks">
+                    <span class="hot-live-title">📡 实时热榜直达：</span>
+                    <a href="https://s.weibo.com/top/summary" target="_blank" rel="noopener" onclick="event.stopPropagation()">微博热搜</a>
+                    <a href="https://www.douyin.com/hot" target="_blank" rel="noopener" onclick="event.stopPropagation()">抖音热榜</a>
+                    <a href="https://www.bilibili.com/v/popular/rank/all" target="_blank" rel="noopener" onclick="event.stopPropagation()">B站热门</a>
+                    <a href="https://www.xiaohongshu.com/explore" target="_blank" rel="noopener" onclick="event.stopPropagation()">小红书</a>
+                    <a href="https://www.kuaishou.com/?isHome=1" target="_blank" rel="noopener" onclick="event.stopPropagation()">快手热榜</a>
+                    <a href="https://top.baidu.com/board?tab=realtime" target="_blank" rel="noopener" onclick="event.stopPropagation()">百度热搜</a>
+                    <a href="https://www.zhihu.com/hot" target="_blank" rel="noopener" onclick="event.stopPropagation()">知乎热榜</a>
+                    <a href="https://trends.google.com/trending?geo=US" target="_blank" rel="noopener" onclick="event.stopPropagation()">美国趋势</a>
+                    <a href="https://trends.google.com/trending?geo=JP" target="_blank" rel="noopener" onclick="event.stopPropagation()">日本趋势</a>
+                    <a href="https://trends.google.com/trending?geo=KR" target="_blank" rel="noopener" onclick="event.stopPropagation()">韩国趋势</a>
+                    <span class="hot-live-note">（本页为 AI 预置示例，点击上方可看各平台实时热榜）</span>
+                </div>
+
                 <!-- ===== 行业热点视图 ===== -->
                 <div id="hotViewMain" style="display:flex;flex-direction:column;gap:16px;flex:1;min-height:0;">
                 <!-- 当月热点排行 -->
@@ -8482,7 +8522,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     '--sidebar-bg': '#1e3527', '--sidebar-text': '#dbe8dd',
                     '--sidebar-hover': '#2a4634', '--sidebar-active': '#34a56f',
                     '--accent': '#2f9e63', '--accent2': '#1f7a4d',
-                    '--card-bg': '#ffffff', '--card-border': '#d6e4d2', '--text': '#2b3b2f', '--muted': '#6b7d70'
+                    '--card-bg': '#f2faf0', '--card-bg-2': '#e4f2e0', '--card-border': '#cfe3ca', '--text': '#24402c', '--muted': '#5f7d68'
                 }
             },
             mocha: {
@@ -8493,7 +8533,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     '--sidebar-bg': '#3a2a1a', '--sidebar-text': '#f0e4d2',
                     '--sidebar-hover': '#4a3a28', '--sidebar-active': '#c8823a',
                     '--accent': '#b96a2e', '--accent2': '#8f4f1f',
-                    '--card-bg': '#fffdf8', '--card-border': '#eadcc6', '--text': '#3c3227', '--muted': '#8a7a66'
+                    '--card-bg': '#fdf6ec', '--card-bg-2': '#f5ead6', '--card-border': '#e6d3b8', '--text': '#3a2f22', '--muted': '#8a7760'
                 }
             },
             ocean: {
@@ -8504,7 +8544,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     '--sidebar-bg': '#0f2c4d', '--sidebar-text': '#d7e7f5',
                     '--sidebar-hover': '#1a3a5e', '--sidebar-active': '#3b82f6',
                     '--accent': '#2563eb', '--accent2': '#1e40af',
-                    '--card-bg': '#ffffff', '--card-border': '#d4e2ee', '--text': '#22303f', '--muted': '#5f7a92'
+                    '--card-bg': '#f0f7fd', '--card-bg-2': '#dcebf8', '--card-border': '#c6ddf0', '--text': '#1f2f40', '--muted': '#5c7a94'
                 }
             },
             lavender: {
@@ -8515,7 +8555,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                     '--sidebar-bg': '#241a3d', '--sidebar-text': '#dcd2ee',
                     '--sidebar-hover': '#33274f', '--sidebar-active': '#8b5cf6',
                     '--accent': '#7c3aed', '--accent2': '#5b21b6',
-                    '--card-bg': '#ffffff', '--card-border': '#dfd4ee', '--text': '#332844', '--muted': '#7d6f96'
+                    '--card-bg': '#f7f3fd', '--card-bg-2': '#eae0f8', '--card-border': '#dcd0f0', '--text': '#2e2440', '--muted': '#7a6a96'
                 }
             }
         };
@@ -8534,6 +8574,72 @@ html[data-theme] .niko-mobile-tab.active { color: var(--accent); }
 html[data-theme] .niko-mobile-tab.active .tab-icon { color: var(--accent); }
 html[data-theme] .theme-chip.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft, rgba(102,126,234,.25)); }
 html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
+/* ===== 卡片级组件统一套用主题色（浅色主题不再全白） ===== */
+html[data-theme] .panel-card,
+html[data-theme] .task-card,
+html[data-theme] .time-block,
+html[data-theme] .day-cell,
+html[data-theme] .day-detail-panel,
+html[data-theme] .board-card,
+html[data-theme] .stat-card,
+html[data-theme] .hot-item,
+html[data-theme] .deal-card,
+html[data-theme] .book-card,
+html[data-theme] .book-rec-card,
+html[data-theme] .book-checkin-today,
+html[data-theme] .node-card,
+html[data-theme] .inbox-item,
+html[data-theme] .tag-item,
+html[data-theme] .ai-item,
+html[data-theme] .comp-item,
+html[data-theme] .hot-cn-plat,
+html[data-theme] .gt-card,
+html[data-theme] .notepad-card,
+html[data-theme] .event-item,
+html[data-theme] .day-task-item,
+html[data-theme] .pomo-card,
+html[data-theme] .data-action-card,
+html[data-theme] .ocr-result,
+html[data-theme] .market-node-card,
+html[data-theme] .cal-fest-chip,
+html[data-theme] .cal-mem-chip,
+html[data-theme] .hot-rank-item { background: var(--card-bg); border-color: var(--card-border); color: var(--text); }
+html[data-theme] .panel-card h3,
+html[data-theme] .task-title,
+html[data-theme] .time-block .title,
+html[data-theme] .board-card .card-title,
+html[data-theme] .book-card-title,
+html[data-theme] .day-task-item .task-title-text { color: var(--text); }
+html[data-theme] .subtitle,
+html[data-theme] .task-desc,
+html[data-theme] .card-desc,
+html[data-theme] .book-card-meta,
+html[data-theme] .hot-desc,
+html[data-theme] .day-task-item .task-info,
+html[data-theme] .gt-empty { color: var(--muted); }
+html[data-theme] .events-container { background: transparent; }
+html[data-theme] .time-blocks-grid,
+html[data-theme] .board-column { background: transparent; }
+/* 次级卡片（hot-cn-plat、表单区等）用更深的主题色 */
+html[data-theme] .hot-cn-plat { background: var(--card-bg-2, var(--card-bg)); }
+html[data-theme] .book-sub-notes,
+html[data-theme] .hot-fav-section,
+html[data-theme] .hot-rank-section { background: transparent; }
+html[data-theme] .form-item input,
+html[data-theme] .form-item select,
+html[data-theme] .form-item textarea,
+html[data-theme] .book-form-grid input,
+html[data-theme] .book-form-grid select,
+html[data-theme] .book-form-grid textarea,
+html[data-theme] .inbox-input,
+html[data-theme] .search-box,
+html[data-theme] .global-search-input { background: var(--card-bg-2, var(--card-bg)); border-color: var(--card-border); color: var(--text); }
+html[data-theme] .modal { background: var(--card-bg); border-color: var(--card-border); }
+html[data-theme] .modal h3,
+html[data-theme] .modal label { color: var(--text); }
+html[data-theme] .day-date { color: var(--text); }
+html[data-theme] .week-header-cell { color: var(--muted); }
+html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); color: var(--muted); }
 `;
         let currentTheme = 'default';
         let prevLightTheme = 'default'; // 记录切换深色前的浅色主题，快速切换不丢
@@ -8546,7 +8652,8 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             const t = NIKO_THEMES[key] || NIKO_THEMES.default;
             currentTheme = key;
             if (!t.dark) prevLightTheme = key;
-            document.body.setAttribute('data-theme', key);
+            document.documentElement.setAttribute('data-theme', key);
+            document.body.setAttribute('data-theme', key); // 兼容个别按 body 取主题的代码
             document.body.classList.toggle('dark-mode', !!t.dark);
             // 同步侧边栏深色按钮状态
             const icon = document.getElementById('darkModeIcon');
@@ -9905,30 +10012,20 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 const dateHeader = document.createElement('div');
                 dateHeader.className = 'day-date';
                 const wdName = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][date.getDay()];
-                dateHeader.innerHTML = `<span><span class="day-weekday">${wdName}</span>${date.getDate()}</span>${dayEvents.length ? `<span class="day-count">${dayEvents.length}</span>` : ''}`;
-                cell.appendChild(dateHeader);
-                // 中国传统节日 & 纪念日标签（受「🏮 节日」「💝 纪念日」开关控制；每格最多 2 个，多的折叠为 +N）
+                // 中国传统节日 & 纪念日标签：内联在日期数字旁边（不单独占行）
                 const festChips = cnFestivalShow ? getFestivalsForDate(dateStr) : [];
                 const memChips = memorialShow ? getMemorialsForDate(dateStr) : [];
+                let inlineTags = '';
                 if (festChips.length || memChips.length) {
-                    const chipWrap = document.createElement('div');
-                    chipWrap.style.cssText = 'display:flex;flex-direction:row;flex-wrap:wrap;gap:2px;margin-top:2px;';
-                    const allChips = [
-                        ...festChips.map(f => `<span class="cal-fest-chip${f.holiday ? ' holiday' : ''}">${f.holiday ? '🎉' : '🏮'} ${escapeHtml(f.name)}</span>`),
-                        ...memChips.map(m => `<span class="cal-mem-chip" title="${escapeHtml((m.note || m.name) + ' · ' + m.date)}" onclick="event.stopPropagation();openMemorialModal()">💝 ${escapeHtml(m.name)}</span>`)
+                    const allTags = [
+                        ...festChips.map(f => `<span class="cal-fest-chip-inline${f.holiday ? ' holiday' : ''}" title="${escapeHtml(f.name)}">${f.holiday ? '🎉' : '🏮'}${escapeHtml(f.name)}</span>`),
+                        ...memChips.map(m => `<span class="cal-mem-chip-inline" title="${escapeHtml((m.note || m.name) + ' · ' + m.date)}" onclick="event.stopPropagation();openMemorialModal()">💝${escapeHtml(m.name)}</span>`)
                     ];
-                    const MAX_CHIPS = 2;
-                    allChips.slice(0, MAX_CHIPS).forEach(c => chipWrap.insertAdjacentHTML('beforeend', c));
-                    if (allChips.length > MAX_CHIPS) {
-                        const more = document.createElement('span');
-                        more.className = 'cal-extra-chip';
-                        more.textContent = `+${allChips.length - MAX_CHIPS} 更多`;
-                        more.title = '打开纪念日管理 / 查看节日';
-                        more.addEventListener('click', (e) => { e.stopPropagation(); openMemorialModal(); });
-                        chipWrap.appendChild(more);
-                    }
-                    cell.appendChild(chipWrap);
+                    const MAX_TAGS = 2;
+                    inlineTags = `<span class="day-fest-inline">${allTags.slice(0, MAX_TAGS).join('')}${allTags.length > MAX_TAGS ? `<span class="cal-extra-chip-inline" title="打开纪念日管理 / 查看节日">+${allTags.length - MAX_TAGS}</span>` : ''}</span>`;
                 }
+                dateHeader.innerHTML = `<span style="display:inline-flex;align-items:center;gap:3px;"><span class="day-weekday">${wdName}</span>${date.getDate()}${inlineTags}</span>${dayEvents.length ? `<span class="day-count">${dayEvents.length}</span>` : ''}`;
+                cell.appendChild(dateHeader);
                 const eventsContainer = document.createElement('div');
                 eventsContainer.className = 'events-container';
                 dayEvents.forEach(ev => {
@@ -10511,8 +10608,11 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 { title: '「毛坯人生 vs 精装朋友圈」', desc: '现实生活一团糟，但朋友圈必须精致完美的反差现象', detail: '这个对比精准描述了当代年轻人的社交媒体生存状态：现实中可能加班到凌晨、吃泡面、住合租屋，但朋友圈/小红书呈现的是精心修图的美食、旅行、自拍。"毛坯人生"指真实生活的粗糙、混乱、不完美；"精装朋友圈"指经过滤镜、排版、文案打磨的社交形象。这种割裂引发广泛共鸣，也催生了"反精装"潮流——故意发未经修饰的真实生活照。', tags: ['社交媒体', '心理', '自嘲'] },
                 { title: '「科目三」舞蹈', desc: '源自广西婚礼的魔性舞蹈，通过海底捞服务员表演火遍全球，成为文化输出符号', detail: '"科目三"最初是广西民间婚礼上的即兴舞蹈，特点是扭腰、摇花手、滑步，配乐为《一笑江湖》（DJ 版）。2023 年底通过海底捞服务员在顾客生日时表演而爆红，随后席卷 TikTok（海外称"Chinese Street Dance"）。全球各地出现模仿版本：英国皇家芭蕾舞团、俄罗斯芭蕾舞者、非洲小孩都跳过。成为近年最成功的中国民间文化输出之一。', tags: ['舞蹈', '文化输出', ' viral'] },
                 { title: '「挖呀挖」儿歌', desc: '幼儿园老师黄老师教唱《花园种花》儿歌，简单旋律引发全民模仿', detail: '2023 年 4 月，幼儿园老师黄琼（网名"音乐老师花开富贵"）在抖音发布教小朋友唱《花园种花》的视频。歌词"在小小的花园里面挖呀挖呀挖，种小小的种子开小小的花"配合手指动作，因反差萌（甜美老师+幼稚儿歌）而病毒式传播。播放量超 100 亿，衍生出无数改编版本（打工人版、考研版、炒股版）。黄老师直播带货单场销售额破百万，但也引发"幼师能否商业化"的争议。', tags: ['音乐', ' viral', '教育'] },
-                // ===== 主流媒体平台当周热点（2026-08 当周）=====
-                { title: '「打工人周末报复性熬夜」', desc: '微博热搜：周末明明能早睡却疯狂熬夜，被解读为"夺回属于自己的时间"', platform: '微博热搜', detail: '一条"周末舍不得睡"的微博话题登上热搜，引发大规模共鸣。心理学者指出这本质是"补偿性自由"——白天时间被工作侵占，深夜成了唯一能自主支配的时段。评论区大量晒出凌晨刷剧、打游戏、发呆的"报复性熬夜"记录。健康账号顺势科普长期熬夜对心血管与皮肤的影响，衍生出"熬夜修复"商品推荐热潮。', tags: ['社会', '职场', '健康'] },
+                // ===== 主流媒体平台当周热点（2026-08 当周，含真实来源链接）=====
+                { title: '「牛来」烂片逆袭成全民许愿梗', desc: '微博热搜：86分钟动画《牛来》零宣发上映票房7169元，因"牛来=牛市来"被股民当许愿池，几天冲到千万级票房', platform: '微博热搜', link: 'https://weibo.com/ttarticle/p/show?id=2309405333397622096459', detail: '2026年夏天最魔幻的流量故事：国产动画《牛来》8月5日零宣发上映，前9天全国票房7169元，粗糙到被调侃"AI都做不出这么烂"；结果8月14日起突然翻红，单日票房冲到87万，累计破1700万，热搜挂了一整天。核心梗：片名"牛来"谐音"牛市来"被A股股民当许愿咒，晒票根求回本；片中"小牛被石头绊倒"名场面被命名"绊倒体"（谐音半导体），趴地微笑牛被封"半导体老祖"，甚至火到韩国散户。', tags: ['电影', '股市', '网络梗'] },
+                { title: '「绊倒体」小牛表情包席卷全网', desc: '抖音热榜：《牛来》小牛绊倒四脚朝天还微笑的画面，被网友二创为"半导体老祖"表情包', platform: '抖音热榜', link: 'https://www.toutiao.com/w/1873846314022922/', detail: '《牛来》高潮段落小牛被石头绊倒四脚朝天、还露出诡异微笑的镜头，被网友命名为"绊倒体"（谐音"半导体"），黄色小牛成为股民自嘲神兽：半导体板块受冲击时"还能笑着站起来"。表情包从股民朋友圈扩散到全网，韩国散户也用来表达三星/SK海力士波动的心情，一位在韩发展的中国艺人发梗图直接把它顶上韩网热搜。', tags: ['表情包', '股市', '二创'] },
+                { title: '「86分钟电影鸟飞5分钟」', desc: 'B站热门：动画《牛来》开场5分钟纯飞鸟长镜头被剪成梗，"剩下81分钟都在等它落地"', platform: 'B站热搜', link: 'https://weibo.com/3602560841/5332598154855091', detail: 'B站UP主把《牛来》开场5分钟无台词纯飞鸟长镜头剪成视频疯传，话题"86分钟电影开头鸟飞了5分钟"登上热门。网友神评："像电脑屏保""剩下81分钟都在等它落地""开盘集合竞价5分钟，导演把散户的日常拍出来了"。叠加"牛来=牛市来"的许愿梗，飞鸟5分钟被解读成A股9:25-9:30集合竞价后的贤者时间，金牛化工、公牛集团、铜牛信息都被带过热搜。', tags: ['电影', '股市', '搞笑'] },
+                { title: '「演唱会抢票难」黄牛治理再引关注', desc: '微博热搜：热门演唱会开票秒空，实名制与退票机制成讨论焦点', platform: '微博热搜', detail: '多场热门演唱会开票秒空，"抢票难"再度登上微博热搜。网友吐槽黄牛囤票、平台卡顿，呼吁更严格的实名制购票与合理退票机制。票务平台回应称将升级风控、增加候补购票功能。话题也延伸出"文化消费性价比""为情绪价值买单"等讨论。', tags: ['娱乐', '消费', '社会'] },
                 { title: 'AI 修图「一键变装」挑战', desc: '抖音热榜：用 AI 修图 App 一键生成古风/异域/职场造型，全民玩梗', platform: '抖音热榜', detail: 'AI 修图"一键变装"功能在抖音爆火：上传一张自拍，即可生成汉服、赛博朋克、空乘、法官等多种职业造型。话题播放量破 20 亿，明星素人纷纷晒"AI 版自己"。背后是国产 AIGC 图像模型的成熟，多家修图 App 借势冲上应用榜前列。也有声音提醒肖像权与"过度美颜"焦虑问题。', tags: ['AI', '娱乐', '短视频'] },
                 { title: 'B站科技区「AI 眼镜横评」', desc: 'B站热搜：多款 AI 眼镜实测对比，从拍摄到实时翻译到底实不实用', platform: 'B站热搜', detail: 'B站多位科技 UP 主发布 AI 眼镜深度横评，从续航、拍摄画质、实时翻译、导航提示等维度实测。评论区争论焦点从"是不是智商税"转向"续航与重量何时突破"。视频带动 AI 眼镜搜索量翻倍，电商平台相关品类销量明显上涨，成为近期最热的硬件话题。', tags: ['科技', 'AI', '评测'] },
                 { title: '「35 岁真的没有职场竞争力了吗」', desc: '百度热搜：关于中年职场焦虑的讨论，高赞回答提出"能力组合"论', platform: '百度热搜', detail: '百度热搜出现"35 岁是否真的失去职场竞争力"的长篇讨论，多位从业者分享转型经历。高赞回答提出"T 型能力组合"——深耕一个专业领域的同时，叠加沟通、管理、AI 工具等通用能力，用组合优势对冲年龄焦虑。话题也带动"AI 时代哪些岗位更抗衰"的衍生讨论。', tags: ['职场', '社会', '成长'] },
@@ -10589,6 +10689,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                                 tag: tag,
                                 isHot: isHot,
                                 region: '国内',
+                                link: tpl.link || '',
                                 time: `${Math.floor(seededRandom(baseSeed + i * 23 + p.length) * 12) + 1}小时前`
                             });
                         }
@@ -10618,6 +10719,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                         tag: tag,
                         isHot: isHot,
                         region: cat,
+                        link: tpl.link || '',
                         time: `${Math.floor(seededRandom(baseSeed + i * 23 + cat.length) * 12) + 1}小时前`
                     });
                 }
@@ -10855,6 +10957,7 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                         <span>·</span>
                         <span>${item.time}</span>
                         ${regionKey ? `<span>·</span><span>${regionKey}</span>` : ''}
+                        ${item.link ? `<a class="hot-link" href="${escapeHtml(item.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation();markHotRead('${regionKey}','${escapeHtml(item.title)}')" title="打开来源页面查看实时热点">🔗 来源</a>` : ''}
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
                         ${footerHint}${actionBtns}
@@ -13805,20 +13908,16 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
             const p = Math.min(100, Math.max(0, Number(b.progress) || 0));
             const esc = escapeHtml;
 
-            // 推荐语 = 内容概要：优先用户自定义 reason（可能是自己写的读书心得）；
-            // 否则从概要库按书名匹配（前言/书评/内容简介汇总）
-            let recText = b.reason || '';
-            let recSource = 'my';
+            // "这本书讲什么" = 内容概要：优先书籍自身 summary / 概要库匹配 / AI 推荐 seed 的 summary；
+            // 用户手写的 reason 单独显示在下方「我的推荐语/备注」，不再占用概要位置
+            let recText = b.summary || '';
             if (!recText) {
-                // 先从 AI 推荐 seed 的 summary 字段找
-                if (b.recId) {
-                    const rec = bookRec.find(r => r.id === b.recId);
-                    if (rec && rec.summary) { recText = rec.summary; recSource = 'ai'; }
-                }
-                if (!recText) {
-                    const s = bookSummaryOf(b);
-                    if (s) { recText = s; recSource = 'ai'; }
-                }
+                const s = bookSummaryOf(b);
+                if (s) recText = s;
+            }
+            if (!recText && b.recId) {
+                const rec = bookRec.find(r => r.id === b.recId);
+                if (rec && rec.summary) recText = rec.summary;
             }
 
             let html = `
@@ -13839,11 +13938,10 @@ html[data-theme] .theme-chip.active .theme-name { color: var(--accent); }
                 <div class="book-detail-sec">
                     <div class="book-detail-sec-title">📖 这本书讲什么</div>
                     <div class="book-detail-reason" style="font-size:14px;line-height:1.85;min-height:56px;">
-                        ${recText
-                            ? esc(recText)
-                            : '<span style="color:#bbb;font-size:13px;">还没有这本书的内容概要。点击下方「编辑」补充一段话（可写前言/书评/内容简介），或去「AI 推荐」查看预置书籍。</span>'}
+                    ${recText
+                        ? esc(recText)
+                        : '<span style="color:#bbb;font-size:13px;">还没有这本书的内容概要。点击下方「编辑」补充一段话（可写前言/书评/内容简介），或去「AI 推荐」查看预置书籍。</span>'}
                     </div>
-                    ${recSource === 'ai' && b.reason ? `<div style="font-size:11px;color:#999;margin-top:6px;">↑ 自动匹配的内容概要 · 你的备注在下方</div>` : ''}
                 </div>
                 ${b.reason ? `
                 <div class="book-detail-sec">
