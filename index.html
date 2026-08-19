@@ -6199,6 +6199,59 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         body.dark-mode .gt-empty { color: #777; }
         .gt-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
         @media (max-width: 860px) { .gt-layout { grid-template-columns: 1fr; } }
+/* ===== 复利面板专属CSS ===== */
+        .cp-wrap { display:flex; flex-direction:column; gap:14px; }
+        .cp-hero {
+            background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 60%, #7c3aed 100%);
+            border-radius: 16px; padding: 20px 24px; color: #fff; flex-shrink: 0;
+            display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+        }
+        .cp-hero h2 { font-size: 20px; font-weight: 700; }
+        .cp-hero p { font-size: 12.5px; color: rgba(255,255,255,.75); margin-top: 4px; }
+        .cp-hero-score { text-align:center; }
+        .cp-hero-score .num { font-size: 34px; font-weight: 800; line-height: 1.1; }
+        .cp-hero-score .lbl { font-size: 11px; color: rgba(255,255,255,.7); }
+        .cp-grid { display:grid; grid-template-columns: 1fr 1fr; gap:14px; align-items:start; }
+        @media (max-width: 900px) { .cp-grid { grid-template-columns: 1fr; } }
+        .cp-card { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 16px 18px; }
+        body.dark-mode .cp-card { background: #1f1f2e; border-color: #333345; }
+        .cp-card-title { font-size: 14px; font-weight: 600; color: #444; margin-bottom: 12px; display:flex; align-items:center; gap:8px; }
+        body.dark-mode .cp-card-title { color: #ddd; }
+        .cp-card-title span { font-size: 11px; font-weight: 400; color: #999; }
+        /* 雷达图容器 */
+        .cp-radar-wrap { position: relative; }
+        .cp-radar { width: 100%; max-width: 380px; margin: 0 auto; display: block; }
+        /* 八维格子 */
+        .cp-dims { display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:8px; }
+        .cp-dim {
+            background: #faf9f7; border: 1px solid #efebe4; border-radius: 10px; padding: 10px 12px;
+            cursor: pointer; transition: all .15s;
+        }
+        body.dark-mode .cp-dim { background: #232335; border-color: #2e2e42; }
+        .cp-dim:hover { border-color: #8b5cf6; box-shadow: 0 0 0 1px #8b5cf6 inset; }
+        .cp-dim-head { display:flex; align-items:center; gap:6px; font-size: 12px; font-weight: 600; color: #555; }
+        body.dark-mode .cp-dim-head { color: #ccc; }
+        .cp-dim-val { font-size: 22px; font-weight: 800; margin: 4px 0 2px; }
+        .cp-dim-bar { height: 5px; background: #e8e6e1; border-radius: 4px; overflow: hidden; }
+        body.dark-mode .cp-dim-bar { background: #2e2e42; }
+        .cp-dim-bar-fill { height: 100%; border-radius: 4px; }
+        .cp-dim-tip { font-size: 10.5px; color: #999; margin-top: 4px; line-height: 1.4; }
+        /* 一年预测 */
+        .cp-pred-list { display:flex; flex-direction:column; gap:10px; }
+        .cp-pred-item { display:flex; align-items:center; gap:10px; padding: 10px 12px; background:#faf9f7; border-radius: 10px; }
+        body.dark-mode .cp-pred-item { background: #232335; }
+        .cp-pred-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+        .cp-pred-main { flex: 1; min-width: 0; }
+        .cp-pred-label { font-size: 12px; color: #888; }
+        .cp-pred-val { font-size: 16px; font-weight: 700; color: #444; }
+        body.dark-mode .cp-pred-val { color: #ddd; }
+        .cp-pred-now { font-size: 11px; color: #999; }
+        .cp-pred-arrow { color: #8b5cf6; font-weight: 700; }
+        .cp-insight { margin-top: 12px; background: #f6f4ff; border-left: 3px solid #8b5cf6; border-radius: 0 10px 10px 0; padding: 10px 14px; font-size: 12.5px; color: #4c3d8a; line-height: 1.7; }
+        body.dark-mode .cp-insight { background: #2a2340; color: #c4b5fd; }
+        .cp-empty { text-align:center; color:#aaa; font-size: 13px; padding: 20px; }
+        .cp-refresh { font-size: 11px; color: #8b5cf6; cursor: pointer; margin-left:auto; padding: 3px 10px; border: 1px solid #c4b5fd; border-radius: 12px; }
+        .cp-refresh:hover { background: #ede9fe; }
 /* ===== 育儿手册专属CSS ===== */
         .parenting-page { display: flex; flex-direction: column; gap: 14px; }
         .parenting-stats {
@@ -6690,6 +6743,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="nav-item" onclick="switchPage('diary')">📔 日记</div>
             <div class="nav-item" onclick="switchPage('member')">💰 会员</div>
             <div class="nav-item" onclick="switchPage('game')">🎮 游戏时间</div>
+            <div class="nav-item" onclick="switchPage('compound')">📈 复利面板 <span class="nav-badge">新</span></div>
             <div class="nav-item" onclick="switchPage('parenting')">👶 育儿手册</div>
         </div>
         <div class="nav-section settings-section" style="margin-top:auto;">
@@ -7953,6 +8007,45 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                 </div>
             </div>
         </div>
+        <div class="page" id="compoundPage">
+<div class="cp-wrap">
+                <div class="cp-hero">
+                    <div>
+                        <h2>📈 复利面板</h2>
+                        <p>八维复利指数 + 一年后的你 —— 把成长变成看得见的复利</p>
+                    </div>
+                    <div class="cp-hero-score">
+                        <div class="num" id="cpTotalScore">—</div>
+                        <div class="lbl">综合复利指数</div>
+                    </div>
+                </div>
+
+                <div class="cp-grid">
+                    <div class="cp-card">
+                        <div class="cp-card-title">🕸 八维复利雷达 <span>基于你的真实数据实时计算</span></div>
+                        <div class="cp-radar-wrap">
+                            <svg class="cp-radar" id="cpRadar" viewBox="0 0 380 340" role="img" aria-label="八维复利雷达图"></svg>
+                        </div>
+                    </div>
+
+                    <div class="cp-card">
+                        <div class="cp-card-title">🎯 八维复利指数 <span>点击格子看说明</span></div>
+                        <div class="cp-dims" id="cpDims"></div>
+                    </div>
+
+                    <div class="cp-card">
+                        <div class="cp-card-title">⏳ 一年复利预测 <span>按当前节奏外推 365 天</span></div>
+                        <div class="cp-pred-list" id="cpPredictions"></div>
+                        <div class="cp-insight" id="cpInsight"></div>
+                    </div>
+
+                    <div class="cp-card">
+                        <div class="cp-card-title">🧭 复利飞轮 <span>四链循环</span></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="cpWheel"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="page" id="parentingPage">
 <div style="padding:20px 32px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;" class="parenting-page">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:8px;">
@@ -8842,7 +8935,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         function switchPage(page) {
             currentPage = page;
             document.querySelectorAll('.sidebar-left .nav-item').forEach((item, idx) => {
-                const pages = ['today', 'plan', 'hot', 'meme', 'copy', 'notes', 'book', 'diary', 'member', 'game', 'parenting'];
+                const pages = ['today', 'plan', 'hot', 'meme', 'copy', 'notes', 'book', 'diary', 'member', 'game', 'compound', 'parenting'];
                 item.classList.toggle('active', pages[idx] === page);
             });
             // 同步底部 Tab 栏激活态（手机端）
@@ -8867,6 +8960,8 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 renderMemberPage();
             } else if (page === 'game') {
                 renderGameTimePage();
+            } else if (page === 'compound') {
+                renderCompoundPage();
             } else if (page === 'parenting') {
                 renderParentingPage();
             } else {
@@ -17005,6 +17100,235 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         if (typeof window.__NIKO_GAME_TEST__ !== 'undefined' && window.__NIKO_GAME_TEST__) {
             renderGameTimePage();
         }
+// ===== 复利面板 =====
+        // 数据源：健康(habit_logs) 认知(books/book_logs/book_notes) 时间(work_calendar_events)
+        // 产品/内容(便签 notes) 财务(niko_memberships) 人脉(relationship 轨道事件) 身份(综合)
+        const CP_DIM_DEFS = [
+            { key: 'health',  name: '健康复利', icon: '💪', color: '#14b8a6', desc: '身体是复利的地基。基于近 30 天习惯打卡率。' },
+            { key: 'cognition', name: '认知复利', icon: '🧠', color: '#34d399', desc: '输入沉淀。基于读书本数、打卡频率与笔记数。' },
+            { key: 'time',    name: '时间复利', icon: '⏰', color: '#38bdf8', desc: '时间投入产出。基于本周时间块覆盖与完成度。' },
+            { key: 'product', name: '产品复利', icon: '📦', color: '#818cf8', desc: '产出积累。基于便签/脚本类内容的新增数量。' },
+            { key: 'finance', name: '财务复利', icon: '💰', color: '#fbbf24', desc: '收入资产积累。基于会员订阅金额与数量。' },
+            { key: 'network', name: '人脉复利', icon: '🤝', color: '#fb923c', desc: '关系连接。基于关系轨道任务与合作线索。' },
+            { key: 'content', name: '内容复利', icon: '📝', color: '#f472b6', desc: '内容资产沉淀。基于便签/文案/梗/热点的产出量。' },
+            { key: 'identity', name: '身份复利', icon: '🏆', color: '#a78bfa', desc: '个人品牌。内容+产品+人脉的综合体现。' }
+        ];
+
+        function cpClamp(v) { return Math.max(0, Math.min(100, Math.round(v))); }
+        function cp30days() { const d = new Date(); d.setDate(d.getDate() - 30); return formatDate(d); }
+        function cpWeekRange() {
+            const mon = getMonday(new Date());
+            return [formatDate(mon), formatDate(addDays(mon, 6))];
+        }
+        function cpCount(list, fn) { return (list || []).filter(fn).length; }
+        function cpSum(list, fn) { return (list || []).reduce((s, x) => s + (fn(x) || 0), 0); }
+
+        // 计算八维指数（0-100），全部基于 localStorage 真实数据
+        function cpCompute() {
+            const dims = {};
+            const cut30 = cp30days();
+            const [ws, we] = cpWeekRange();
+
+            // 健康：近 30 天习惯打卡率（有打卡习惯前提下）
+            const habits = safeStorage.get('niko_habits', []);
+            const habitLogs = safeStorage.get('niko_habit_logs', []);
+            if (habits.length) {
+                const recent = habitLogs.filter(l => l.date >= cut30);
+                const perHabit = habits.map(h => cpCount(recent, l => l.habitId === h.id));
+                const avgRate = (cpSum(perHabit, v => v) / habits.length) / 30 * 100;
+                dims.health = cpClamp(avgRate * 2.2); // 30天全勤=100左右
+            } else dims.health = 0;
+
+            // 认知：读书（在读/读完占比 30% + 打卡频率 40% + 笔记 30%）
+            const books = safeStorage.get('niko_books', []);
+            const bookLogs = safeStorage.get('niko_book_logs', []);
+            const bookNotes = safeStorage.get('niko_book_notes', []);
+            let cog = 0;
+            if (books.length) {
+                const reading = cpCount(books, b => b.status === 'reading' || b.status === 'done');
+                cog += (reading / books.length) * 30;
+            }
+            cog += cpClamp((cpCount(bookLogs, l => l.date >= cut30) / 20) * 40);
+            cog += cpClamp((bookNotes.length / 20) * 30);
+            dims.cognition = cpClamp(cog);
+
+            // 时间：本周时间块覆盖 + 完成度
+            const events = safeStorage.get('work_calendar_events', []);
+            // 事件与本周区间有交集（startDate<=周日 && endDate>=周一）
+            const weekEvents = events.filter(e => (e.startDate || '') <= we && (e.endDate || e.startDate || '') >= ws);
+            const withTime = weekEvents.filter(e => e.startTime);
+            let timeScore = 0;
+            if (withTime.length) {
+                timeScore += Math.min(60, withTime.length * 6);          // 每周 10 个时间块满分
+                const done = cpCount(withTime, e => e.status === 'done');
+                timeScore += (done / withTime.length) * 40;               // 完成度
+            }
+            dims.time = cpClamp(timeScore);
+
+            // 产品：便签（脚本/素材方向）近 30 天新增
+            const notes = safeStorage.get('niko_inspiration_notes', []);
+            const active = notes.filter(n => !n.deleted && (!n.archived || n.updatedAt >= cut30));
+            const recentNotes = notes.filter(n => !n.deleted && n.createdAt && n.createdAt.slice(0, 10) >= cut30);
+            dims.product = cpClamp(Math.min(50, active.length * 3) + Math.min(50, recentNotes.length * 8));
+
+            // 财务：会员订阅金额/数量
+            const memberships = safeStorage.get('niko_memberships', []);
+            const memAmount = cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0);
+            const memActive = cpCount(memberships, m => !m.status || m.status !== 'expired');
+            dims.finance = cpClamp(Math.min(60, memActive * 12) + Math.min(40, memAmount / 500 * 40));
+
+            // 人脉：关系轨道任务（近 90 天）
+            const relEvents = events.filter(e => e.track === 'relationship' && e.startDate >= cut30);
+            dims.network = cpClamp(Math.min(100, relEvents.length * 12));
+
+            // 内容：便签+文案+梗+热点收藏总量（近30天活跃）
+            const copies = safeStorage.get('niko_copy_library', []);
+            const memes = safeStorage.get('niko_memes', []);
+            const contentActive = (notes.filter(n => !n.deleted).length) + copies.length + memes.length;
+            const recentContent = recentNotes.length + cpCount(copies, c => c.updatedAt && c.updatedAt.slice(0, 10) >= cut30);
+            dims.content = cpClamp(Math.min(50, contentActive * 1.2) + Math.min(50, recentContent * 6));
+
+            // 身份：内容+产品+人脉 加权
+            dims.identity = cpClamp((dims.content * 0.4) + (dims.product * 0.35) + (dims.network * 0.25));
+
+            const total = cpClamp(cpSum(Object.values(dims), v => v) / 8);
+            return { dims, total };
+        }
+
+        // 渲染雷达图（纯 SVG）
+        function cpRenderRadar(scores) {
+            const svg = document.getElementById('cpRadar');
+            if (!svg) return;
+            const cx = 190, cy = 160, R = 115;
+            const n = CP_DIM_DEFS.length;
+            const pt = (i, r) => {
+                const ang = (Math.PI * 2 * i) / n - Math.PI / 2;
+                return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
+            };
+            let html = '';
+            // 网格环
+            [0.25, 0.5, 0.75, 1].forEach(f => {
+                const pts = CP_DIM_DEFS.map((_, i) => pt(i, R * f).join(',')).join(' ');
+                html += `<polygon points="${pts}" fill="none" stroke="rgba(139,92,246,.25)" stroke-width="0.5"/>`;
+            });
+            // 轴线
+            CP_DIM_DEFS.forEach((d, i) => {
+                const [x, y] = pt(i, R);
+                html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(139,92,246,.18)" stroke-width="0.5"/>`;
+            });
+            // 数据多边形
+            const dataPts = CP_DIM_DEFS.map((d, i) => pt(i, R * (scores[d.key] / 100)).join(',')).join(' ');
+            html += `<polygon points="${dataPts}" fill="rgba(139,92,246,.22)" stroke="#8b5cf6" stroke-width="1.5"/>`;
+            // 数据点 + 标签
+            CP_DIM_DEFS.forEach((d, i) => {
+                const [x, y] = pt(i, R * (scores[d.key] / 100));
+                html += `<circle cx="${x}" cy="${y}" r="3" fill="${d.color}"/>`;
+                const [lx, ly] = pt(i, R + 24);
+                html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="11" fill="${d.color}">${d.name}</text>`;
+                const [vx, vy] = pt(i, R + 42);
+                html += `<text x="${vx}" y="${vy}" text-anchor="middle" dominant-baseline="central" font-size="10.5" font-weight="bold" fill="${d.color}">${scores[d.key]}</text>`;
+            });
+            html += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="bold" fill="#8b5cf6">复利</text>`;
+            svg.innerHTML = html;
+        }
+
+        function cpRenderDims(scores) {
+            const box = document.getElementById('cpDims');
+            if (!box) return;
+            box.innerHTML = CP_DIM_DEFS.map(d => `
+                <div class="cp-dim" title="${d.desc}" onclick="cpShowDimTip('${d.key}')">
+                    <div class="cp-dim-head">${d.icon} ${d.name}</div>
+                    <div class="cp-dim-val" style="color:${d.color};">${scores[d.key]}</div>
+                    <div class="cp-dim-bar"><div class="cp-dim-bar-fill" style="width:${scores[d.key]}%;background:${d.color};"></div></div>
+                    <div class="cp-dim-tip" id="cpTip_${d.key}" style="display:none;">${d.desc}</div>
+                </div>`).join('');
+        }
+        function cpShowDimTip(key) {
+            const el = document.getElementById('cpTip_' + key);
+            if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 一年复利预测：按当前节奏外推 365 天
+        function cpPredict(dims) {
+            const cut30 = cp30days();
+            const notes = safeStorage.get('niko_inspiration_notes', []);
+            const books = safeStorage.get('niko_books', []);
+            const bookLogs = safeStorage.get('niko_book_logs', []);
+            const game = safeStorage.get('niko_game_time', {});
+            const gameLogs = safeStorage.get('niko_game_play_logs', []);
+            const events = safeStorage.get('work_calendar_events', []);
+            const memberships = safeStorage.get('niko_memberships', []);
+
+            const monthBookLogs = cpCount(bookLogs, l => l.date >= cut30);
+            const yearBooks = Math.round(monthBookLogs / 30 * 365) || books.length;
+            const note30 = cpCount(notes, n => !n.deleted && n.createdAt && n.createdAt.slice(0, 10) >= cut30);
+            const yearNotes = Math.round(note30 / 30 * 365);
+            const gameToday = gameLogs.reduce((s, l) => s + (l.minutes || 0), 0);
+            const avgGamePerDay = gameToday / Math.max(1, Math.min(30, gameLogs.length || 30));
+            const yearGameMin = Math.round(avgGamePerDay * 365);
+            const weekEvents = events.filter(e => e.startTime);
+            const weekCount = weekEvents.length / Math.max(1, (weekEvents.reduce((s, e) => s + (e.startDate ? 1 : 0), 0) || 1));
+            const yearDeep = Math.round(weekEvents.length / 4 * 52);
+            const memAmount = cpSum(memberships, m => Number(m.amount) || Number(m.price) || 0);
+            const yearIncome = Math.round(memAmount * 12);
+
+            const preds = [
+                { icon: '📚', label: '一年后累计读书', val: `${yearBooks} 本`, now: `现有 ${books.length} 本 · 月均约 ${Math.max(1, Math.round(monthBookLogs / 30 * 30))} 次打卡` },
+                { icon: '💡', label: '一年后灵感资产', val: `${yearNotes + notes.length} 条`, now: `现有 ${notes.filter(n => !n.deleted).length} 条` },
+                { icon: '🎮', label: '一年后游戏时长', val: `${Math.round(yearGameMin / 60)} 小时`, now: `日均 ${Math.round(avgGamePerDay)} 分钟` },
+                { icon: '⏳', label: '一年后时间块', val: `${yearDeep} 个`, now: `现有 ${weekEvents.length} 个` },
+                { icon: '💰', label: '一年后订阅收入', val: `¥${yearIncome.toLocaleString()}`, now: `当前月 ¥${memAmount.toLocaleString()}` }
+            ];
+            const box = document.getElementById('cpPredictions');
+            if (!box) return;
+            box.innerHTML = preds.map(p => `
+                <div class="cp-pred-item">
+                    <span class="cp-pred-icon">${p.icon}</span>
+                    <span class="cp-pred-main">
+                        <div class="cp-pred-label">${p.label}</div>
+                        <div class="cp-pred-val">${p.val} <span class="cp-pred-arrow">→</span> <span style="font-size:12px;color:#999;">${p.now}</span></div>
+                    </span>
+                </div>`).join('');
+            // 综合洞察
+            const top = CP_DIM_DEFS.slice().sort((a, b) => (dims[b.key] || 0) - (dims[a.key] || 0))[0];
+            const low = CP_DIM_DEFS.slice().sort((a, b) => (dims[a.key] || 0) - (dims[b.key] || 0))[0];
+            const insight = document.getElementById('cpInsight');
+            if (insight) {
+                insight.innerHTML = `🧠 <b>复利洞察：</b>你的最强复利是「${top.name}」（${dims[top.key] || 0} 分）；最需要补的是「${low.name}」（${dims[low.key] || 0} 分）。一年后的你，取决于今天开始把最弱的那条链滚起来。`;
+            }
+        }
+
+        // 复利飞轮四链（健康→认知 / 时间→产品 / 财务→人脉 / 内容→身份）
+        function cpRenderWheel() {
+            const box = document.getElementById('cpWheel');
+            if (!box) return;
+            const pairs = [
+                ['💪', '健康', '→', '🧠', '认知', '#14b8a6'],
+                ['⏰', '时间', '→', '📦', '产品', '#38bdf8'],
+                ['💰', '财务', '→', '🤝', '人脉', '#fbbf24'],
+                ['📝', '内容', '→', '🏆', '身份', '#a78bfa']
+            ];
+            box.innerHTML = pairs.map(([i1, n1, ar, i2, n2, c]) => `
+                <div style="background:#faf9f7;border:1px solid #efebe4;border-radius:10px;padding:10px;text-align:center;">
+                    <div style="font-size:20px;">${i1}</div>
+                    <div style="font-size:12px;font-weight:600;color:#555;margin:2px 0;">${n1}</div>
+                    <div style="color:${c};font-size:12px;">→ 支撑/催化 →</div>
+                    <div style="font-size:20px;margin-top:2px;">${i2}</div>
+                    <div style="font-size:12px;font-weight:600;color:#555;">${n2}</div>
+                </div>`).join('');
+        }
+
+        // 主渲染
+        function renderCompoundPage() {
+            const { dims, total } = cpCompute();
+            const totalEl = document.getElementById('cpTotalScore');
+            if (totalEl) totalEl.textContent = total;
+            cpRenderRadar(dims);
+            cpRenderDims(dims);
+            cpPredict(dims);
+            cpRenderWheel();
+        }
+        if (typeof window.__NIKO_GAME_TEST__ !== 'undefined') renderCompoundPage();
 // ===== 育儿手册 =====
         const PARENTING_CATEGORIES = ['食品安全', '用品召回', '疾病预警', '养育误区', '出行安全', '其他'];
         const PARENTING_SEED_VERSION = 'v2026-08-17';
