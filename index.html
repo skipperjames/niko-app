@@ -19492,7 +19492,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
         // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
-        window.NIKO_VERSION = "202608201021";
+        window.NIKO_VERSION = "202608201040";
         function nikoApplyUpdate() {
             var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
             if (v && location.pathname) {
@@ -19501,9 +19501,9 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 location.href = location.pathname + '?v=' + v;
             }
         }
-        // 加载完成后若地址带 ?v= 参数，悄悄还原为根地址（仅改地址栏显示，不重新加载）
+        // 加载完成后若地址带 ?v= 或 ?_t= 参数，悄悄还原为根地址（仅改地址栏显示，不重新加载）
         try {
-            if (location.search && /[?&]v=/.test(location.search) && history.replaceState) {
+            if (location.search && /[?&](v|_t)=/.test(location.search) && history.replaceState) {
                 history.replaceState(null, '', location.pathname);
             }
         } catch (e) {}
@@ -19535,6 +19535,13 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 }, 2500); // 等首屏渲染完再检测，不抢加载带宽
             } catch (e) {}
         })();
+
+        // ===== Service Worker 注册：接管缓存策略，确保每次加载最新版本 =====
+        // SW 注册后，所有 fetch 请求走 network-first（优先网络，离线降级缓存），
+        // 彻底解决浏览器/运营商代理缓存旧版的问题
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(function(e) { console.warn('SW:', e); });
+        }
     </script>
 
     <!-- ===== 弹窗全局关闭（移动端友好）+ 防密码簿弹窗 ===== -->
