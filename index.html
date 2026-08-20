@@ -17367,6 +17367,12 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         }
         function gtSave(d) { safeStorage.set('niko_game_time', d); }
 
+        // 本地日期字符串（YYYY-MM-DD）。凌晨 0-8 点时 toISOString 是 UTC 昨天，必须用本地日期
+        function gtTodayStr() {
+            const n = new Date();
+            return new Date(n.getTime() - n.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        }
+
         function fmtMin(min) {
             min = Math.round(min || 0);
             if (min >= 60) {
@@ -17381,7 +17387,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         function gtEarn(habitId, min, habitName, dateStr) {
             if (!habitId || !min || min <= 0) return false;
             const d = gtData();
-            const date = dateStr || (new Date().toISOString().slice(0, 10));
+            const date = dateStr || (gtTodayStr());
             const dup = d.history.some(e => e.type === 'earn' && e.habitId === habitId && e.date === date);
             if (dup) return false;
             d.balance = (d.balance || 0) + min;
@@ -17402,7 +17408,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         function gtRefund(habitId, dateStr) {
             if (!habitId) return;
             const d = gtData();
-            const date = dateStr || (new Date().toISOString().slice(0, 10));
+            const date = dateStr || (gtTodayStr());
             const idx = d.history.findIndex(e => e.type === 'earn' && e.habitId === habitId && e.date === date);
             if (idx < 0) return;
             const e = d.history[idx];
@@ -17426,11 +17432,11 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             }
             d.balance -= min;
             d.totalUsed = (d.totalUsed || 0) + min;
-            d.history.unshift({ id: 'gu_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), type: 'use', min: min, reason: '手动消耗', date: new Date().toISOString().slice(0, 10), at: new Date().toISOString() });
+            d.history.unshift({ id: 'gu_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), type: 'use', min: min, reason: '手动消耗', date: gtTodayStr(), at: new Date().toISOString() });
             if (d.history.length > GT_MAX_HISTORY) d.history.length = GT_MAX_HISTORY;
             gtSave(d);
             // 消耗 = 去玩游戏，自动计入当天游玩日历
-            gtAddPlay(min, null, new Date().toISOString().slice(0, 10));
+            gtAddPlay(min, null, gtTodayStr());
             if (input) input.value = '';
             if (typeof showToast === 'function') showToast(`🎮 消耗 ${fmtMin(min)} 玩游戏，剩余 ${fmtMin(d.balance)}`);
             renderGameTimePage();
@@ -17485,7 +17491,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (statEarned) statEarned.textContent = fmtMin(d.totalEarned || 0);
             const statUsed = document.getElementById('gtStatUsed');
             if (statUsed) statUsed.textContent = fmtMin(d.totalUsed || 0);
-            const today = new Date().toISOString().slice(0, 10);
+            const today = gtTodayStr();
             const todayEarn = (d.history || []).filter(e => e.type === 'earn' && e.date === today).reduce((s, e) => s + e.min, 0);
             const statToday = document.getElementById('gtStatToday');
             if (statToday) statToday.textContent = fmtMin(todayEarn);
@@ -17536,7 +17542,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         function gtAddPlay(min, note, dateStr) {
             if (!min || min <= 0) return;
             const logs = gtPlayLogs();
-            const date = dateStr || new Date().toISOString().slice(0, 10);
+            const date = dateStr || gtTodayStr();
             let day = logs.find(l => l.date === date);
             if (day) {
                 day.minutes = (day.minutes || 0) + min;
@@ -17550,7 +17556,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         }
         // 撤销当天最后一次：优先扣减手动备注，没有备注则整体扣减
         function gtUndoPlay() {
-            const today = new Date().toISOString().slice(0, 10);
+            const today = gtTodayStr();
             const logs = gtPlayLogs();
             const day = logs.find(l => l.date === today);
             if (!day || !day.minutes) { if (typeof showToast === 'function') showToast('今天还没有游玩记录'); return; }
@@ -17574,7 +17580,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (min > 1440) { if (typeof showToast === 'function') showToast('单次记录不要超过 24 小时哦'); return; }
             const note = (noteInput && noteInput.value.trim()) || '';
             // 纯记录实际游玩时长（不扣余额）；"消耗"按钮会自动计入当天
-            gtAddPlay(min, note ? { note: note, min: min } : null, new Date().toISOString().slice(0, 10));
+            gtAddPlay(min, note ? { note: note, min: min } : null, gtTodayStr());
             if (minInput) minInput.value = '';
             if (noteInput) noteInput.value = '';
             renderGameTimePage();
@@ -17647,7 +17653,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const now = new Date();
             const base = new Date(now.getFullYear(), now.getMonth() + gtCalOffset, 1);
             const year = base.getFullYear(), month = base.getMonth();
-            const todayStr = now.toISOString().slice(0, 10);
+            const todayStr = gtTodayStr();
             const firstWeekday = base.getDay(); // 0=周日
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const prevDays = new Date(year, month, 0).getDate();
@@ -17734,7 +17740,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (statDaily) statDaily.textContent = fmtMin(avg);
             const undoBtn = document.getElementById('gtUndoPlayBtn');
             if (undoBtn) {
-                const today = new Date().toISOString().slice(0, 10);
+                const today = gtTodayStr();
                 const dayLog = gtPlayDay(today);
                 undoBtn.style.display = (dayLog && dayLog.minutes) ? 'inline-block' : 'none';
             }
@@ -20006,7 +20012,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
         // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
-        window.NIKO_VERSION = "202608210007";
+        window.NIKO_VERSION = "202608210022";
         function nikoApplyUpdate() {
             var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
             if (v && location.pathname) {
