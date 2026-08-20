@@ -5290,6 +5290,8 @@
         }
         body.dark-mode .book-stat { background: #1f2937; border-color: #333; }
         .book-stat-label { font-size: 12px; color: #888; }
+        .book-stat-sub { font-size: 11px; color: #aaa; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        body.dark-mode .book-stat-sub { color: #777; }
         .book-stat-value { font-size: 22px; font-weight: 600; margin-top: 2px; color: #b45309; }
         body.dark-mode .book-stat-value { color: #fbbf24; }
 
@@ -9756,6 +9758,43 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         const HABIT_ICONS = ['💪','🏃','🧘','📖','✍️','🎬','🎨','🗣️','💧','😴','💰','🌱'];
         let habitIconPick = '💪';
 
+        // ===== 内置「📖 读书」习惯：读书板块 ↔ 今日看板 双向联动 =====
+        const HABIT_BOOK_ID = 'habit_book';
+
+        // 幂等创建内置读书习惯（只补缺，不覆盖用户已改的配置）
+        function ensureBookHabit() {
+            const list = habitList();
+            if (!list.find(h => h.id === HABIT_BOOK_ID)) {
+                list.push({ id: HABIT_BOOK_ID, name: '读书', icon: '📖', goal: 7, rewardMin: 0, builtin: 1 });
+                habitSaveList(list);
+            }
+            return habitList().find(h => h.id === HABIT_BOOK_ID);
+        }
+
+        // 今日看板打卡「读书」习惯 → 读书板块当日占位（0 分钟 = 标记今日已读书）
+        function bookHabitLinkApply(date) {
+            try {
+                const logs = safeStorage.get('niko_book_logs', []);
+                if (!logs.find(l => l.date === date)) {
+                    logs.push({ date: date, minutes: 0 });
+                    safeStorage.set('niko_book_logs', logs);
+                }
+                if (typeof window.renderBookPage === 'function') { try { window.renderBookPage(); } catch (e) {} }
+            } catch (e) {}
+        }
+
+        // 取消「读书」习惯打卡 → 仅移除读书板块当日 0 分钟占位（真实分钟数保留）
+        function bookHabitLinkRollback(date) {
+            try {
+                const logs = safeStorage.get('niko_book_logs', []);
+                const kept = logs.filter(l => l.date !== date || (Number(l.minutes) || 0) > 0);
+                if (kept.length !== logs.length) {
+                    safeStorage.set('niko_book_logs', kept);
+                    if (typeof window.renderBookPage === 'function') { try { window.renderBookPage(); } catch (e) {} }
+                }
+            } catch (e) {}
+        }
+
         function habitList() { return safeStorage.get('niko_habits', []); }
         function habitLogs() { return safeStorage.get('niko_habit_logs', []); }
         function habitSaveList(list) { safeStorage.set('niko_habits', list); }
@@ -9800,10 +9839,14 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 if (typeof window.gameTimeRefund === 'function') {
                     try { window.gameTimeRefund(id, today); } catch (e) {}
                 }
+                // 取消「读书」习惯 → 同步移除读书板块当日 0 分钟占位
+                if (id === HABIT_BOOK_ID) bookHabitLinkRollback(today);
                 if (typeof showToast === 'function') showToast('已取消今日打卡');
             } else {
                 logs.push({ id: 'hl_' + Date.now(), habitId: id, date: today, doneAt: new Date().toISOString() });
                 habitSaveLogs(logs);
+                // 打卡「读书」习惯 → 读书板块当日占位（0 分钟，标记今日已读书）
+                if (id === HABIT_BOOK_ID) bookHabitLinkApply(today);
                 const h = habitList().find(x => x.id === id);
                 const rewardMin = h ? (Number(h.rewardMin) || 0) : 0;
                 if (rewardMin > 0 && typeof window.gameTimeEarn === 'function') {
@@ -10017,7 +10060,8 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (head) head.textContent = `🎯 习惯打卡（今日 ${todayDone}/${habits.length} · 共 ${habits.length} 个）`;
         }
 
-        // 习惯打卡初始化
+        // 习惯打卡初始化（内置「读书」习惯幂等补建，保证读书板块联动可用）
+        ensureBookHabit();
         renderTodayHabits();
 // ===== 计划看板专属JS =====
 
@@ -14889,17 +14933,39 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 ['📖 在读', reading + ' 本'],
                 ['🎉 已读完', done + ' 本']
             ];
-            el.innerHTML = cards.map(([l, v]) => `<div class="book-stat"><div class="book-stat-label">${l}</div><div class="book-stat-value">${v}</div></div>`).join('');
+            // 微信读书联动：顶部统计合并真实阅读数据（数据来自导入的 niko_weread_snapshot，未导入不造假）
+            const wsnap = safeStorage.get('niko_weread_snapshot', null);
+            const wm = wsnap && wsnap.stats && wsnap.stats.monthly;
+            const wo = wsnap && wsnap.stats && wsnap.stats.overall;
+            cards.push(wm
+                ? ['📖 微信读书', wereadFmtDur(wm.totalReadTime), (wo ? '累计 ' + wereadFmtDur(wo.totalReadTime) : '本月')]
+                : ['📖 微信读书', '—', '去「微信读书」页导入']);
+            el.innerHTML = cards.map(([l, v, s]) => `<div class="book-stat" onclick="switchBookView('weread')" style="cursor:pointer;" title="查看微信读书阅读数据">
+                <div class="book-stat-label">${l}</div><div class="book-stat-value">${v}</div>${s ? `<div class="book-stat-sub">${s}</div>` : ''}</div>`).join('');
         }
         function renderBookCheckin() {
             const today = bookTodayStr();
             const todayLog = bookLogs.find(l => l.date === today);
             document.getElementById('bookTodayMinutes').textContent = todayLog ? todayLog.minutes : 0;
             document.getElementById('bookCheckinMin').value = todayLog ? todayLog.minutes : '';
-            document.getElementById('bookTodayState').textContent = todayLog
-                ? '✅ 今日已打卡 ' + todayLog.minutes + ' 分钟（可更新）'
-                : '今天还没打卡，读一会儿就来打个卡吧';
-            document.getElementById('bookCheckinBtn').textContent = todayLog ? '🔄 更新打卡' : '✅ 打卡';
+            // 今日看板「📖 读书」习惯联动状态（今日看板打卡 = 0 分钟占位标记）
+            const habitBookDone = (typeof window.habitDoneSet === 'function')
+                ? (function(){ try { return !!window.habitDoneSet(today)['habit_book']; } catch (e) { return false; } })()
+                : false;
+            if (todayLog && !(Number(todayLog.minutes) || 0)) {
+                // 占位记录：习惯打卡标记的"今日已读书"，等待补记时长
+                document.getElementById('bookTodayMinutes').textContent = 0;
+                document.getElementById('bookCheckinMin').value = '';
+                document.getElementById('bookTodayState').textContent = '📖 今日已在「今日看板」打卡读书习惯，补记分钟数即可';
+                document.getElementById('bookCheckinBtn').textContent = '✅ 补记分钟';
+            } else {
+                document.getElementById('bookTodayMinutes').textContent = todayLog ? todayLog.minutes : 0;
+                document.getElementById('bookCheckinMin').value = todayLog ? todayLog.minutes : '';
+                document.getElementById('bookTodayState').textContent = todayLog
+                    ? '✅ 今日已打卡 ' + todayLog.minutes + ' 分钟（可更新）' + (habitBookDone ? ' · 今日习惯已同步 ✓' : '')
+                    : (habitBookDone ? '📖 今日已在习惯打卡，补记分钟数即可' : '今天还没打卡，读一会儿就来打个卡吧');
+                document.getElementById('bookCheckinBtn').textContent = todayLog ? '🔄 更新打卡' : '✅ 打卡';
+            }
 
             // 本周 7 天（周一起）
             const monday = new Date(); {
@@ -14944,8 +15010,26 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (idx >= 0) bookLogs[idx].minutes = min;
             else bookLogs.unshift({ date: today, minutes: min });
             bookSaveLogs();
+            // 联动今日看板「📖 读书」习惯：当天已打卡则不重复；有奖励则同步赚取游戏时间
+            let habitLinked = false;
+            if (typeof window.ensureBookHabit === 'function') {
+                try {
+                    const logs = safeStorage.get('niko_habit_logs', []);
+                    if (!logs.find(l => l.habitId === 'habit_book' && l.date === today)) {
+                        const h = window.ensureBookHabit();
+                        logs.push({ id: 'hl_' + Date.now(), habitId: 'habit_book', date: today, doneAt: new Date().toISOString() });
+                        safeStorage.set('niko_habit_logs', logs);
+                        const rewardMin = h ? (Number(h.rewardMin) || 0) : 0;
+                        if (rewardMin > 0 && typeof window.gameTimeEarn === 'function') {
+                            try { window.gameTimeEarn('habit_book', rewardMin, h.name, today); } catch (e) {}
+                        }
+                        if (typeof window.renderTodayHabits === 'function') { try { window.renderTodayHabits(); } catch (e) {} }
+                        habitLinked = true;
+                    }
+                } catch (e) {}
+            }
             renderBookPage();
-            showToast('✅ 打卡成功，今天读了 ' + min + ' 分钟');
+            showToast('✅ 打卡成功，今天读了 ' + min + ' 分钟' + (habitLinked ? '，已同步今日读书习惯' : ''));
         }
 
         // ===== 笔记 =====
@@ -19831,7 +19915,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
         // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
-        window.NIKO_VERSION = "202608201307";
+        window.NIKO_VERSION = "202608202329";
         function nikoApplyUpdate() {
             var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
             if (v && location.pathname) {
