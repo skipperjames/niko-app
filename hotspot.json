@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "fetchedAt": "2026-08-20T16:00:00+08:00",
+  "date": "2026-08-20",
+  "summary": "今日热点：12306回应\"买票占座放零食\"登微博热搜第一，引发座位使用权讨论；我国朱雀三号实现火箭陆地回收，航天再进一步；七夕晚会扎堆，朋友圈秀恩爱变少引热议；黄金一夜暴涨3.91%破4500美元；日本成田机场马航客机引擎冒烟关闭跑道；朝鲜向东海发射短程弹道导弹，韩美联合军演缩减；日韩民众排队5小时买中国相机成新话题。",
+  "regions": {
+    "国内": [
+      { "title": "12306回应买票占座放零食", "desc": "两女孩买3张硬座票1座放零食，站票大姐想坐被拒；12306回应座位使用权归购票人，舆论争议座位让不让", "platform": "微博热搜", "hot": "59万", "link": "https://s.weibo.com/top/summary" },
+      { "title": "我国首次实现火箭陆地回收", "desc": "朱雀三号遥二一子级在甘肃腾格里沙漠成功着陆，从海上回收迈向陆地回收", "platform": "抖音热榜", "hot": "1168万", "link": "https://www.douyin.com/hot" },
+      { "title": "空枪李嘉诚儿子绑架案", "desc": "朱一龙主演《空枪》上映首日票房破5000万，原型1996年张子强绑架李泽钜案", "platform": "微博热搜", "hot": "热", "link": "https://s.weibo.com/top/summary" },
+      { "title": "公积金新政来了有哪些利好", "desc": "9月20日起施行：租房提取不再设收入比例门槛，新增装修、物业费可提取", "platform": "百度热点", "hot": "热", "link": "https://top.baidu.com/board?tab=realtime" },
+      { "title": "5万以下的燃油车正在被遗忘", "desc": "上半年5万以下车型销量同比下滑55%，市场份额从2.8%降至1.4%", "platform": "百度热点", "hot": "热", "link": "https://top.baidu.com/board?tab=realtime" },
+      { "title": "金价彻底反弹了", "desc": "现货黄金涨3.91%报4503美元/盎司，创6月以来新高", "platform": "微博热搜", "hot": "7.9万", "link": "https://s.weibo.com/top/summary" },
+      { "title": "升学宴致5死主家未提前报备宴席", "desc": "四川宜宾升学宴雨棚积水致女儿墙倒塌5死17伤，家属称3名幼子失去妈妈", "platform": "微博热搜", "hot": "7.9万", "link": "https://s.weibo.com/top/summary" },
+      { "title": "名侦探柯南大结局已经画好了", "desc": "作者青山刚昌证实大结局分镜稿全部画完，称结局很有趣", "platform": "抖音热榜", "hot": "917万", "link": "https://www.douyin.com/hot" },
+      { "title": "为什么七夕朋友圈秀恩爱的变少了", "desc": "七夕晚会扎堆、苏翊鸣晒9图、肖战张凌赫周深同台，但朋友圈秀恩爱明显变少成全民话题", "platform": "微博热搜", "hot": "12.2万", "link": "https://s.weibo.com/top/summary" },
+      { "title": "华为天才少年回应离职后卖玉米", "desc": "百万年薪天才少年宁博宇离职发帖卖玉米引猜测，本人澄清只是帮亲戚卖", "platform": "百度热点", "hot": "热", "link": "https://top.baidu.com/board?tab=realtime" },
+      { "title": "女子凌晨倒掉24瓶爱心水被拍下", "desc": "爱心供水点凌晨被女子倒掉24瓶水，监控拍下引发全网讨论", "platform": "微博热搜", "hot": "7.9万", "link": "https://s.weibo.com/top/summary" },
+      { "title": "2026年涉汛谣言大起底", "desc": "公安部公布15起涉汛涉灾网络谣言典型案例，AI伪造视频成主要手段", "platform": "抖音热榜", "hot": "880万", "link": "https://www.douyin.com/hot" },
+      { "title": "一款抗癌疫苗引爆美股医药股", "desc": "Moderna与默沙东mRNA个性化癌症疫苗临床积极，Moderna股价暴涨超126%", "platform": "百度热点", "hot": "热", "link": "https://top.baidu.com/board?tab=realtime" },
+      { "title": "985大学开在县城考进大山了", "desc": "多所985/双一流高校布局县域校区引热议，教育与区域平衡再成焦点", "platform": "百度热点", "hot": "热", "link": "https://top.baidu.com/board?tab=realtime" }
+    ],
+    "日本": [
+      { "title": "成田机场马航客机引擎冒黑烟 跑道关闭", "desc": "20日上午马航客机在成田机场准备起飞时左引擎故障冒黑烟，A跑道紧急关闭，无伤亡报告", "platform": "日本Yahoo/时事", "hot": "热", "link": "https://www.yahoo.co.jp/" },
+      { "title": "日本连续3个月出现贸易逆差", "desc": "7月贸易逆差6345亿日元，进口额同比增27.8%创历史新高，原油进口额增87.8%", "platform": "日本经济新闻", "hot": "热", "link": "https://www.nikkei.com/" },
+      { "title": "栃木县列车撞人事故致4死", "desc": "鹿沼市车站4名铁路除草作业人员与特急列车碰撞，送医时均已失去意识", "platform": "日本Yahoo/时事", "hot": "热", "link": "https://www.yahoo.co.jp/" },
+      { "title": "日本防卫省2027财年预算申请再创新高", "desc": "拟申请防卫预算增至10万亿日元，研发水中发射型高超音速导弹并引入AI辅助指挥", "platform": "日本动态", "hot": "热", "link": "https://new.qq.com/rain/a/20260820A08K3D00" },
+      { "title": "日本跨党派议员团计划访华", "desc": "五党议员代表团24-27日访华，系去年11月以来关系恶化后首次", "platform": "日本动态", "hot": "热", "link": "https://new.qq.com/rain/a/20260820A08K3D00" },
+      { "title": "日本民众排队5小时买中国相机", "desc": "影石Insta360东京开店，日本消费者背着佳能松下排队5小时，半天销售额超300万日元", "platform": "百度热点", "hot": "热", "link": "https://top.baidu.com/board?tab=realtime" },
+      { "title": "名侦探柯南大结局已画好", "desc": "青山刚昌证实大结局分镜稿完成，追了30年的粉丝终于看到终点线", "platform": "日漫话题", "hot": "热", "link": "https://www.douyin.com/hot" },
+      { "title": "日本防相出访澳印推销武器", "desc": "小泉进次郎本周访澳印，推进澳方采购升级版最上级护卫舰，专家指为再军事化铺路", "platform": "日本动态", "hot": "热", "link": "https://new.qq.com/rain/a/20260820A08K3D00" }
+    ],
+    "韩国": [
+      { "title": "朝鲜向东海发射短程弹道导弹", "desc": "韩军方称朝鲜向东海发射多枚短程弹道导弹，飞行约300公里；此前韩美宣布缩减UFS联合军演", "platform": "韩联社", "hot": "热", "link": "https://en.yna.co.kr/" },
+      { "title": "中韩外长会谈在首尔举行", "desc": "王毅应韩国外长赵显邀请访问韩国，双方愿推动中韩战略合作伙伴关系迈上新台阶", "platform": "韩联社/央视", "hot": "热", "link": "https://en.yna.co.kr/" },
+      { "title": "金与正回应特朗普会面表态", "desc": "特朗普称预计今年再见金正恩；金与正表示对华盛顿沟通消息一无所知，并批评缩减军演表态", "platform": "韩联社", "hot": "热", "link": "https://en.yna.co.kr/" },
+      { "title": "BTS柾国账号被黑案中国籍嫌疑人获刑20年", "desc": "中国籍嫌疑人因入侵BTS田柾国等艺人账号被判20年，引发网络安全与跨国司法讨论", "platform": "韩联社", "hot": "热", "link": "https://en.yna.co.kr/" },
+      { "title": "Naver工会要求总部参与集体谈判", "desc": "约300名工会成员集会要求子公司劳资谈判合并、总部直接参与，引用Naver Jet谈判破裂案例", "platform": "朝鲜日报", "hot": "热", "link": "https://www.chosun.com/" },
+      { "title": "韩国警方追查首尔大学附近性骚扰案", "desc": "警方正在追查首尔大学附近一男性，涉嫌性骚扰（最新动态）", "platform": "韩联社", "hot": "热", "link": "https://en.yna.co.kr/" },
+      { "title": "韩美联合军演缩减引发国内讨论", "desc": "UFS演习规模缩减，朝方称首尔陷入取消演习的窘境；国内对安保态势讨论升温", "platform": "韩联社", "hot": "热", "link": "https://en.yna.co.kr/" },
+      { "title": "韩美产业部长通话称取得有意义进展", "desc": "产业部长称与美方谈判取得有意义进展，涉贸易与产业合作议题", "platform": "韩联社", "hot": "热", "link": "https://en.yna.co.kr/" }
+    ]
+  }
+}
