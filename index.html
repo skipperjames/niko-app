@@ -6899,7 +6899,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="nav-title">System</div>
             <div class="nav-item active" onclick="switchPage('today')">📌 今日</div>
             <div class="nav-item" onclick="switchPage('plan')">📋 计划</div>
-            <div class="nav-item" onclick="switchPage('hot')">🔥 热点 <span class="nav-badge">新</span></div>
+            <div class="nav-item" onclick="switchPage('hot')">🔥 热点</div>
             <div class="nav-item" onclick="switchPage('meme')">🈯 梗文化</div>
             <div class="nav-item" onclick="switchPage('copy')">✍️ 文案库</div>
             <div class="nav-item" onclick="switchPage('notes')">🗂️ 便签看板</div>
@@ -6907,7 +6907,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <div class="nav-item" onclick="switchPage('diary')">📔 日记</div>
             <div class="nav-item" onclick="switchPage('member')">💰 会员</div>
             <div class="nav-item" onclick="switchPage('game')">🎮 游戏时间</div>
-            <div class="nav-item" onclick="switchPage('compound')">📈 复利面板 <span class="nav-badge">新</span></div>
+            <div class="nav-item" onclick="switchPage('compound')">📈 复利面板</div>
             <div class="nav-item" onclick="switchPage('parenting')">👶 育儿手册</div>
         </div>
         <div class="nav-section settings-section" style="margin-top:auto;">
@@ -6947,13 +6947,13 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         <div class="nav-more-item" onclick="switchPage('parenting');hideNavMore()">👶 育儿手册</div>
     </div>
 
-    <!-- 手机端底部 Tab 栏：一键直达最常用 5 个板块 -->
+    <!-- 手机端底部 Tab 栏：一键直达最常用 5 个板块（2026-08-20 调整：便签→复利面板，因复利需高频查看） -->
     <div class="niko-mobile-tabbar" id="nikoMobileTabbar">
         <div class="niko-mobile-tab active" data-page="today" onclick="switchPage('today')"><span class="tab-icon">📌</span><span>今日</span></div>
         <div class="niko-mobile-tab" data-page="plan" onclick="switchPage('plan')"><span class="tab-icon">📋</span><span>计划</span></div>
         <div class="niko-mobile-tab" data-page="diary" onclick="switchPage('diary')"><span class="tab-icon">📔</span><span>日记</span></div>
-        <div class="niko-mobile-tab" data-page="notes" onclick="switchPage('notes')"><span class="tab-icon">🗂️</span><span>便签</span></div>
         <div class="niko-mobile-tab" data-page="game" onclick="switchPage('game')"><span class="tab-icon">🎮</span><span>游戏</span></div>
+        <div class="niko-mobile-tab" data-page="compound" onclick="switchPage('compound')"><span class="tab-icon">📈</span><span>复利</span></div>
     </div>
 
 
@@ -11339,7 +11339,10 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (hotLoading) return;
             hotLoading = true;
 
-            // 显示 loading 状态
+            // 显示 loading 状态（按钮自身也要给出反馈，避免点击后"完全没反应"）
+            const btn = document.getElementById('hotFullRefreshBtn');
+            const btnOrgText = btn ? btn.textContent : null;
+            if (btn) { btn.disabled = true; btn.textContent = '⏳ 刷新中…'; }
             const todayList = document.getElementById('hotList');
             const fullBuy = document.getElementById('hotFullBuy');
             const fullGame = document.getElementById('hotFullGame');
@@ -11351,17 +11354,35 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             if (fullMedia) fullMedia.innerHTML = loadingHtml;
 
             // 真实刷新：先拉云端 AI 热榜（每日自动化更新），云端失败才回退本地预置数据
-            loadCloudHot(ok => {
-                if (!ok) {
-                    hotData = generateHotData();
-                    hotLastFetchTime = new Date().toISOString();
-                    safeStorage.set('niko_hot_last_fetch', hotLastFetchTime);
-                    hotCloudMeta = null;
-                }
+            const finish = (ok) => {
                 hotLoading = false;
+                if (btn) { btn.disabled = false; btn.textContent = btnOrgText || '🔄 刷新热点'; }
+                if (typeof showToast === 'function') {
+                    showToast(ok ? '✅ 热点已刷新为最新云端数据' : '⚠️ 云端拉取失败，已回退预置数据');
+                }
+            };
+            try {
+                loadCloudHot(ok => {
+                    if (!ok) {
+                        hotData = generateHotData();
+                        hotLastFetchTime = new Date().toISOString();
+                        safeStorage.set('niko_hot_last_fetch', hotLastFetchTime);
+                        hotCloudMeta = null;
+                    }
+                    renderHot();
+                    if (currentPage === 'hot') renderHotFull();
+                    finish(ok);
+                });
+            } catch (e) {
+                // 防御性兜底：即使 loadCloudHot 同步抛错也能恢复按钮 + 渲染
+                hotData = generateHotData();
+                hotLastFetchTime = new Date().toISOString();
+                safeStorage.set('niko_hot_last_fetch', hotLastFetchTime);
+                hotCloudMeta = null;
                 renderHot();
                 if (currentPage === 'hot') renderHotFull();
-            });
+                finish(false);
+            }
         }
 
         function renderHot() {
@@ -11444,21 +11465,37 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 'hotCNWeibo': '微博热搜', 'hotCNDouyin': '抖音热榜', 'hotCNBilibili': 'B站热搜',
                 'hotCNXhs': '小红书热门', 'hotCNKuaishou': '快手热榜', 'hotCNBaidu': '百度热搜'
             };
+            // 平台名称兼容：云端 hotspot.json 与本地预置可能用不同写法（百度热点 / 百度热搜）
+            const cnAlias = {
+                '微博热搜': ['微博热搜'],
+                '抖音热榜': ['抖音热榜'],
+                'B站热搜': ['B站热搜', 'B站热门', '哔哩哔哩热搜'],
+                '小红书热门': ['小红书热门', '小红书热搜'],
+                '快手热榜': ['快手热榜', '快手热门'],
+                '百度热搜': ['百度热搜', '百度热点']
+            };
             const cnAll = hotData['国内'] || [];
             Object.keys(cnMap).forEach(containerId => {
                 const el = document.getElementById(containerId);
                 if (!el) return;
                 const plat = cnMap[containerId];
+                const aliases = cnAlias[plat] || [plat];
                 // 注意：必须用原始索引（openHotDetail 按 hotData[region][index] 定位），
                 // 过滤后重新编号会导致点击"看过/收藏/转灵感"打开错误的条目
                 const items = [];
                 cnAll.forEach((it, i) => {
-                    if (it.source === plat) items.push({ ...it, region: '国内', index: i });
+                    if (aliases.indexOf(it.source) !== -1 || aliases.indexOf(it.platform) !== -1) {
+                        items.push({ ...it, region: '国内', index: i });
+                    }
                 });
+                // 没数据的平台：整张卡片（含 panel-card 容器）直接隐藏，避免出现"暂无数据"空白栏
+                const panel = el.closest('.panel-card');
                 if (items.length) {
                     el.innerHTML = items.map(item => createHotItemHtml(item, true)).join('');
+                    if (panel) panel.style.display = '';
                 } else {
                     el.innerHTML = '<div class="hot-empty" style="padding:10px;">暂无数据</div>';
+                    if (panel) panel.style.display = 'none';
                 }
             });
 
@@ -17841,12 +17878,12 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             });
             const dataPts = CP_DIM_DEFS.map((d, i) => pt(i, R * (scores[d.key] / 100)).join(',')).join(' ');
             html += `<polygon points="${dataPts}" fill="rgba(139,92,246,.22)" stroke="#8b5cf6" stroke-width="1.5"/>`;
-            // 标签：名称+分值合为一行放在 R+28，加白色描边避免相邻维度重叠
+            // 标签：名称+分值合为一行放在 R+38（远离多边形避免遮挡），不加白色描边（之前描边在深色主题下显灰、且字小看不清）
             CP_DIM_DEFS.forEach((d, i) => {
                 const [x, y] = pt(i, R * (scores[d.key] / 100));
                 html += `<circle cx="${x}" cy="${y}" r="3" fill="${d.color}"/>`;
-                const [lx, ly] = pt(i, R + 28);
-                html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="500" fill="${d.color}" paint-order="stroke" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linejoin="round">${d.icon}${d.name}<tspan dx="3" font-size="12" font-weight="800">${scores[d.key]}</tspan></text>`;
+                const [lx, ly] = pt(i, R + 38);
+                html += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="600" fill="${d.color}">${d.icon}${d.name}<tspan dx="3" font-size="12" font-weight="800">${scores[d.key]}</tspan></text>`;
             });
             html += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="bold" fill="#8b5cf6">复利</text>`;
             svg.innerHTML = html;
@@ -19969,7 +20006,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
         // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
-        window.NIKO_VERSION = "202608202349";
+        window.NIKO_VERSION = "202608210007";
         function nikoApplyUpdate() {
             var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
             if (v && location.pathname) {
