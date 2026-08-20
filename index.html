@@ -5579,6 +5579,60 @@
         @media (max-width: 768px) {
             .book-detail-grid { grid-template-columns: 1fr; }
         }
+        /* ===== 微信读书联动 ===== */
+        .weread-import-box {
+            background: #faf8f3;
+            border: 1.5px dashed #d4c9a8;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        body.dark-mode .weread-import-box { background: #1a2233; border-color: #3d4a63; }
+        .weread-hint { font-size: 12.5px; color: #888; line-height: 1.8; }
+        .weread-hint b { color: #b45309; }
+        body.dark-mode .weread-hint b { color: #fbbf24; }
+        .weread-section-title { font-size: 14px; font-weight: 600; margin: 14px 0 8px; display: flex; align-items: center; gap: 6px; }
+        .weread-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+        .weread-stat { background: #f8f6f1; border: 1px solid #eee8dd; border-radius: 12px; padding: 10px 14px; }
+        body.dark-mode .weread-stat { background: #1f2937; border-color: #333; }
+        .weread-stat-label { font-size: 12px; color: #888; }
+        .weread-stat-value { font-size: 20px; font-weight: 600; margin-top: 2px; color: #07c160; }
+        body.dark-mode .weread-stat-value { color: #34d399; }
+        .weread-stat-sub { font-size: 11.5px; color: #aaa; margin-top: 2px; }
+        .weread-rank-list { display: flex; flex-direction: column; gap: 6px; }
+        .weread-rank-row { display: flex; align-items: center; gap: 10px; background: #f8f6f1; border: 1px solid #eee8dd; border-radius: 10px; padding: 8px 12px; }
+        body.dark-mode .weread-rank-row { background: #1f2937; border-color: #333; }
+        .weread-rank-no { font-size: 13px; font-weight: 700; color: #b45309; width: 22px; text-align: center; flex-shrink: 0; }
+        body.dark-mode .weread-rank-no { color: #fbbf24; }
+        .weread-rank-info { flex: 1; min-width: 0; }
+        .weread-rank-title { font-size: 13.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .weread-rank-meta { font-size: 12px; color: #999; margin-top: 1px; }
+        .weread-rank-time { font-size: 13px; color: #07c160; font-weight: 600; flex-shrink: 0; }
+        body.dark-mode .weread-rank-time { color: #34d399; }
+        .weread-shelf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px; }
+        .weread-book-card { background: #f8f6f1; border: 1px solid #eee8dd; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+        body.dark-mode .weread-book-card { background: #1f2937; border-color: #333; }
+        .weread-cover { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 6px; background: #ddd; }
+        .weread-book-title { font-size: 12.5px; font-weight: 500; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; }
+        .weread-book-meta { font-size: 11px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .weread-chip { display: inline-block; font-size: 10.5px; padding: 1px 7px; border-radius: 20px; color: #fff; }
+        .weread-note-book { background: #f8f6f1; border: 1px solid #eee8dd; border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; }
+        body.dark-mode .weread-note-book { background: #1f2937; border-color: #333; }
+        .weread-note-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .weread-note-title { font-size: 14px; font-weight: 600; }
+        .weread-note-count { font-size: 12px; color: #888; }
+        .weread-highlight { border-left: 3px solid #07c160; background: rgba(7,193,96,.06); border-radius: 0 8px 8px 0; padding: 7px 10px; margin: 6px 0; font-size: 13px; line-height: 1.65; }
+        body.dark-mode .weread-highlight { background: rgba(52,211,153,.08); }
+        .weread-highlight .hl-chapter { font-size: 11px; color: #999; margin-top: 3px; }
+        .weread-thought { border-left: 3px solid #8b5cf6; background: rgba(139,92,246,.06); border-radius: 0 8px 8px 0; padding: 7px 10px; margin: 6px 0; font-size: 13px; line-height: 1.65; }
+        body.dark-mode .weread-thought { background: rgba(139,92,246,.1); }
+        .weread-thought .hl-quote { font-size: 12px; color: #999; margin-bottom: 4px; }
+        @media (max-width: 768px) {
+            .weread-shelf-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+        }
 /* ===== 日记专属CSS ===== */
         .diary-stats {
             display: grid;
@@ -7808,6 +7862,41 @@ body.dark-mode .sync-indicator-sub { color: #555; }
                             </div>
                         </div>
                         <div id="bookNotesList">
+                            <div class="book-empty">加载中...</div>
+                        </div>
+                    </div>
+
+                    <!-- 微信读书视图 -->
+                    <div id="bookWereadView" style="display:none;">
+                        <div class="book-toolbar" style="margin-bottom:10px;flex-wrap:wrap;">
+                            <span style="font-size:12.5px;color:#888;" id="wereadUpdatedAt"></span>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <button class="book-btn" onclick="toggleWereadImport()" id="wereadImportBtn">📥 导入 / 更新数据</button>
+                                <button class="book-btn" onclick="wereadSyncShelfToNiko()" title="把微信读书书架合并进 NIKO 书架（按书名去重，不动已有书籍）">📚 同步书架</button>
+                                <button class="book-btn" onclick="wereadSyncNotesToNiko()" title="把微信读书划线/想法合并进 NIKO 读书笔记（按内容去重）">📝 同步笔记</button>
+                                <button class="book-btn danger" onclick="wereadClearData()">🗑 清除数据</button>
+                            </div>
+                        </div>
+
+                        <div class="weread-import-box" id="wereadImportBox" style="display:none;">
+                            <div class="weread-hint">
+                                <b>为什么需要导入？</b>微信读书接口不开放网页跨域调用，且 Key 不能放进公开网页，所以由本地脚本拉数据：<br>
+                                ① 双击项目里的「<b>微信读书同步.bat</b>」（生成 weread_data.json）<br>
+                                ② 点下方「选择文件」上传它，或用记事本打开后整段复制粘贴到输入框<br>
+                                ③ 导入后数据存入 localStorage，经 NIKO 云同步自动分发到手机端
+                            </div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                                <button class="book-btn" onclick="document.getElementById('wereadFileInput').click()">📄 选择文件</button>
+                                <span style="font-size:12px;color:#aaa;">支持直接上传 weread_data.json</span>
+                                <input type="file" id="wereadFileInput" accept=".json,application/json" style="display:none;" onchange="wereadHandleFile(this.files[0])">
+                            </div>
+                            <textarea id="wereadPasteBox" style="width:100%;height:100px;box-sizing:border-box;border:1px solid #ddd;border-radius:8px;padding:8px 10px;font-size:12px;" placeholder="或把 weread_data.json 的完整内容粘贴到这里"></textarea>
+                            <div style="display:flex;justify-content:flex-end;">
+                                <button class="book-btn primary" onclick="wereadImportPaste()">⚡ 导入</button>
+                            </div>
+                        </div>
+
+                        <div id="wereadContent">
                             <div class="book-empty">加载中...</div>
                         </div>
                     </div>
@@ -14189,6 +14278,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             bookLogs = safeStorage.get('niko_book_logs', []);
             bookNotes = safeStorage.get('niko_book_notes', []);
             bookRec = safeStorage.get('niko_book_recommend', []);
+            wereadSnap = safeStorage.get('niko_weread_snapshot', null);
             seedBookRecommend();
             renderBookStats();
             renderBookViewTabs();
@@ -14197,6 +14287,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             renderBookRec();
             renderBookCheckin();
             renderBookNotes();
+            renderWereadView();
             showBookView();
             const upd = safeStorage.get('niko_book_updated_at', null);
             document.getElementById('bookUpdatedAt').textContent = upd ? '数据更新于 ' + upd.slice(0, 10) : '';
@@ -14206,6 +14297,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             document.getElementById('bookRecView').style.display = bookView === 'rec' ? '' : 'none';
             document.getElementById('bookCheckinView').style.display = bookView === 'checkin' ? '' : 'none';
             document.getElementById('bookNotesView').style.display = bookView === 'notes' ? '' : 'none';
+            document.getElementById('bookWereadView').style.display = bookView === 'weread' ? '' : 'none';
         }
         function renderBookViewTabs() {
             const el = document.getElementById('bookViewTabs');
@@ -14214,13 +14306,15 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 shelf: books.length,
                 rec: bookRec.length,
                 checkin: bookLogs.length,
-                notes: bookNotes.length
+                notes: bookNotes.length,
+                weread: wereadSnap && wereadSnap.shelf ? (wereadSnap.shelf.total || 0) : 0
             };
             const defs = [
                 ['shelf', '📚 书架'],
                 ['rec', '🤖 AI 推荐'],
                 ['checkin', '✅ 阅读打卡'],
-                ['notes', '📝 读书笔记']
+                ['notes', '📝 读书笔记'],
+                ['weread', '📖 微信读书']
             ];
             el.innerHTML = defs.map(([k, label]) =>
                 `<span class="book-view-tab${bookView === k ? ' active' : ''}" onclick="switchBookView('${k}')">${label}<span class="book-view-count">${cnt[k]}</span></span>`
@@ -14952,6 +15046,233 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             bookSaveNotes();
             renderBookPage();
             showToast('已删除');
+        }
+
+        // ===== 微信读书联动（本地脚本拉数据 → 导入快照 → 云同步分发） =====
+        let wereadSnap = safeStorage.get('niko_weread_snapshot', null);
+
+        function wereadFmtDur(sec) {
+            sec = Math.max(0, Math.round(Number(sec) || 0));
+            const h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60);
+            if (h) return h + '小时' + (m ? m + '分' : '');
+            return m + '分钟';
+        }
+        function wereadValidate(data) {
+            if (!data || typeof data !== 'object' || Array.isArray(data)) return '数据格式不对，需要 weread_data.json 的完整内容';
+            if (!data.stats && !data.shelf && !data.notes) return '缺少 stats / shelf / notes 字段，请确认粘贴的是 weread_data.json';
+            return null;
+        }
+        function wereadSave(data) {
+            wereadSnap = data;
+            safeStorage.set('niko_weread_snapshot', data);
+            safeStorage.set('niko_weread_imported_at', new Date().toISOString());
+            renderBookPage();
+        }
+        function toggleWereadImport() {
+            const box = document.getElementById('wereadImportBox');
+            if (!box) return;
+            box.style.display = box.style.display === 'none' ? '' : 'none';
+        }
+        function wereadImportPaste() {
+            const el = document.getElementById('wereadPasteBox');
+            if (!el) return;
+            const txt = (el.value || '').trim();
+            if (!txt) { showToast('先粘贴 weread_data.json 的内容，或用上方按钮选文件'); return; }
+            let data;
+            try { data = JSON.parse(txt); } catch (e) { showToast('❌ JSON 解析失败：' + e.message); return; }
+            const err = wereadValidate(data);
+            if (err) { showToast('❌ ' + err); return; }
+            wereadSave(data);
+            el.value = '';
+            document.getElementById('wereadImportBox').style.display = 'none';
+            showToast('✅ 微信读书数据已导入（云同步稍后分发到手机）');
+        }
+        function wereadHandleFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                let data;
+                try { data = JSON.parse(String(reader.result)); } catch (e) { showToast('❌ 文件不是有效 JSON：' + e.message); return; }
+                const err = wereadValidate(data);
+                if (err) { showToast('❌ ' + err); return; }
+                wereadSave(data);
+                document.getElementById('wereadImportBox').style.display = 'none';
+                showToast('✅ 已导入 ' + file.name);
+            };
+            reader.readAsText(file, 'utf-8');
+        }
+        function wereadClearData() {
+            if (!wereadSnap) return;
+            if (!confirm('确定清除已导入的微信读书数据吗？（不影响 NIKO 本地书架和笔记）')) return;
+            wereadSnap = null;
+            safeStorage.set('niko_weread_snapshot', null);
+            safeStorage.set('niko_weread_imported_at', null);
+            renderBookPage();
+            showToast('已清除微信读书数据');
+        }
+
+        // 微信读书书架 → NIKO 书架（按书名去重，不改动已有书籍）
+        function wereadSyncShelfToNiko() {
+            if (!wereadSnap || !wereadSnap.shelf) { showToast('先导入微信读书数据'); return; }
+            let added = 0, skipped = 0;
+            const items = [];
+            (wereadSnap.shelf.books || []).forEach(b => items.push({ title: b.title, author: b.author, category: b.category, finished: b.finished === 1, album: false }));
+            (wereadSnap.shelf.albums || []).forEach(a => items.push({ title: a.title, author: a.author, category: '有声书', finished: false, album: true }));
+            items.forEach(it => {
+                if (!it.title || books.find(b => b.title === it.title)) { skipped++; return; }
+                books.push({
+                    id: 'b_wr_' + Date.now() + '_' + added,
+                    title: it.title,
+                    author: it.author || '',
+                    category: it.category || '微信读书',
+                    status: it.finished ? 'done' : 'reading',
+                    progress: 0,
+                    rating: 0,
+                    reason: (it.album ? '🎧 有声书 · ' : '') + '同步自微信读书',
+                    summary: ''
+                });
+                added++;
+            });
+            bookSaveBooks();
+            renderBookPage();
+            showToast(added ? '📚 新增 ' + added + ' 本到 NIKO 书架（跳过已存在 ' + skipped + ' 本）' : '书架已同步过，没有新增');
+        }
+
+        // 微信读书划线/想法 → NIKO 读书笔记（按引用内容去重）
+        function wereadSyncNotesToNiko() {
+            if (!wereadSnap || !wereadSnap.notes || !wereadSnap.notes.books) { showToast('先导入微信读书数据'); return; }
+            let added = 0, skipped = 0;
+            const dateOf = ts => {
+                const s = Number(ts);
+                if (!s) return bookTodayStr();
+                const d = new Date(s * 1000);
+                return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            };
+            (wereadSnap.notes.books || []).forEach(nb => {
+                const title = (nb.book && nb.book.title) || '';
+                const localBook = books.find(b => b.title === title);
+                const mk = (quote, thought, ts) => {
+                    const q = (quote || '').trim();
+                    if (!q && !(thought || '').trim()) { skipped++; return; }
+                    if (q && bookNotes.find(n => n.quote === q)) { skipped++; return; }
+                    bookNotes.push({
+                        id: 'bwn_wr_' + Date.now() + '_' + added,
+                        bookId: localBook ? localBook.id : '',
+                        page: '',
+                        quote: q,
+                        thought: (thought || '').trim(),
+                        date: dateOf(ts),
+                        converted: 0,
+                        from: title ? '微信读书 ·《' + title + '》' : '微信读书'
+                    });
+                    added++;
+                };
+                (nb.highlights || []).forEach(h => mk(h.text, '', h.createTime));
+                (nb.reviews || []).forEach(r => mk(r.abstract, r.content, r.createTime));
+            });
+            bookSaveNotes();
+            renderBookPage();
+            showToast(added ? '📝 新增 ' + added + ' 条笔记（跳过重复 ' + skipped + ' 条）' : '笔记已同步过，没有新增');
+        }
+
+        // 微信读书视图渲染
+        function renderWereadView() {
+            const el = document.getElementById('wereadContent');
+            if (!el) return;
+            const updEl = document.getElementById('wereadUpdatedAt');
+            if (!wereadSnap) {
+                if (updEl) updEl.textContent = '';
+                el.innerHTML = `<div class="book-empty">还没有导入微信读书数据——点右上「📥 导入 / 更新数据」，按提示用本地脚本生成的 weread_data.json 导入<br>（数据经 NIKO 云同步自动分发到手机，手机端无需重复导入）</div>`;
+                return;
+            }
+            const fetched = wereadSnap.fetchedAt ? wereadSnap.fetchedAt.slice(0, 10) : '';
+            if (updEl) updEl.textContent = '微信读书数据 · ' + (fetched ? '拉取于 ' + fetched : '') + ' · 数据只存本机和你的云同步通道';
+
+            let html = '';
+
+            // ① 统计卡
+            const st = wereadSnap.stats || {};
+            const m = st.monthly || null;
+            if (m) {
+                const cmp = typeof m.compare === 'number'
+                    ? (m.compare >= 0 ? '<span style="color:#e0604e;">↑' + Math.round(m.compare * 100) + '%</span>' : '<span style="color:#3b9e6f;">↓' + Math.abs(Math.round(m.compare * 100)) + '%</span>')
+                    : '';
+                const statMap = {};
+                (m.readStat || []).forEach(s => { statMap[s.stat] = s.counts; });
+                const cards = [
+                    ['⏱ 本月时长', wereadFmtDur(m.totalReadTime), '环比 ' + (cmp || '—')],
+                    ['📅 阅读天数', (m.readDays || 0) + ' 天', statMap['阅读'] || ''],
+                    ['📈 日均', wereadFmtDur(m.dayAverageReadTime), m.preferCategoryWord || ''],
+                    ['📖 读过 / 读完', (statMap['读过'] || '0') + ' / ' + (statMap['读完'] || '0'), statMap['笔记'] ? '笔记 ' + statMap['笔记'] : '']
+                ];
+                if (st.overall) cards.push(['🏆 累计时长', wereadFmtDur(st.overall.totalReadTime), st.overall.readDays + ' 天']);
+                html += `<div class="weread-stat-row">` + cards.map(([l, v, s]) =>
+                    `<div class="weread-stat"><div class="weread-stat-label">${l}</div><div class="weread-stat-value">${v}</div><div class="weread-stat-sub">${s}</div></div>`).join('') + `</div>`;
+                // 偏好分类
+                if ((m.preferCategory || []).length) {
+                    const cats = m.preferCategory.slice(0, 5).map(c => `${escapeHtml(c.title)} ${wereadFmtDur(c.time)}·${c.count}本`).join('　');
+                    html += `<div class="weread-hint" style="margin-top:8px;">🏷 偏好分类：${cats}</div>`;
+                }
+            }
+
+            // ② 时长排行
+            if (m && (m.readLongest || []).length) {
+                html += `<div class="weread-section-title">🔥 本月读书时长排行</div><div class="weread-rank-list">` +
+                    m.readLongest.slice(0, 10).map((r, i) => {
+                        const t = (r.book && r.book.title) || r.album || '未知';
+                        const a = (r.book && r.book.author) || '';
+                        return `<div class="weread-rank-row">
+                            <div class="weread-rank-no">${i + 1}</div>
+                            <div class="weread-rank-info">
+                                <div class="weread-rank-title">《${escapeHtml(t)}》${r.album ? ' 🎧' : ''}</div>
+                                <div class="weread-rank-meta">${escapeHtml(a)}</div>
+                            </div>
+                            <div class="weread-rank-time">${wereadFmtDur(r.readTime)}</div>
+                        </div>`;
+                    }).join('') + `</div>`;
+            }
+
+            // ③ 书架
+            const shelf = wereadSnap.shelf;
+            if (shelf) {
+                const all = []
+                    .concat((shelf.books || []).map(b => ({ title: b.title, author: b.author, cover: b.cover, chip: b.finished === 1 ? ['读完', '#10b981'] : ['在读', '#3b82f6'] })))
+                    .concat((shelf.albums || []).map(a => ({ title: a.title, author: a.author, cover: a.cover, chip: ['🎧 有声书', '#8b5cf6'] })));
+                if (all.length) {
+                    html += `<div class="weread-section-title">📚 微信读书书架 <span class="weread-note-count">共 ${shelf.total || all.length} 条目（电子书 ${shelf.books.length} · 有声书 ${shelf.albums.length}）</span></div>
+                    <div class="weread-shelf-grid">` + all.map(b => `
+                        <div class="weread-book-card">
+                            ${b.cover ? `<img class="weread-cover" src="${escapeHtml(b.cover)}" alt="封面" loading="lazy" onerror="this.style.display='none'">` : ''}
+                            <div class="weread-book-title">《${escapeHtml(b.title)}》</div>
+                            <div class="weread-book-meta">${escapeHtml(b.author || '')}</div>
+                            <span class="weread-chip" style="background:${b.chip[1]};">${b.chip[0]}</span>
+                        </div>`).join('') + `</div>`;
+                }
+            }
+
+            // ④ 笔记划线
+            const notes = wereadSnap.notes;
+            if (notes && (notes.books || []).length) {
+                html += `<div class="weread-section-title">📝 笔记与划线 <span class="weread-note-count">${notes.totalBookCount} 本书 · 共 ${notes.totalNoteCount} 条</span></div>`;
+                html += (notes.books || []).map(nb => {
+                    const title = (nb.book && nb.book.title) || '未知书籍';
+                    const author = (nb.book && nb.book.author) || '';
+                    const hl = (nb.highlights || []).map(h => `
+                        <div class="weread-highlight">${escapeHtml(h.text)}${h.chapter ? `<div class="hl-chapter">— ${escapeHtml(h.chapter)}</div>` : ''}</div>`).join('');
+                    const rv = (nb.reviews || []).map(r => `
+                        <div class="weread-thought">${r.abstract ? `<div class="hl-quote">“${escapeHtml(r.abstract)}”</div>` : ''}${escapeHtml(r.content || '')}</div>`).join('');
+                    if (!hl && !rv) return '';
+                    return `<div class="weread-note-book">
+                        <div class="weread-note-head">
+                            <div class="weread-note-title">《${escapeHtml(title)}》</div>
+                            <div class="weread-note-count">${escapeHtml(author)} · 划线 ${nb.noteCount || 0} · 想法 ${nb.reviewCount || 0} · 书签 ${nb.bookmarkCount || 0}</div>
+                        </div>
+                        ${hl}${rv}
+                    </div>`;
+                }).join('');
+            }
+
+            el.innerHTML = html || '<div class="book-empty">快照里没有可展示的数据，试试重新运行微信读书同步.bat 后再导入</div>';
         }
 
         // 初始化（面板 JS 顶层执行，早于框架渲染；框架 init 里再兜底调 renderBookPage）
@@ -19510,7 +19831,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
         // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
-        window.NIKO_VERSION = "202608201207";
+        window.NIKO_VERSION = "202608201307";
         function nikoApplyUpdate() {
             var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
             if (v && location.pathname) {
