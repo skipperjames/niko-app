@@ -361,6 +361,26 @@
             .niko-float-dock { display: none !important; }
             .niko-sync-popover { display: none !important; }
         }
+        /* 新版本提示气泡（轻量小绿点，不遮挡内容） */
+        .niko-update-tip {
+            position: fixed; right: 14px; bottom: 74px; z-index: 800;
+            display: none; align-items: center; gap: 8px;
+            background: rgba(255,255,255,.96); border: 1px solid #e5e7eb;
+            border-radius: 999px; padding: 8px 14px 8px 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.14);
+            font-size: 12.5px; color: #374151; cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            max-width: 86vw; white-space: nowrap;
+        }
+        body.dark-mode .niko-update-tip { background: rgba(31,31,46,.96); border-color: #333; color: #d1d5db; }
+        .niko-update-tip .dot {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #10b981; flex-shrink: 0; animation: nikoPulse 1.6s infinite;
+        }
+        .niko-update-tip b { color: #059669; }
+        body.dark-mode .niko-update-tip b { color: #34d399; }
+        .niko-update-tip.show { display: flex; }
+        .niko-update-tip:active { transform: scale(0.97); }
         /* 手机端底部快捷 Tab 栏（替代繁琐的侧边栏滚动） */
         .niko-mobile-tabbar {
             display: none;
@@ -8265,6 +8285,11 @@ body.dark-mode .sync-indicator-sub { color: #555; }
             <span class="niko-float-dot-inner"></span>
         </button>
         <button class="niko-float-more" onclick="toggleNavMore(event)" aria-label="更多">⋮</button>
+    </div>
+    <!-- 新版本提示气泡（发现新版本时显示，点击立即更新） -->
+    <div class="niko-update-tip" id="nikoUpdateTip" onclick="nikoApplyUpdate()">
+        <span class="dot"></span>
+        <span>发现新版本 <b id="nikoUpdateVer">v</b>，点此更新</span>
     </div>
     <!-- 同步详情 popover（点击小圆点展开） -->
     <div class="niko-sync-popover" id="nikoSyncPopover" onclick="event.stopPropagation()">
@@ -19460,6 +19485,52 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         console.log('✅ NIKO 已启动（便签看板已启用：三视图 / 拖拽分类 / 置顶 / 归档 / 回收站 / 批量管理 / 转任务打通）');
         // 预置买量节点注入（计划看板定义 seedMarketNodes，此处兜底：保证页面加载早期已注入，今日看板提醒立即可见）
         if (typeof seedMarketNodes === 'function') { try { seedMarketNodes(); } catch (e) { console.warn('seedMarketNodes:', e); } }
+
+        // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
+        // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
+        window.NIKO_VERSION = "202608200841";
+        function nikoApplyUpdate() {
+            var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
+            if (v && location.pathname) {
+                // 带参数跳转绕过浏览器缓存加载最新版；页面加载后会自动用 history.replaceState 还原根地址
+                try { sessionStorage.setItem('niko_tip_ver', v); } catch (e) {}
+                location.href = location.pathname + '?v=' + v;
+            }
+        }
+        // 加载完成后若地址带 ?v= 参数，悄悄还原为根地址（仅改地址栏显示，不重新加载）
+        try {
+            if (location.search && /[?&]v=/.test(location.search) && history.replaceState) {
+                history.replaceState(null, '', location.pathname);
+            }
+        } catch (e) {}
+        (function checkNikoUpdate() {
+            if (typeof location === 'undefined' || typeof fetch !== 'function') return;
+            if (location.protocol === 'file:' || location.protocol === 'about:') return;
+            var cur = window.NIKO_VERSION || '';
+            // 未注入版本号（直接打开 parts 开发文件）跳过检测
+            if (!cur || cur.indexOf('__NIKO') === 0) return;
+            try {
+                var last = Number(localStorage.getItem('niko_ver_check_at') || 0);
+                if (Date.now() - last < 30 * 60 * 1000) return; // 30 分钟内已检测过，不重复打扰
+                localStorage.setItem('niko_ver_check_at', String(Date.now()));
+                setTimeout(function () {
+                    fetch(location.pathname + '?t=' + Date.now(), { cache: 'no-store' })
+                        .then(function (r) { return r.text(); })
+                        .then(function (txt) {
+                            var m = txt.match(/NIKO_VERSION\s*=\s*"([^"]+)"/);
+                            if (!m || !m[1]) return;
+                            var online = m[1];
+                            if (Number(online) <= Number(cur)) return; // 已是最新
+                            var tip = document.getElementById('nikoUpdateTip');
+                            if (!tip) return;
+                            document.getElementById('nikoUpdateVer').textContent = 'v' + online;
+                            tip.setAttribute('data-ver', online);
+                            tip.classList.add('show');
+                        })
+                        .catch(function () {});
+                }, 2500); // 等首屏渲染完再检测，不抢加载带宽
+            } catch (e) {}
+        })();
     </script>
 
     <!-- ===== 弹窗全局关闭（移动端友好）+ 防密码簿弹窗 ===== -->
