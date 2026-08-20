@@ -14249,7 +14249,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `niko_notes_${new Date().toISOString().slice(0, 10)}.md`;
+            a.download = `niko_notes_${new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)}.md`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -18828,7 +18828,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const dateStr = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10).replace(/-/g, '');
             a.href = url;
             a.download = `niko_backup_${dateStr}.json`;
             document.body.appendChild(a);
@@ -20012,7 +20012,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
         // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
-        window.NIKO_VERSION = "202608210022";
+        window.NIKO_VERSION = "202608210031";
         function nikoApplyUpdate() {
             var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
             if (v && location.pathname) {
