@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>NIKO · 正在加载…</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:system-ui,-apple-system,sans-serif; background:#0f0e17; color:#a5b4fc; display:flex; align-items:center; justify-content:center; height:100vh; }
+.box { text-align:center; }
+.icon { font-size:42px; margin-bottom:14px; animation:spin 1.2s linear infinite; display:inline-block; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.txt { font-size:15px; opacity:0.8; }
+.hint { font-size:12px; margin-top:20px; opacity:0.4; }
+a { color:#818cf8; }
+</style>
+</head>
+<body>
+<div class="box">
+<div class="icon">⏳</div>
+<div class="txt">正在加载 NIKO 最新版本…</div>
+<div class="hint">如长时间无响应，<a href="./app.html">点此手动进入</a></div>
+</div>
+<script>
+// 核心原理：生成一个从未存在过的唯一时间戳 URL，
+// 让浏览器、CDN、运营商代理都无法命中任何缓存，强制从 GitHub 拉取最新版
+var ts = Date.now();
+// location.replace 不留历史记录，用户后续分享/书签都是根地址
+window.location.replace('./app.html?_t=' + ts);
+</script>
+<!-- 备用：如果 JS 被禁用，0 秒后 meta refresh 跳转 -->
+<meta http-equiv="refresh" content="0; url=./app.html" />
+</body>
+</html>
