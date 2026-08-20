@@ -6880,6 +6880,7 @@ body.dark-mode .sync-indicator-sub { color: #555; }
         <div class="nav-more-item" onclick="switchPage('notes');hideNavMore()">🗂 便签看板</div>
         <div class="nav-more-item" onclick="switchPage('member');hideNavMore()">💰 会员</div>
         <div class="nav-more-item" onclick="switchPage('game');hideNavMore()">🎮 游戏时间</div>
+        <div class="nav-more-item" onclick="switchPage('compound');hideNavMore()">📈 复利面板</div>
         <div class="nav-more-item" onclick="switchPage('book');hideNavMore()">📚 读书</div>
         <div class="nav-more-item" onclick="switchPage('parenting');hideNavMore()">👶 育儿手册</div>
     </div>
@@ -13034,6 +13035,9 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         }
 
         function renderMemePage() {
+            // 渲染前重读（云同步修复）：云同步拉取后 localStorage 已是最新，旧内存变量会导致云端梗库不可见
+            memes = safeStorage.get('niko_memes', []);
+            memeTaboos = safeStorage.get('niko_meme_taboos', {});
             renderMemeRegionTabs();
             renderMemeViewTabs();
             initMemeSidebar();
@@ -13363,6 +13367,9 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
         }
 
         function renderCopyPage() {
+            // 渲染前重读（云同步修复）：云同步拉取后 localStorage 已是最新，旧内存变量会导致云端文案库不可见
+            copyLibrary = safeStorage.get('niko_copy_library', []);
+            copyRecommend = safeStorage.get('niko_copy_recommend', null);
             renderCopyRegionTabs();
             renderCopyCatSelect();
             renderCopyViewTabs();
@@ -14177,6 +14184,11 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 主渲染 =====
         function renderBookPage() {
+            // 渲染前重读（云同步修复）：云同步拉取后 localStorage 已是最新，旧内存变量会导致云端书籍/笔记不可见
+            books = safeStorage.get('niko_books', []);
+            bookLogs = safeStorage.get('niko_book_logs', []);
+            bookNotes = safeStorage.get('niko_book_notes', []);
+            bookRec = safeStorage.get('niko_book_recommend', []);
             seedBookRecommend();
             renderBookStats();
             renderBookViewTabs();
@@ -14983,6 +14995,9 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 主渲染 =====
         function renderDiaryPage() {
+            // 渲染前重读（云同步修复）：云同步拉取后 localStorage 已是最新，若不重读内存变量，
+            // 云端日记不可见，且本地再保存时会把过期内存写回、覆盖云端刚拉下来的数据
+            diaryEntries = safeStorage.get('niko_diary_entries', []);
             if (!diarySelectedDate) diarySelectedDate = diaryTodayStr();
             const sel = diaryEntry(diarySelectedDate);
             diaryMood = (sel && sel.mood) || 'ok';
@@ -15068,6 +15083,9 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
             const el = document.getElementById('diaryEditorCard');
             if (!el) return;
             const ds = diarySelectedDate || diaryTodayStr();
+            // 草稿保护：云同步等触发的重渲染，不冲掉正在编辑、尚未保存的内容（仅限同一日期）
+            const prevInput = document.getElementById('diaryEditorInput');
+            const draft = (prevInput && prevInput.getAttribute('data-date') === ds && prevInput.value.trim()) ? prevInput.value : null;
             const e = diaryEntry(ds);
             const today = diaryTodayStr();
             const d = new Date(ds + 'T00:00:00');
@@ -15083,7 +15101,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
                 <div class="diary-mood-row" id="diaryMoodRow">
                     ${DIARY_MOODS.map(m => `<span class="diary-mood${mood === m.key ? ' active' : ''}" data-mood="${m.key}" onclick="diarySetMood('${m.key}')">${m.icon} ${m.name}</span>`).join('')}
                 </div>
-                <textarea class="diary-editor-input" id="diaryEditorInput" placeholder="写点什么…">${e ? diaryEsc(e.content) : ''}</textarea>
+                <textarea class="diary-editor-input" id="diaryEditorInput" data-date="${ds}" placeholder="写点什么…">${draft !== null ? diaryEsc(draft) : (e ? diaryEsc(e.content) : '')}</textarea>
                 <div class="diary-editor-foot">
                     <button class="diary-btn danger" id="diaryDeleteBtn" style="${e ? '' : 'display:none;'}" onclick="diaryDeleteCurrent()">🗑 删除这一天</button>
                     <span class="diary-editor-actions">
@@ -19492,7 +19510,7 @@ html[data-theme] .day-count { background: var(--card-bg-2, var(--card-bg)); colo
 
         // ===== 新版本检测（合并时自动注入版本号，发现新版右下角小绿点提示，点一下即更新） =====
         // 该版本号由 verify_merge.py 合并时自动替换注入，形如 202608200839（可数值比较）
-        window.NIKO_VERSION = "202608201040";
+        window.NIKO_VERSION = "202608201207";
         function nikoApplyUpdate() {
             var v = document.getElementById('nikoUpdateTip').getAttribute('data-ver') || '';
             if (v && location.pathname) {
